@@ -1,0 +1,26 @@
+/* Shared layout for the navigation pages */
+.inner-hero { background: linear-gradient(135deg, rgba(26,58,42,.95), rgba(45,90,61,.82)), url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&h=600&fit=crop') center/cover; color: var(--white); padding: 92px 0; }
+.inner-hero .eyebrow { color: var(--gold-light); font-size: .85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.inner-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.1; margin: 10px 0 16px; }
+.inner-hero p { max-width: 680px; font-size: 1.08rem; opacity: .92; }
+.page-section { padding: 80px 0; }
+.page-section.alt { background: var(--light-gray); }
+.page-title { font-family: 'Playfair Display', serif; color: var(--primary-dark); font-size: 2.1rem; margin-bottom: 15px; }
+.page-intro { max-width: 760px; color: var(--text-gray); margin-bottom: 34px; }
+.content-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.content-card { background: var(--white); border-radius: 12px; padding: 28px; box-shadow: var(--shadow); border-top: 4px solid var(--gold); }
+.content-card i { color: var(--primary-green); font-size: 1.6rem; margin-bottom: 15px; }
+.content-card .managed-image { width: calc(100% + 56px); height: 180px; object-fit: cover; display: block; margin: -28px -28px 20px; border-radius: 8px 8px 0 0; }
+.content-card h3 { color: var(--primary-dark); font-family: 'Montserrat', sans-serif; margin-bottom: 10px; }
+.content-card p, .content-card li { color: var(--text-gray); font-size: .94rem; }
+.content-card ul { list-style: disc; padding-left: 18px; }
+.content-card li + li { margin-top: 7px; }
+.page-cta { background: var(--primary-dark); color: var(--white); text-align: center; padding: 58px 20px; }
+.page-cta h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 10px; }
+.page-cta p { max-width: 620px; margin: 0 auto 24px; opacity: .9; }
+.page-button { display: inline-block; background: var(--gold); color: var(--primary-dark); padding: 12px 25px; border-radius: 25px; font-weight: 700; }
+.page-button:hover { background: var(--white); transform: translateY(-2px); }
+.page-footer { background: #10291d; color: var(--white); padding: 26px 0; font-size: .9rem; }
+.page-footer .container { display: flex; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+.page-footer a { color: var(--gold-light); }
+@media (max-width: 850px) { .content-grid { grid-template-columns: 1fr; } .inner-hero { padding: 68px 0; } }

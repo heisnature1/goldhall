@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Refinery Hall - University of Mines and Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- PAGE LOADER -->
+    <div class="page-loader" id="pageLoader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">GOLD REFINERY HALL</div>
+    </div>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>University of Mines and Technology, Tarkwa</span>
+            </div>
+            <div class="top-bar-right">
+                <em>Excellence Â· Unity Â· Leadership</em>
+            </div>
+            <div class="top-bar-social">
+                <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header" id="header">
+        <div class="container">
+            <div class="logo-section">
+                <div class="logo-img">
+                    <img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo">
+                </div>
+                <div class="logo-text">
+                    <h1>GOLD<br>REFINERY<br>HALL</h1>
+                    <p>University of Mines and Technology</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="header-divider"></div>
+                <div class="admin-section">
+                    <div class="admin-icon">
+                        <img src="assets/logo/pius-tweneboah-administration-logo.png" alt="Pius and Tweneboah administration logo">
+                    </div>
+                    <div class="admin-text">
+                        <h3>PIUS-<br>TWENEBOAH</h3>
+                        <p>LED ADMINISTRATION</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE OVERLAY -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- NAVIGATION -->
+    <nav class="nav-section" id="navSection">
+        <button class="mobile-nav-close" id="mobileNavClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="container">
+            <ul class="main-nav">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li class="nav-dropdown">
+                    <a href="about.html">About Us <i class="fas fa-chevron-down" style="font-size:0.6rem; margin-left:4px;"></i></a>
+                    <div class="nav-dropdown-content">
+                        <a href="about.html#history">Our History</a>
+                        <a href="about.html#mission">Mission & Vision</a>
+                        <a href="about.html#values">Core Values</a>
+                    </div>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="students.html">Students <i class="fas fa-chevron-down" style="font-size:0.6rem; margin-left:4px;"></i></a>
+                    <div class="nav-dropdown-content">
+                        <a href="students.html#council">Student Council</a>
+                        <a href="students.html#clubs">Clubs & Societies</a>
+                        <a href="students.html#support">Academic Support</a>
+                    </div>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="leadership.html">Leadership <i class="fas fa-chevron-down" style="font-size:0.6rem; margin-left:4px;"></i></a>
+                    <div class="nav-dropdown-content">
+                        <a href="leadership.html#hall-master">Hall Master</a>
+                        <a href="leadership.html#senior-tutor">Senior Tutor</a>
+                        <a href="leadership.html#executives">Executives</a>
+                    </div>
+                </li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="documents.html">Documents</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="login-btn">
+                <button class="btn">Login <i class="fas fa-chevron-down"></i></button>
+                <div class="login-dropdown">
+                    <a href="#"><i class="fas fa-user-graduate"></i> Student Portal</a>
+                    <a href="admin.html"><i class="fas fa-user-tie"></i> Admin Portal</a>
+                    <a href="#"><i class="fas fa-chalkboard-teacher"></i> Staff Portal</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="hero">
+        <div class="hero-slider">
+            <div class="hero-slide active">
+                <img src="assets/images/hero/hero-hall-building.jpg" alt="Gold Refinery Hall building">
+            </div>
+            <div class="hero-slide">
+                <img src="assets/images/hero/hero-hall-building.jpg" alt="Gold Refinery Hall building">
+            </div>
+            <div class="hero-slide">
+                <img src="assets/images/hero/hero-hall-building.jpg" alt="Gold Refinery Hall building">
+            </div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="hero-content">
+                <p class="welcome-text">Welcome to</p>
+                <h2>Gold Refinery Hall</h2>
+                <div class="hero-line"></div>
+                <p class="university-name">University of Mines and Technology</p>
+                <p class="hero-desc">A home away from home, where excellence is built, friendships are formed, and leaders are shaped.</p>
+                <a href="#about" class="hero-btn">
+                    Explore GoldHall <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="hero-controls">
+            <div class="hero-dot active" data-slide="0"></div>
+            <div class="hero-dot" data-slide="1"></div>
+            <div class="hero-dot" data-slide="2"></div>
+        </div>
+    </section>
+
+    <!-- QUICK LINKS -->
+    <section class="quick-links">
+        <div class="container">
+            <div class="quick-links-grid">
+                <div class="quick-link-card animate-on-scroll">
+                    <div class="quick-link-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="quick-link-text">
+                        <h4>Apply for Scholarship</h4>
+                        <p>Online Application</p>
+                    </div>
+                </div>
+                <div class="quick-link-card animate-on-scroll">
+                    <div class="quick-link-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+                    <div class="quick-link-text">
+                        <h4>Submit a Complaint</h4>
+                        <p>Grievance Portal</p>
+                    </div>
+                </div>
+                <div class="quick-link-card animate-on-scroll">
+                    <div class="quick-link-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="quick-link-text">
+                        <h4>Upcoming Events</h4>
+                        <p>View Calendar</p>
+                    </div>
+                </div>
+                <div class="quick-link-card animate-on-scroll">
+                    <div class="quick-link-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="quick-link-text">
+                        <h4>Hall Documents</h4>
+                        <p>Download Resources</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-badge">About Us</span>
+                <h2>Our Heritage & Legacy</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image animate-on-scroll">
+                    <img src="assets/images/hero/hero-hall-building.jpg" alt="Gold Refinery Hall building">
+                    <div class="about-image-overlay">
+                        <div class="year">Est. 2005</div>
+                        <p>A legacy of excellence</p>
+                    </div>
+                </div>
+                <div class="about-text animate-on-scroll">
+                    <h3>Building Leaders Since 2005</h3>
+                    <p>Gold Refinery Hall stands as one of the prestigious halls of residence at the University of Mines and Technology, Tarkwa. Named after the rich gold mining heritage of the Western Region of Ghana, the hall embodies the spirit of transformation and excellence.</p>
+                    <p>Our mission is to provide a conducive living and learning environment that nurtures academic excellence, personal development, and community engagement among students.</p>
+                    <div class="about-features">
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Academic Excellence</span>
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Leadership Training</span>
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Sports & Recreation</span>
+                        </div>
+                        <div class="about-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Cultural Activities</span>
+                        </div>
+                    </div>
+                    <a href="#" class="about-btn">
+                        Learn More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-count="1200">0</div>
+                    <div class="stat-label">Current Residents</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-number" data-count="45">0</div>
+                    <div class="stat-label">Awards Won</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-number" data-count="8500">0</div>
+                    <div class="stat-label">Alumni Network</div>
+                </div>
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-number" data-count="19">0</div>
+                    <div class="stat-label">Years of Excellence</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEADERSHIP SECTION -->
+    <section class="leadership-section" id="leadership">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-badge">Leadership</span>
+                <h2>Meet Our Leaders</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="leadership-grid">
+                <div class="leader-card animate-on-scroll">
+                    <div class="leader-image">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face" alt="Hall Master">
+                        <div class="leader-image-overlay"></div>
+                    </div>
+                    <div class="leader-info">
+                        <h3>Prof. James Mensah</h3>
+                        <p class="position">Hall Master</p>
+                        <p>Leading Gold Refinery Hall with vision and dedication to academic excellence.</p>
+                        <div class="leader-social">
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="leader-card animate-on-scroll">
+                    <div class="leader-image">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" alt="Senior Tutor">
+                        <div class="leader-image-overlay"></div>
+                    </div>
+                    <div class="leader-info">
+                        <h3>Dr. Pius Tweneboah</h3>
+                        <p class="position">Senior Tutor</p>
+                        <p>Providing academic guidance and mentorship to all hall residents.</p>
+                        <div class="leader-social">
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="leader-card animate-on-scroll">
+                    <div class="leader-image">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face" alt="JCR President">
+                        <div class="leader-image-overlay"></div>
+                    </div>
+                    <div class="leader-info">
+                        <h3>Emmanuel Asante</h3>
+                        <p class="position">JCR President</p>
+                        <p>Representing the student body and driving hall development initiatives.</p>
+                        <div class="leader-social">
+                            <a href="#"><i class="fas fa-envelope"></i></a>
+                            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWS SECTION -->
+    <section class="news-section" id="news">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-badge">Latest News</span>
+                <h2>Stay Updated</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="news-grid">
+                <div class="news-card animate-on-scroll">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c476?w=600&h=400&fit=crop" alt="News">
+                        <div class="news-date">
+                            <span class="day">15</span>
+                            Jan
+                        </div>
+                    </div>
+                    <div class="news-body">
+                        <span class="news-category">Academics</span>
+                        <h3>Gold Hall Students Excel in National Science Competition</h3>
+                        <p>Our students brought home multiple awards from the national science and technology competition held in Accra.</p>
+                        <a href="#" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card animate-on-scroll">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&h=400&fit=crop" alt="News">
+                        <div class="news-date">
+                            <span class="day">08</span>
+                            Jan
+                        </div>
+                    </div>
+                    <div class="news-body">
+                        <span class="news-category">Sports</span>
+                        <h3>Inter-Hall Football Championship Victory Celebration</h3>
+                        <p>Gold Refinery Hall emerges victorious in the annual inter-hall football championship for the third consecutive year.</p>
+                        <a href="#" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="news-card animate-on-scroll">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400&fit=crop" alt="News">
+                        <div class="news-date">
+                            <span class="day">02</span>
+                            Jan
+                        </div>
+                    </div>
+                    <div class="news-body">
+                        <span class="news-category">Development</span>
+                        <h3>New Study Rooms and Common Areas Under Construction</h3>
+                        <p>The hall administration announces the expansion of study facilities and recreational areas for residents.</p>
+                        <a href="#" class="news-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EVENTS SECTION -->
+    <section class="events-section" id="events">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-badge">Events</span>
+                <h2>Upcoming Events</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="events-grid">
+                <div class="event-card animate-on-scroll">
+                    <div class="event-date-block">
+                        <span class="month">FEB</span>
+                        <span class="day">14</span>
+                        <span class="year">2025</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Hall Week Celebration</h3>
+                        <p>Annual celebration featuring cultural performances, academic competitions, and sports events.</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 9:00 AM - 6:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Main Hall</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-card animate-on-scroll">
+                    <div class="event-date-block">
+                        <span class="month">MAR</span>
+                        <span class="day">05</span>
+                        <span class="year">2025</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Career Development Workshop</h3>
+                        <p>Interactive session with industry professionals on career planning and professional development.</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 2:00 PM - 5:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Conference Room</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-card animate-on-scroll">
+                    <div class="event-date-block">
+                        <span class="month">MAR</span>
+                        <span class="day">20</span>
+                        <span class="year">2025</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Inter-Hall Debate Competition</h3>
+                        <p>Annual inter-hall debate competition promoting intellectual discourse and critical thinking.</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 10:00 AM - 4:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Auditorium</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-card animate-on-scroll">
+                    <div class="event-date-block">
+                        <span class="month">APR</span>
+                        <span class="day">12</span>
+                        <span class="year">2025</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Alumni Homecoming Dinner</h3>
+                        <p>Annual gathering of Gold Hall alumni for networking, mentorship, and celebration.</p>
+                        <div class="event-meta">
+                            <span><i class="fas fa-clock"></i> 6:00 PM - 10:00 PM</span>
+                            <span><i class="fas fa-map-marker-alt"></i> Dining Hall</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY SECTION -->
+    <section class="gallery-section" id="gallery">
+        <div class="container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-badge">Gallery</span>
+                <h2>Life at Gold Hall</h2>
+                <div class="underline"></div>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop" alt="Hall Building">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c476?w=400&h=300&fit=crop" alt="Study Area">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=400&h=300&fit=crop" alt="Campus">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=400&h=300&fit=crop" alt="Events">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=400&h=300&fit=crop" alt="Sports">
+                    <div class="gallery-overlay">
+                        <i class="fas fa-search-plus"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content animate-on-scroll">
+                <h2>Join the Gold Refinery Family</h2>
+                <p>Experience the best of university life at Gold Refinery Hall. From academic support to vibrant social activities, we have everything you need to thrive.</p>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-btn-primary">
+                        <i class="fas fa-user-plus"></i> Apply Now
+                    </a>
+                    <a href="#" class="cta-btn-secondary">
+                        <i class="fas fa-info-circle"></i> Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-about">
+                    <h3>Gold Refinery Hall</h3>
+                    <p>A prestigious hall of residence at the University of Mines and Technology, Tarkwa. Building leaders, fostering excellence, and creating lasting bonds since 2005.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Leadership</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> News & Events</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Gallery</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Documents</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Student Portal</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Scholarship</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Hall Constitution</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Academic Calendar</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact Us</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>University of Mines and Technology, Tarkwa, Western Region, Ghana</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone"></i>
+                            <span>+233 XX XXX XXXX</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>goldhall@umat.edu.gh</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-clock"></i>
+                            <span>Mon - Fri: 8:00 AM - 5:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Gold Refinery Hall, UMaT. All Rights Reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BACK TO TOP -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="Gallery Image">
+    </div>
+    <script src="content-store.js"></script>
+    <script src="script.js"></script>
+    <script src="home-content.js"></script>
+</body>
+</html>
