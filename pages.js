@@ -82,7 +82,7 @@ if (typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey
 }
 const links = [
   ['Home', 'index.html'], ['About Us', 'about.html'], ['Students', 'students.html'],
-  ['Leadership', 'leadership.html'], ['News', 'news.html'], ['Events', 'events.html'],
+  ['Student Hub', 'student.html'], ['Leadership', 'leadership.html'], ['News', 'news.html'], ['Events', 'events.html'],
   ['Gallery', 'gallery.html'], ['Documents', 'documents.html'], ['Contact', 'contact.html']
 ];
 
