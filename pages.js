@@ -75,15 +75,18 @@ const pages = {
   }
 };
 
+const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
+const linkLabels = { news: 'Read the full story', events: 'Event details', gallery: 'View picture', documents: 'Open document' };
+const blankFor = href => /^https?:/i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+
 const page = pages[pageKey] || pages.about;
 if (typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey)) {
   const icons = { news: 'fa-newspaper', events: 'fa-calendar-days', gallery: 'fa-image', documents: 'fa-file-lines' };
-  page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey]]);
+  page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey], item.image || '', item.link || '']);
 }
 const links = [
-  ['Home', 'index.html'], ['About Us', 'about.html'], ['Students', 'students.html'],
-  ['Student Hub', 'student.html'], ['Leadership', 'leadership.html'], ['News', 'news.html'], ['Events', 'events.html'],
-  ['Gallery', 'gallery.html'], ['Documents', 'documents.html'], ['Contact', 'contact.html']
+  ['Home', 'index.html'], ['Student Hub', 'student.html'], ['News', 'news.html'],
+  ['Events', 'events.html'], ['Documents', 'documents.html'], ['About Us', 'about.html']
 ];
 
 document.title = `${page.title} | Gold Refinery Hall`;
@@ -92,17 +95,10 @@ document.body.innerHTML = `
     <a class="logo-section" href="index.html"><div class="logo-img"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></div><div class="logo-text"><h1>GOLD REFINERY HALL</h1><p>University of Mines and Technology</p></div></a>
     <div class="header-right"><div class="admin-section"><div class="admin-icon"><img src="assets/logo/pius-tweneboah-administration-logo.png" alt="Pius and Tweneboah administration logo"></div><div class="admin-text"><h3>Gold Hall</h3><p>UMaT, Tarkwa</p></div></div></div>
   </div></header>
-  <nav class="nav-section"><div class="container"><ul class="main-nav">${links.map(([label, href]) => `<li><a href="${href}" class="${href === `${pageKey}.html` ? 'active' : ''}">${label}</a></li>`).join('')}</ul></div></nav>
+  <nav class="nav-section inner-nav"><div class="container"><ul class="main-nav">${links.map(([label, href]) => `<li><a href="${href}" class="${href === 'student.html' ? 'nav-highlight' : ''} ${href === `${pageKey}.html` ? 'active' : ''}">${label}</a></li>`).join('')}</ul></div></nav>
   <main>
-    <section class="inner-hero"><div class="container"><span class="eyebrow">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.intro}</p></div></section>
-    <section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon]) => `<article id="${id}" class="content-card"><i class="fas ${icon}"></i><h3>${title}</h3><p>${text.replace(/\n/g, '<br>')}</p></article>`).join('')}</div></div></section>
-    <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="contact.html">Contact the Hall</a></section>
+    <section class="inner-hero"><div class="container"><span class="eyebrow">${esc(page.eyebrow)}</span><h1>${esc(page.title)}</h1><p>${esc(page.intro)}</p></div></section>
+    <section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link]) => `<article id="${esc(id)}" class="content-card">${picture ? `<img class="managed-image" src="${esc(picture)}" alt="${esc(title)}">` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>
+    <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="student.html">Open the Student Hub</a></section>
   </main>
   <footer class="page-footer"><div class="container"><span>© 2026 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
-
-if (pageKey === 'gallery' && typeof GoldHallStore !== 'undefined') {
-  GoldHallStore.visible('gallery').forEach(item => {
-    const card = document.getElementById(item.id);
-    if (card) card.insertAdjacentHTML('afterbegin', `<img class="managed-image" src="${item.meta}" alt="${item.title}">`);
-  });
-}
