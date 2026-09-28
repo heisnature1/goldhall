@@ -2,11 +2,19 @@
 
 A static website for Gold Refinery Hall, University of Mines and Technology, with a browser-based Student Hub prototype.
 
+## Design & animations
+
+Visual polish and motion live in two files included by every page:
+
+- `enhancements.css` – upgrade layer loaded after the page styles: richer hover states, shine sweeps, animated gradients, scroll-reveal rules and a `prefers-reduced-motion` fallback.
+- `fx.js` – animation engine: scroll-reveal (`[data-reveal]`), a gold scroll-progress bar, hero entrance synced with the page loader, floating gold particles and gentle card tilt. It exposes `window.GoldHallFX.observe(root)` for JS-rendered views.
+
 ## Student Hub features
 
 Open `student.html` to register or sign in. Registration collects:
 
 - Full name and UMaT Student ID
+- Student email (official UMaT student email) and personal email
 - Programme and year / level
 - Room / bedspace and Resident / Non-Resident status
 - A password (8 characters minimum)

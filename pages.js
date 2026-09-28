@@ -98,7 +98,7 @@ document.body.innerHTML = `
     <section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon]) => `<article id="${id}" class="content-card"><i class="fas ${icon}"></i><h3>${title}</h3><p>${text.replace(/\n/g, '<br>')}</p></article>`).join('')}</div></div></section>
     <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="contact.html">Contact the Hall</a></section>
   </main>
-  <footer class="page-footer"><div class="container"><span>© 2025 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
+  <footer class="page-footer"><div class="container"><span>© 2026 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
 
 if (pageKey === 'gallery' && typeof GoldHallStore !== 'undefined') {
   GoldHallStore.visible('gallery').forEach(item => {

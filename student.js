@@ -21,6 +21,8 @@ function setMode(mode) {
           <label>Student ID<input name="studentId" autocomplete="username" placeholder="Your UMaT student ID" required maxlength="40"></label>
           <label>Programme<input name="programme" placeholder="e.g. BSc Minerals Engineering" required maxlength="100"></label>
         </div>
+        <label>Student email<input name="studentEmail" type="email" autocomplete="email" placeholder="e.g. ama.mensah@st.umat.edu.gh" required maxlength="120"><span class="field-hint"><i class="fas fa-graduation-cap"></i> Your official UMaT student email</span></label>
+        <label>Personal email<input name="personalEmail" type="email" autocomplete="email" placeholder="e.g. ama.mensah@gmail.com" required maxlength="120"><span class="field-hint"><i class="fas fa-envelope-open-text"></i> For hall updates and account recovery</span></label>
         <div class="form-grid">
           <label>Year / level<select name="year" required><option value="" disabled selected>Select year</option>${[100,200,300,400,500,600].map(year => `<option value="${year}">Year ${year}</option>`).join('')}<option value="Other">Other / postgraduate</option></select></label>
           <label>Hall status<select name="hallStatus" id="hallStatus" required><option value="" disabled selected>Select status</option><option>Resident</option><option>Non-Resident</option></select></label>
@@ -64,6 +66,14 @@ async function registerStudent(event) {
   const message = document.getElementById('authMessage');
   const studentId = String(form.get('studentId')).trim().toUpperCase();
   const password = String(form.get('password'));
+  const studentEmail = String(form.get('studentEmail')).trim().toLowerCase();
+  const personalEmail = String(form.get('personalEmail')).trim().toLowerCase();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if (!emailPattern.test(studentEmail)) { message.textContent = 'Enter a valid student email address.'; return; }
+  if (!emailPattern.test(personalEmail)) { message.textContent = 'Enter a valid personal email address.'; return; }
+  if (studentEmail === personalEmail) { message.textContent = 'Your student email and personal email should be different addresses.'; return; }
+  const emailTaken = GoldHallPortal.students().find(existing => existing.studentEmail === studentEmail || existing.personalEmail === studentEmail);
+  if (emailTaken) { message.textContent = 'That student email is already registered to another account.'; return; }
   if (password !== form.get('confirmPassword')) { message.textContent = 'Those passwords do not match.'; return; }
   if (GoldHallPortal.findStudent(studentId)) { message.textContent = 'That Student ID already has an account. Please sign in instead.'; return; }
   try {
@@ -71,6 +81,7 @@ async function registerStudent(event) {
       fullName: String(form.get('fullName')).trim(), studentId,
       programme: String(form.get('programme')).trim(), year: String(form.get('year')),
       room: String(form.get('room')).trim(), hallStatus: String(form.get('hallStatus')),
+      studentEmail, personalEmail,
       passwordHash: await passwordDigest(password), accessStatus: 'active',
       createdAt: new Date().toISOString(), completedAt: null
     };
@@ -148,22 +159,22 @@ function dashboardMarkup(student) {
     managed.forEach(item => notices.push({ icon: 'fa-bullhorn', title: item.title, text: item.text }));
   }
   return `<div class="hub-dashboard">
-    <section class="hub-welcome">
+    <section class="hub-welcome" data-reveal>
       <div><span class="student-eyebrow">STUDENT HUB · UMaT</span><h1>Welcome, ${esc(student.fullName.split(/\s+/)[0])}.</h1><p>Your Gold Hall resources, opportunities and student voice—all in one place.</p></div>
       <div class="welcome-side"><button class="hub-button" id="signOutButton" type="button"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button></div>
     </section>
-    <div class="hub-profile-strip" aria-label="Student details">
-      <span><i class="fas fa-id-card"></i> ${esc(student.studentId)}</span><span><i class="fas fa-graduation-cap"></i> ${esc(student.programme)}</span><span><i class="fas fa-layer-group"></i> Year ${esc(student.year)}</span><span><i class="fas fa-house"></i> ${esc(student.hallStatus)}${student.room ? ` · ${esc(student.room)}` : ''}</span>
+    <div class="hub-profile-strip" aria-label="Student details" data-reveal style="--fx-delay:.08s">
+      <span><i class="fas fa-id-card"></i> ${esc(student.studentId)}</span><span><i class="fas fa-graduation-cap"></i> ${esc(student.programme)}</span><span><i class="fas fa-layer-group"></i> Year ${esc(student.year)}</span><span><i class="fas fa-house"></i> ${esc(student.hallStatus)}${student.room ? ` · ${esc(student.room)}` : ''}</span><span><i class="fas fa-envelope"></i> ${esc(student.studentEmail || 'No student email on file')}</span>${student.personalEmail ? `<span><i class="fas fa-envelope-open-text"></i> ${esc(student.personalEmail)}</span>` : ''}
     </div>
-    <section class="hub-section" aria-labelledby="resourceHeading">
+    <section class="hub-section" aria-labelledby="resourceHeading" data-reveal style="--fx-delay:.14s">
       <div class="hub-section-head"><div><span class="hub-kicker">Your student toolkit</span><h2 id="resourceHeading">Useful resources</h2></div><p>Open a link to explore more.</p></div>
       <div class="hub-resource-grid">${resources.map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" ${item.link.startsWith('http') ? 'target="_blank" rel="noopener noreferrer"' : ''}>${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
     </section>
-    <section class="hub-section hub-lower-grid">
+    <section class="hub-section hub-lower-grid" data-reveal style="--fx-delay:.2s">
       <div class="hub-panel"><h3>Hall announcements</h3><p class="hub-panel-intro">Community updates and programmes to look forward to.</p><div class="announcement-list">${notices.slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}</div><p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p></div>
       <div class="hub-panel" id="bus-schedule"><h3>Campus shuttle</h3><p class="hub-panel-intro">Sample weekday departures · UMaT / Gold Hall</p><div class="bus-list"><div class="bus-row"><strong>Morning run</strong><span>6:30 · 7:15 · 8:00</span></div><div class="bus-row"><strong>Midday run</strong><span>12:00 · 13:00</span></div><div class="bus-row"><strong>Evening run</strong><span>16:30 · 17:30 · 18:30</span></div></div><p class="bus-caveat"><i class="fas fa-circle-info"></i> Indicative demo times only. Please confirm the current timetable with the Hall Office before travelling.</p></div>
     </section>
-    <section class="hub-section" id="student-polls">
+    <section class="hub-section" id="student-polls" data-reveal style="--fx-delay:.26s">
       <div class="election-header"><div><span class="hub-kicker">Your voice matters</span><h2 class="hub-section-head" style="display:block;margin:4px 0 0"><span id="electionTitle"></span></h2><p class="hub-section-head" style="display:block;margin:4px 0 0;color:#818b84;font:400 .82rem 'DM Sans',sans-serif">Free to vote · one ballot per student for each position</p></div><span id="electionStatus" class="election-status"></span></div>
       <div class="poll-grid" id="pollGrid"></div>
       <p class="hub-privacy-note"><i class="fas fa-shield-halved"></i> Voting is free. This preview saves votes in this browser and cannot verify student identity or prevent tampering. Use a secured server-side election system for an official or binding result.</p>
@@ -216,6 +227,7 @@ function bindDashboard(student) {
     showCompleted();
   });
   renderPolls(student);
+  window.GoldHallFX?.observe(dashboardHost);
 }
 
 tabs.forEach(tab => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
