@@ -1,0 +1,427 @@
+/* ==========================================================================
+   GOLDHALL FX — design & animation upgrade layer
+   Loads AFTER styles.css / student.css / page.css / admin.css and polishes
+   the whole site: richer motion, micro-interactions and refined surfaces.
+   ========================================================================== */
+
+/* ----- 0. Tokens & global polish ----- */
+:root {
+  --fx-ease: cubic-bezier(.22, .61, .36, 1);
+  --fx-ease-spring: cubic-bezier(.34, 1.4, .44, 1);
+  --fx-gold: #d8b45c;
+  --fx-gold-bright: #eed488;
+  --fx-gold-deep: #a58634;
+  --fx-green: #1f5b43;
+  --fx-green-deep: #0f2b20;
+}
+
+::selection { background: rgba(216, 180, 92, .85); color: #142c21; }
+
+html.fx-ready { scroll-padding-top: 90px; }
+
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: #10281e; }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #3d7a5a, #245540); border-radius: 8px; border: 2px solid #10281e; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #d8b45c, #a58634); }
+
+:focus-visible { outline: 2px solid var(--fx-gold); outline-offset: 2px; border-radius: 4px; }
+
+/* ----- 1. Keyframes ----- */
+@keyframes fxRise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fxRiseSmall { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fxSlideLeft { from { opacity: 0; transform: translateX(-36px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fxSlideRight { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fxPop { 0% { opacity: 0; transform: scale(.92) translateY(18px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes fxZoomReveal { from { opacity: 0; transform: scale(.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes fxDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes fxSweep { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(230%) skewX(-18deg); } }
+@keyframes fxKenBurns { from { transform: scale(1.02) translate(0, 0); } to { transform: scale(1.14) translate(-1.4%, -1.8%); } }
+@keyframes fxMote {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  12% { opacity: var(--fx-mote-o, .5); }
+  88% { opacity: var(--fx-mote-o, .5); }
+  100% { transform: translateY(-46vh) translateX(3vw); opacity: 0; }
+}
+@keyframes fxGradient { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+@keyframes fxFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes fxFloatRing { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-16px, -20px) rotate(6deg); } }
+@keyframes fxPulseSoft { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes fxGlowPulse { 0%, 100% { opacity: .45; } 50% { opacity: .9; } }
+@keyframes fxShimmerText { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes fxSpinSlow { to { transform: rotate(360deg); } }
+@keyframes fxLetterSpace { from { letter-spacing: .6em; opacity: 0; } to { letter-spacing: 3px; opacity: 1; } }
+
+/* ----- 2. Scroll progress bar ----- */
+.fx-progress {
+  position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 100000;
+  background: linear-gradient(90deg, #a58634, #e8c84e 45%, #f5e6b0 70%, #e8c84e);
+  box-shadow: 0 0 14px rgba(232, 200, 78, .75);
+  transform: scaleX(0); transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+/* ----- 3. Reveal-on-scroll system (JS-gated, safe without JS) ----- */
+html.fx-ready [data-reveal] { opacity: 0; transform: translateY(30px); transition: opacity .8s var(--fx-ease), transform .8s var(--fx-ease); transition-delay: var(--fx-delay, 0s); will-change: opacity, transform; }
+html.fx-ready [data-reveal="left"] { transform: translateX(-42px); }
+html.fx-ready [data-reveal="right"] { transform: translateX(42px); }
+html.fx-ready [data-reveal="zoom"] { transform: scale(.93) translateY(18px); }
+html.fx-ready [data-reveal].fx-in { opacity: 1; transform: none; }
+
+/* ----- 4. Page loader upgrade ----- */
+.page-loader { background: radial-gradient(circle at 50% 30%, #1d4732, #0f2b20 70%); }
+.loader-spinner { position: relative; border-width: 3px; }
+.loader-spinner::after {
+  content: ''; position: absolute; inset: -12px; border-radius: 50%;
+  border: 1px dashed rgba(216, 180, 92, .5); animation: fxSpinSlow 6s linear infinite;
+}
+.loader-text { animation: fxLetterSpace 1.2s var(--fx-ease) both; text-transform: uppercase; font-size: 1rem; }
+
+/* ----- 5. Top bar, header & nav micro-interactions ----- */
+.top-bar-social a { transition: transform .3s var(--fx-ease-spring), color .3s, background .3s; }
+.top-bar-social a:hover { transform: translateY(-3px) scale(1.12); color: var(--fx-gold-bright); }
+
+.header .logo-img img { transition: transform .6s var(--fx-ease); }
+.header .logo-section:hover .logo-img img { transform: rotate(-6deg) scale(1.06); }
+.header.scrolled { box-shadow: 0 10px 30px rgba(16, 40, 30, .14); }
+
+.main-nav a::after {
+  content: ''; position: absolute; left: 20px; right: 20px; bottom: 10px; height: 2px;
+  background: linear-gradient(90deg, var(--fx-gold), var(--fx-gold-bright));
+  border-radius: 2px; transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform .35s var(--fx-ease);
+}
+.main-nav a:hover::after, .main-nav a.active::after { transform: scaleX(1); }
+
+.nav-dropdown-content { border-top: 2px solid var(--fx-gold); }
+.nav-dropdown-content a { transition: padding-left .3s var(--fx-ease), background .3s, color .3s; }
+
+/* ----- 6. Hero: Ken Burns, entrance sync, particles, glow ----- */
+.hero-slide.active img { animation: fxKenBurns 7.5s var(--fx-ease) forwards; }
+.hero-slide img { transform: scale(1.02); }
+
+.hero-overlay {
+  background:
+    radial-gradient(circle at 78% 22%, rgba(216, 180, 92, .16), transparent 34%),
+    linear-gradient(135deg, rgba(20, 46, 33, .9) 0%, rgba(45, 90, 61, .72) 45%, rgba(20, 46, 33, .68) 100%);
+}
+.hero-overlay::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 34%;
+  background: linear-gradient(180deg, transparent, rgba(12, 26, 19, .55));
+  pointer-events: none;
+}
+
+/* Re-time hero entrance so it plays as the loader fades (fx.js adds .fx-hero-go) */
+html.fx-ready .hero .hero-content > *, html.fx-ready .hero .hero-line { animation: none; opacity: 0; }
+html.fx-ready .hero .hero-line { width: 120px; transform: scaleX(0); transform-origin: 0 50%; }
+html.fx-ready .hero.fx-hero-go .welcome-text { animation: fxRise .7s var(--fx-ease) .05s forwards; }
+html.fx-ready .hero.fx-hero-go h2 { animation: fxRise .8s var(--fx-ease) .18s forwards; }
+html.fx-ready .hero.fx-hero-go .hero-line { animation: fxDraw .7s var(--fx-ease) .5s forwards; }
+html.fx-ready .hero.fx-hero-go .university-name { animation: fxRise .7s var(--fx-ease) .58s forwards; }
+html.fx-ready .hero.fx-hero-go .hero-desc { animation: fxRise .7s var(--fx-ease) .72s forwards; }
+html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) .86s forwards; }
+
+.hero-content h2 { text-shadow: 0 4px 30px rgba(0, 0, 0, .35); }
+.hero-dot { box-shadow: 0 0 0 0 rgba(216, 180, 92, 0); }
+.hero-dot.active { box-shadow: 0 0 0 5px rgba(216, 180, 92, .22); }
+
+.fx-motes { position: relative; }
+.fx-mote {
+  position: absolute; bottom: -12px; border-radius: 50%;
+  background: radial-gradient(circle, #f5e6b0 0%, #d8b45c 65%, transparent 75%);
+  filter: drop-shadow(0 0 6px rgba(232, 200, 78, .8));
+  animation: fxMote linear infinite; pointer-events: none; z-index: 1;
+}
+
+/* ----- 7. Shared button shine sweep ----- */
+.hero-btn, .cta-btn-primary, .cta-btn-secondary, .hub-spotlight-button,
+.form-submit, .hub-button, .admin-btn, .page-button, .about-btn, .login-btn .btn {
+  position: relative; overflow: hidden; isolation: isolate;
+}
+.hero-btn::after, .cta-btn-primary::after, .cta-btn-secondary::after, .hub-spotlight-button::after,
+.form-submit::after, .hub-button::after, .admin-btn::after, .page-button::after, .about-btn::after {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, .45) 50%, transparent 58%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+.hero-btn:hover::after, .cta-btn-primary:hover::after, .cta-btn-secondary:hover::after,
+.hub-spotlight-button:hover::after, .form-submit:hover::after, .hub-button:hover::after,
+.admin-btn:hover::after, .page-button:hover::after, .about-btn:hover::after {
+  animation: fxSweep .9s var(--fx-ease);
+}
+
+/* ----- 8. Quick links ----- */
+.quick-link-card::after {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, .28) 50%, transparent 58%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+.quick-link-card:hover::after { animation: fxSweep .9s var(--fx-ease); }
+.quick-link-card:hover .quick-link-icon i { animation: fxPulseSoft .7s var(--fx-ease); }
+
+/* ----- 9. Hub spotlight ----- */
+.hub-spotlight { background-size: auto, 180% 180%; animation: fxGradient 16s ease-in-out infinite alternate; }
+.hub-spotlight::before { animation: fxFloatRing 18s ease-in-out infinite; }
+.hub-spotlight-cards a { position: relative; overflow: hidden; }
+.hub-spotlight-cards a::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, .16) 50%, transparent 58%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+.hub-spotlight-cards a:hover::after { animation: fxSweep .9s var(--fx-ease); }
+.hub-spotlight-cards a:hover > i:first-child { animation: fxPulseSoft .7s var(--fx-ease); }
+.hub-spotlight-button:hover { box-shadow: 0 10px 26px rgba(221, 197, 111, .35); }
+
+/* ----- 10. Section headers ----- */
+.section-badge { transition: transform .35s var(--fx-ease-spring), box-shadow .35s; }
+.section-badge:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(200, 168, 78, .25); }
+.section-header .underline { position: relative; overflow: hidden; }
+.section-header .underline::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, .9) 50%, transparent 70%);
+  animation: fxSweep 3.6s ease-in-out infinite;
+}
+
+/* ----- 11. About ----- */
+.about-image { transition: transform .5s var(--fx-ease); }
+.about-image:hover { transform: translateY(-4px); }
+.about-image-overlay .year { animation: fxGlowPulse 4s ease-in-out infinite; }
+.about-feature { transition: transform .3s var(--fx-ease-spring), color .3s; }
+.about-feature:hover { transform: translateX(6px); }
+.about-feature:hover i { color: var(--fx-gold-deep); }
+
+/* ----- 12. Stats ----- */
+.stat-item { transition: transform .4s var(--fx-ease), box-shadow .4s; }
+.stat-item:hover { transform: translateY(-6px); }
+.stat-item:hover .stat-icon i { animation: fxPulseSoft .8s var(--fx-ease); }
+
+/* ----- 13. Leadership ----- */
+.leader-card { transition: transform .45s var(--fx-ease), box-shadow .45s; will-change: transform; }
+.leader-card:hover { box-shadow: 0 22px 50px rgba(16, 40, 30, .18); }
+.leader-image { overflow: hidden; }
+.leader-image img { transition: transform .8s var(--fx-ease); }
+.leader-card:hover .leader-image img { transform: scale(1.08); }
+.leader-social a { transition: transform .3s var(--fx-ease-spring), background .3s, color .3s; }
+.leader-social a:hover { transform: translateY(-4px) scale(1.1); }
+
+/* ----- 14. News / events / gallery ----- */
+.news-card, .event-card { transition: transform .45s var(--fx-ease), box-shadow .45s; }
+.news-card:hover, .event-card:hover { transform: translateY(-6px); box-shadow: 0 20px 44px rgba(16, 40, 30, .15); }
+.news-image { overflow: hidden; }
+.news-image img { transition: transform .8s var(--fx-ease); }
+.news-card:hover .news-image img { transform: scale(1.07); }
+.news-date { transition: transform .4s var(--fx-ease-spring); }
+.news-card:hover .news-date { transform: scale(1.08) rotate(-2deg); }
+.news-link i { transition: transform .3s var(--fx-ease); }
+.news-link:hover i { transform: translateX(6px); }
+
+.event-date-block { transition: transform .4s var(--fx-ease-spring); }
+.event-card:hover .event-date-block { transform: scale(1.05); }
+
+.gallery-item { overflow: hidden; }
+.gallery-item img { transition: transform .8s var(--fx-ease), filter .8s; }
+.gallery-item:hover img { transform: scale(1.09); }
+.gallery-overlay { transition: opacity .4s, backdrop-filter .4s; }
+.gallery-overlay i { transition: transform .45s var(--fx-ease-spring); transform: scale(.6); }
+.gallery-item:hover .gallery-overlay i { transform: scale(1); }
+
+/* ----- 15. CTA ----- */
+.cta-section { background-size: 200% 200%; animation: fxGradient 14s ease-in-out infinite alternate; }
+.cta-section::before { animation: fxFloatRing 16s ease-in-out infinite; }
+.cta-section::after { animation: fxFloatRing 19s ease-in-out infinite reverse; }
+.cta-btn-primary:hover { box-shadow: 0 14px 34px rgba(200, 168, 78, .4); }
+
+/* ----- 16. Footer ----- */
+.footer-column ul a { transition: padding-left .3s var(--fx-ease), color .3s; }
+.footer-column ul a:hover { padding-left: 8px; color: var(--fx-gold-bright); }
+.footer-social a { transition: transform .3s var(--fx-ease-spring), background .3s, color .3s, box-shadow .3s; }
+.footer-social a:hover { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(216, 180, 92, .3); }
+
+/* ----- 17. Back to top ----- */
+.back-to-top { transition: transform .35s var(--fx-ease-spring), opacity .35s, background .3s, box-shadow .3s; }
+.back-to-top:hover { transform: translateY(-5px); box-shadow: 0 12px 26px rgba(216, 180, 92, .4); }
+
+/* ==========================================================================
+   STUDENT HUB
+   ========================================================================== */
+
+/* Ambient page glow */
+.student-page { position: relative; }
+.student-page::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(600px 380px at 88% -4%, rgba(216, 180, 92, .16), transparent 60%),
+    radial-gradient(560px 420px at -6% 100%, rgba(31, 91, 67, .13), transparent 60%),
+    var(--hub-paper);
+}
+
+.student-header { position: relative; overflow: hidden; }
+.student-header::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--fx-gold) 30%, var(--fx-gold-bright) 50%, var(--fx-gold) 70%, transparent);
+  background-size: 200% 100%; animation: fxGradient 6s linear infinite alternate;
+}
+.brand-gem { transition: transform .5s var(--fx-ease-spring); }
+.student-brand:hover .brand-gem { transform: rotate(-8deg) scale(1.08); }
+.student-top-nav a { position: relative; transition: color .3s; }
+.student-top-nav a::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px;
+  background: var(--fx-gold); transform: scaleX(0); transform-origin: 0 50%; transition: transform .35s var(--fx-ease);
+}
+.student-top-nav a:hover::after { transform: scaleX(1); }
+
+/* Auth shell entrance */
+.auth-intro > * { opacity: 0; animation: fxRise .8s var(--fx-ease) forwards; }
+.auth-intro > *:nth-child(1) { animation-delay: .05s; }
+.auth-intro > *:nth-child(2) { animation-delay: .16s; }
+.auth-intro > *:nth-child(3) { animation-delay: .28s; }
+.auth-intro > *:nth-child(4) { animation-delay: .4s; }
+.auth-intro > *:nth-child(5) { animation-delay: .52s; }
+.auth-card { opacity: 0; animation: fxPop .85s var(--fx-ease) .3s forwards; }
+.auth-benefits span { transition: transform .3s var(--fx-ease-spring); display: inline-flex; align-items: center; }
+.auth-benefits span:hover { transform: translateX(6px); }
+.auth-benefits i { transition: transform .4s var(--fx-ease-spring), background .3s, color .3s; }
+.auth-benefits span:hover i { transform: scale(1.15) rotate(-8deg); background: var(--fx-gold); color: #223427; }
+.auth-decoration i { animation: fxFloat 4.5s ease-in-out infinite; }
+.auth-tab { transition: background .3s, color .3s, transform .15s, box-shadow .3s; }
+.auth-tab:active { transform: scale(.97); }
+.auth-title { animation: fxRiseSmall .5s var(--fx-ease) both; }
+.auth-subtitle { animation: fxRiseSmall .5s var(--fx-ease) .06s both; }
+
+/* Form fields stagger (replays each time a tab re-renders the form) */
+.portal-form > * { opacity: 0; animation: fxRiseSmall .55s var(--fx-ease) forwards; }
+.portal-form > *:nth-child(1) { animation-delay: .04s; }
+.portal-form > *:nth-child(2) { animation-delay: .09s; }
+.portal-form > *:nth-child(3) { animation-delay: .14s; }
+.portal-form > *:nth-child(4) { animation-delay: .19s; }
+.portal-form > *:nth-child(5) { animation-delay: .24s; }
+.portal-form > *:nth-child(6) { animation-delay: .29s; }
+.portal-form > *:nth-child(7) { animation-delay: .34s; }
+.portal-form > *:nth-child(8) { animation-delay: .39s; }
+.portal-form > *:nth-child(9) { animation-delay: .44s; }
+.portal-form > *:nth-child(10) { animation-delay: .49s; }
+.portal-form > *:nth-child(11) { animation-delay: .54s; }
+.portal-form > *:nth-child(12) { animation-delay: .59s; }
+
+.portal-form input, .portal-form select {
+  transition: border-color .25s, box-shadow .25s, background .25s, transform .25s;
+}
+.portal-form input:hover, .portal-form select:hover { border-color: #b9c9bc; }
+.portal-form input:focus, .portal-form select:focus { transform: translateY(-1px); background: #fdfffd; }
+
+/* Email field hint */
+.field-hint { display: flex; align-items: center; gap: 6px; color: #8d9a90; font-size: .69rem; font-weight: 500; letter-spacing: .01em; }
+.field-hint i { color: var(--fx-gold-deep); font-size: .66rem; }
+
+.form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.form-error { animation: fxRiseSmall .3s var(--fx-ease); }
+
+/* Dashboard */
+.hub-welcome {
+  position: relative; overflow: hidden;
+  background-size: auto, 220% 220%;
+  animation: fxGradient 16s ease-in-out infinite alternate;
+}
+.hub-welcome::after {
+  content: ''; position: absolute; width: 240px; height: 240px; border-radius: 50%;
+  border: 1px solid rgba(238, 212, 136, .25); right: -60px; top: -90px; pointer-events: none;
+  box-shadow: 0 0 0 34px rgba(238, 212, 136, .05), 0 0 0 70px rgba(238, 212, 136, .03);
+  animation: fxFloatRing 14s ease-in-out infinite;
+}
+.hub-profile-strip span { transition: transform .25s var(--fx-ease-spring), color .25s; }
+.hub-profile-strip span:hover { transform: translateY(-2px); color: #35543f; }
+.hub-profile-strip i { transition: transform .35s var(--fx-ease-spring); }
+.hub-profile-strip span:hover i { transform: scale(1.25) rotate(-6deg); }
+
+.hub-resource { position: relative; overflow: hidden; transition: transform .35s var(--fx-ease), border-color .35s, box-shadow .35s; }
+.hub-resource::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 42%, rgba(31, 91, 67, .06) 50%, transparent 58%);
+  transform: translateX(-130%) skewX(-18deg);
+}
+.hub-resource:hover::after { animation: fxSweep .9s var(--fx-ease); }
+.hub-resource:hover .hub-resource-icon { animation: fxPulseSoft .7s var(--fx-ease); background: #e0ecd7; }
+.hub-resource-icon { transition: background .3s; }
+.resource-link i { transition: transform .3s var(--fx-ease); }
+.resource-link:hover i { transform: translate(4px, -2px); }
+
+.hub-panel { transition: transform .35s var(--fx-ease), box-shadow .35s; }
+.hub-panel:hover { box-shadow: 0 14px 34px rgba(24, 55, 45, .08); }
+.announcement { transition: transform .3s var(--fx-ease), background .3s; }
+.announcement:hover { transform: translateX(5px); background: #f1f6ee; }
+.announcement-icon { transition: transform .4s var(--fx-ease-spring); }
+.announcement:hover .announcement-icon { transform: rotate(-8deg) scale(1.08); }
+
+.poll-card { transition: transform .35s var(--fx-ease), border-color .35s, box-shadow .35s; }
+.poll-card:hover { transform: translateY(-4px); border-color: #cddccd; box-shadow: 0 14px 30px rgba(24, 55, 45, .08); }
+.candidate-option { transition: border-color .25s, background .25s, transform .25s; }
+.candidate-option:hover { border-color: #9dbfa7; transform: translateX(3px); }
+.election-status { animation: fxPop .6s var(--fx-ease) both; }
+
+.graduated-card { animation: fxPop .7s var(--fx-ease) both; }
+.graduated-card .icon i { display: inline-block; animation: fxFloat 3.6s ease-in-out infinite; }
+.complete-access { transition: border-color .3s, color .3s, transform .3s, box-shadow .3s; }
+.complete-access:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(160, 68, 57, .12); }
+
+/* ==========================================================================
+   ADMIN
+   ========================================================================== */
+.member-email { display: block; color: #7d8a81; font-weight: 400; margin-top: 2px; font-size: .72rem; }
+.member-email i { color: var(--fx-gold-deep); margin-right: 4px; font-size: .66rem; }
+.member-email.personal i { color: #5d8a6f; }
+
+.admin-login .login-card { animation: fxPop .65s var(--fx-ease) both; }
+.login-mark i { display: inline-block; animation: fxFloat 3.8s ease-in-out infinite; }
+.admin-side { animation: fxSlideLeft .55s var(--fx-ease) both; }
+.admin-main > * { animation: fxRiseSmall .5s var(--fx-ease) both; }
+.admin-main > *:nth-child(1) { animation-delay: .04s; }
+.admin-main > *:nth-child(2) { animation-delay: .1s; }
+.admin-main > *:nth-child(3) { animation-delay: .16s; }
+.admin-main > *:nth-child(4) { animation-delay: .22s; }
+.admin-main > *:nth-child(5) { animation-delay: .28s; }
+.admin-nav button { transition: background .25s, color .25s, transform .25s, padding-left .25s; }
+.admin-nav button:hover { transform: translateX(4px); }
+.panel { transition: box-shadow .35s, transform .35s; }
+.panel:hover { box-shadow: 0 16px 40px rgba(20, 45, 33, .1); }
+.content-row { transition: transform .25s var(--fx-ease), background .25s; }
+.content-row:hover { transform: translateX(4px); }
+.table-action { transition: background .25s, color .25s, transform .25s; }
+.table-action:hover { transform: translateY(-1px); }
+
+/* ==========================================================================
+   INNER PAGES (page.css)
+   ========================================================================== */
+.inner-hero { position: relative; overflow: hidden; }
+.inner-hero::after {
+  content: ''; position: absolute; inset: auto 0 0 0; height: 40%;
+  background: linear-gradient(180deg, transparent, rgba(10, 24, 17, .4)); pointer-events: none;
+}
+.inner-hero .container { position: relative; z-index: 1; }
+.inner-hero .eyebrow { display: inline-block; animation: fxRise .7s var(--fx-ease) .05s both; }
+.inner-hero h1 { animation: fxRise .8s var(--fx-ease) .16s both; text-shadow: 0 4px 26px rgba(0, 0, 0, .3); }
+.inner-hero p { animation: fxRise .8s var(--fx-ease) .3s both; }
+.content-card { transition: transform .4s var(--fx-ease), box-shadow .4s, border-color .4s; }
+.content-card:hover { transform: translateY(-7px); box-shadow: 0 22px 46px rgba(16, 40, 30, .14); }
+.content-card > i { display: inline-block; transition: transform .45s var(--fx-ease-spring), color .3s; }
+.content-card:hover > i { transform: scale(1.18) rotate(-6deg); color: var(--fx-gold-deep); }
+.page-cta { background: linear-gradient(120deg, #16392b, #2d5a3d, #16392b); background-size: 220% 220%; animation: fxGradient 14s ease-in-out infinite alternate; position: relative; overflow: hidden; }
+.page-button:hover { box-shadow: 0 12px 28px rgba(200, 168, 78, .35); }
+.page-footer a { transition: color .3s, letter-spacing .3s; }
+.page-footer a:hover { letter-spacing: .4px; }
+
+/* ==========================================================================
+   ACCESSIBILITY — honour reduced-motion preferences
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html.fx-ready [data-reveal] { opacity: 1 !important; transform: none !important; }
+  html.fx-ready .hero .hero-content > *, html.fx-ready .hero .hero-line { opacity: 1 !important; transform: none !important; animation: none !important; }
+  html.fx-ready .hero .hero-line { width: 120px !important; }
+  .auth-intro > *, .auth-card, .portal-form > *, .admin-main > *, .admin-side, .admin-login .login-card,
+  .inner-hero .eyebrow, .inner-hero h1, .inner-hero p, .auth-title, .auth-subtitle, .election-status, .graduated-card { opacity: 1 !important; animation: none !important; }
+  .fx-mote, .fx-progress { display: none !important; }
+}
