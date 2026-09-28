@@ -260,8 +260,20 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
   background: linear-gradient(90deg, transparent, var(--fx-gold) 30%, var(--fx-gold-bright) 50%, var(--fx-gold) 70%, transparent);
   background-size: 200% 100%; animation: fxGradient 6s linear infinite alternate;
 }
-.brand-gem { transition: transform .5s var(--fx-ease-spring); }
+.brand-gem { transition: transform .5s var(--fx-ease-spring); background: #fff; overflow: hidden; padding: 3px; }
+.brand-gem img { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
 .student-brand:hover .brand-gem { transform: rotate(-8deg) scale(1.08); }
+
+/* Branded sign-in / sign-up header */
+.auth-card-head { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 14px; margin: 0 0 24px; position: relative; overflow: hidden; color: #fff; background: radial-gradient(circle at 88% -30%, rgba(238,212,136,.25), transparent 50%), linear-gradient(120deg, #14372c, #245b41 65%, #2e7658); box-shadow: inset 0 0 0 1px rgba(238,212,136,.22), 0 10px 26px rgba(20,55,44,.18); animation: fxRiseSmall .6s var(--fx-ease) both; }
+.auth-card-head::after { content: ''; position: absolute; inset: auto 0 0 0; height: 2px; background: linear-gradient(90deg, transparent, var(--fx-gold) 30%, var(--fx-gold-bright) 50%, var(--fx-gold) 70%, transparent); background-size: 200% 100%; animation: fxGradient 6s linear infinite alternate; }
+.auth-logo-ring { width: 54px; height: 54px; min-width: 54px; border-radius: 50%; background: #fff; display: grid; place-items: center; overflow: hidden; box-shadow: 0 0 0 2px rgba(238,212,136,.85), 0 6px 16px rgba(0,0,0,.28); transition: transform .5s var(--fx-ease-spring); }
+.auth-card:hover .auth-logo-ring { transform: rotate(-5deg) scale(1.06); }
+.auth-logo-ring img { width: 92%; height: 92%; object-fit: contain; }
+.auth-head-copy strong { display: block; font: 700 .92rem 'DM Sans', sans-serif; letter-spacing: .14em; color: #fff; }
+.auth-head-copy small { display: block; color: #cfe0d4; font-size: .71rem; margin-top: 3px; letter-spacing: .05em; }
+.auth-head-gem { margin-left: auto; color: rgba(238,212,136,.85); font-size: 1.05rem; animation: fxFloat 4.5s ease-in-out infinite; }
+@media (max-width: 480px) { .auth-head-gem { display: none; } .auth-logo-ring { width: 46px; height: 46px; min-width: 46px; } .auth-card-head { padding: 13px 15px; gap: 12px; } .auth-head-copy strong { font-size: .82rem; letter-spacing: .11em; } }
 .student-top-nav a { position: relative; transition: color .3s; }
 .student-top-nav a::after {
   content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px;
@@ -283,6 +295,11 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
 .auth-benefits span:hover i { transform: scale(1.15) rotate(-8deg); background: var(--fx-gold); color: #223427; }
 .auth-decoration i { animation: fxFloat 4.5s ease-in-out infinite; }
 .auth-tab { transition: background .3s, color .3s, transform .15s, box-shadow .3s; }
+.auth-tab:active { transform: scale(.97); }
+.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #edf1ea; border: 1px solid #dfe6dd; border-radius: 999px; margin-bottom: 24px; box-shadow: inset 0 1px 3px rgba(24,55,45,.06); }
+.auth-tab { border: 0; border-radius: 999px; padding: 11px 12px; background: transparent; color: #6f7d73; font: 700 .88rem 'DM Sans', sans-serif; cursor: pointer; transition: color .3s, background .3s, box-shadow .3s, transform .15s; position: relative; }
+.auth-tab:hover { color: #2c4a39; background: rgba(31,91,67,.07); }
+.auth-tab.active { background: linear-gradient(120deg, #1f5b43, #2e7658); color: #fff; box-shadow: 0 6px 16px rgba(31,91,67,.3), inset 0 0 0 1px rgba(238,212,136,.45); }
 .auth-tab:active { transform: scale(.97); }
 .auth-title { animation: fxRiseSmall .5s var(--fx-ease) both; }
 .auth-subtitle { animation: fxRiseSmall .5s var(--fx-ease) .06s both; }
@@ -370,6 +387,8 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
 .member-email.personal i { color: #5d8a6f; }
 
 .admin-login .login-card { animation: fxPop .65s var(--fx-ease) both; }
+.login-mark { background: #fff; box-shadow: 0 0 0 2px var(--fx-gold), 0 10px 24px rgba(20,45,33,.18); overflow: hidden; padding: 5px; }
+.login-mark img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
 .login-mark i { display: inline-block; animation: fxFloat 3.8s ease-in-out infinite; }
 .admin-side { animation: fxSlideLeft .55s var(--fx-ease) both; }
 .admin-main > * { animation: fxRiseSmall .5s var(--fx-ease) both; }
@@ -421,7 +440,7 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
   html.fx-ready [data-reveal] { opacity: 1 !important; transform: none !important; }
   html.fx-ready .hero .hero-content > *, html.fx-ready .hero .hero-line { opacity: 1 !important; transform: none !important; animation: none !important; }
   html.fx-ready .hero .hero-line { width: 120px !important; }
-  .auth-intro > *, .auth-card, .portal-form > *, .admin-main > *, .admin-side, .admin-login .login-card,
+  .auth-intro > *, .auth-card, .auth-card-head, .portal-form > *, .admin-main > *, .admin-side, .admin-login .login-card,
   .inner-hero .eyebrow, .inner-hero h1, .inner-hero p, .auth-title, .auth-subtitle, .election-status, .graduated-card { opacity: 1 !important; animation: none !important; }
   .fx-mote, .fx-progress { display: none !important; }
 }
