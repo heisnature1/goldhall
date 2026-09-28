@@ -188,9 +188,17 @@
         });
 
         // ===== ACTIVE NAV LINK ON SCROLL =====
+        // Keep exactly one of the six tabs lit: Home by default, and the tab
+        // owning the section currently under the header while scrolling.
         const sections = document.querySelectorAll('section[id]');
+        const sectionTab = {
+            'student-hub': 'student.html',
+            about: 'about.html',
+            news: 'news.html',
+            events: 'events.html'
+        };
 
-        window.addEventListener('scroll', () => {
+        const syncActiveTab = () => {
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.offsetTop - 200;
@@ -199,13 +207,14 @@
                 }
             });
 
+            const activeHref = sectionTab[current] || 'index.html';
             document.querySelectorAll('.main-nav a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
+                link.classList.toggle('active', link.getAttribute('href') === activeHref);
             });
-        });
+        };
+
+        window.addEventListener('scroll', syncActiveTab, { passive: true });
+        syncActiveTab();
 
         // ===== PARALLAX EFFECT FOR HERO =====
         window.addEventListener('scroll', () => {
