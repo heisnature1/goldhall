@@ -27,19 +27,174 @@ function dashboard() {
   activeView === 'portal' ? portalDashboard() : contentDashboard();
 }
 
+const metaField = {
+  news: { label: 'Category or label', placeholder: 'e.g. Achievement' },
+  events: { label: 'Date and location', placeholder: 'e.g. 14 February · Main Hall' },
+  gallery: { label: 'Caption (optional)', placeholder: 'e.g. Main entrance at sunset' },
+  documents: { label: 'Category or label', placeholder: 'e.g. Policy' }
+};
+const linkField = {
+  news: { label: 'Read-more link', placeholder: 'https://… leave empty to link to the News page' },
+  events: { label: 'Event link', placeholder: 'https://… ticket, map or meeting link (optional)' },
+  gallery: { label: 'Picture link', placeholder: 'https://… picture address (optional)' },
+  documents: { label: 'Document link', placeholder: 'https://… download or view link (optional)' }
+};
+
+/* the picture can come from an upload or from a link — never from a picture ID */
+let pictureData = '';
+let uploadedPicture = '';
+let pictureLabel = '';
+
+function pictureFieldMarkup() {
+  return `<fieldset class="upload-field">
+    <legend>Picture</legend>
+    <p class="field-help">Upload a picture from your device <strong>or</strong> paste a picture link. There is no picture ID to remember.</p>
+    <label class="upload-drop" id="uploadDrop" for="pictureFile">
+      <i class="fas fa-cloud-arrow-up"></i>
+      <span><strong>Choose a picture to upload</strong><small>PNG, JPG, WEBP or GIF · up to 6 MB · you can also drop the file here</small></span>
+    </label>
+    <input id="pictureFile" type="file" accept="image/*" hidden>
+    <label>Picture link<input name="pictureLink" id="pictureLink" type="url" placeholder="${linkField[activeType].placeholder}"></label>
+    <div class="upload-preview" id="uploadPreview" hidden>
+      <img id="uploadPreviewImg" alt="Picture preview">
+      <div class="upload-preview-text"><strong id="uploadPreviewTitle">No picture chosen</strong><small id="uploadPreviewMeta"></small></div>
+      <button type="button" class="admin-btn secondary" id="removePicture"><i class="fas fa-xmark"></i> Remove</button>
+    </div>
+    <p class="upload-feedback" id="uploadFeedback" role="status" aria-live="polite"></p>
+  </fieldset>`;
+}
+
+function formatSize(length) {
+  const kb = Math.round(length / 1024);
+  return kb > 1024 ? `${(kb / 1024).toFixed(1)} MB` : `${kb} KB`;
+}
+
+function renderPicturePreview() {
+  const wrap = document.getElementById('uploadPreview');
+  const image = document.getElementById('uploadPreviewImg');
+  const title = document.getElementById('uploadPreviewTitle');
+  const meta = document.getElementById('uploadPreviewMeta');
+  if (!wrap) return;
+  if (!pictureData) {
+    wrap.hidden = true;
+    image.removeAttribute('src');
+    return;
+  }
+  wrap.hidden = false;
+  image.src = pictureData;
+  title.textContent = pictureLabel || 'Picture';
+  meta.textContent = pictureData.startsWith('data:') ? `Uploaded from your device · about ${formatSize(pictureData.length)}` : pictureData;
+}
+
+function readPicture(file) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) { reject(new Error('Please choose a picture file (PNG, JPG, WEBP or GIF).')); return; }
+    if (file.size > 6 * 1024 * 1024) { reject(new Error('That picture is larger than 6 MB. Please choose a smaller file.')); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('That picture could not be read. Please try another file.'));
+    reader.onload = () => {
+      const raw = String(reader.result);
+      if (file.type === 'image/gif' || file.type === 'image/svg+xml') { resolve(raw); return; }
+      const image = new Image();
+      image.onload = () => resolve(shrinkPicture(image, file.type));
+      image.onerror = () => resolve(raw);
+      image.src = raw;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* keep uploaded pictures small so the preview stays light and storage does not fill up */
+function shrinkPicture(image, type) {
+  const max = 1280;
+  const naturalWidth = image.naturalWidth || max;
+  const naturalHeight = image.naturalHeight || max;
+  const scale = Math.min(1, max / Math.max(naturalWidth, naturalHeight));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(naturalHeight * scale));
+  const context = canvas.getContext('2d');
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  let result = type === 'image/png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.82);
+  if (result.length > 700000) result = canvas.toDataURL('image/jpeg', 0.72);
+  return result;
+}
+
+async function usePicture(file) {
+  const feedback = document.getElementById('uploadFeedback');
+  try {
+    feedback.className = 'upload-feedback';
+    feedback.textContent = 'Preparing your picture…';
+    const dataUrl = await readPicture(file);
+    uploadedPicture = dataUrl;
+    pictureData = dataUrl;
+    pictureLabel = 'Uploaded picture';
+    document.getElementById('pictureLink').value = '';
+    renderPicturePreview();
+    feedback.className = 'upload-feedback ok';
+    feedback.textContent = `Picture ready (${formatSize(dataUrl.length)}). It is saved when you press Save.`;
+  } catch (error) {
+    feedback.className = 'upload-feedback';
+    feedback.textContent = error.message;
+  }
+}
+
+function bindPictureField() {
+  const fileInput = document.getElementById('pictureFile');
+  const linkInput = document.getElementById('pictureLink');
+  const drop = document.getElementById('uploadDrop');
+  const remove = document.getElementById('removePicture');
+
+  linkInput.addEventListener('input', () => {
+    const value = linkInput.value.trim();
+    if (value) { pictureData = value; pictureLabel = 'Picture from link'; }
+    else if (uploadedPicture) { pictureData = uploadedPicture; pictureLabel = 'Uploaded picture'; }
+    else { pictureData = ''; pictureLabel = ''; }
+    document.getElementById('uploadFeedback').textContent = '';
+    renderPicturePreview();
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files?.[0]) usePicture(fileInput.files[0]); });
+  remove.addEventListener('click', () => {
+    pictureData = ''; uploadedPicture = ''; pictureLabel = '';
+    linkInput.value = '';
+    document.getElementById('uploadFeedback').textContent = '';
+    renderPicturePreview();
+  });
+  ['dragenter', 'dragover'].forEach(type => drop.addEventListener(type, event => { event.preventDefault(); drop.classList.add('dragging'); }));
+  ['dragleave', 'drop'].forEach(type => drop.addEventListener(type, event => { event.preventDefault(); drop.classList.remove('dragging'); }));
+  drop.addEventListener('drop', event => { const file = event.dataTransfer?.files?.[0]; if (file) usePicture(file); });
+  renderPicturePreview();
+}
+
 function contentDashboard() {
   const main = document.getElementById('adminMain');
-  main.innerHTML = `<div class="admin-top"><div><h2>Manage ${labels[activeType]}</h2><p>Add, update, publish or remove public content.</p></div><button class="admin-btn secondary" id="resetContent">Restore sample content</button></div><div class="admin-grid"><section class="panel"><h3 id="formTitle">Add ${labels[activeType].slice(0,-1)}</h3><form class="editor-form" id="editorForm"><label>Title<input name="title" required></label><label>Description<textarea name="text" required></textarea></label><label>${activeType === 'gallery' ? 'Image URL' : activeType === 'events' ? 'Date and location' : 'Category or label'}<input name="meta"></label><label class="check-label"><input name="published" type="checkbox" checked> Publish on the website</label><button class="admin-btn">Save ${labels[activeType].slice(0,-1)}</button><button type="button" class="admin-btn secondary" id="cancelEdit" hidden>Cancel edit</button></form></section><section class="panel"><h3>Saved ${labels[activeType]}</h3><div id="contentList" class="content-list"></div></section></div>`;
-  document.getElementById('resetContent').onclick = () => { if (confirm('Restore the original sample content?')) { GoldHallStore.reset(); contentDashboard(); } };
+  const meta = metaField[activeType];
+  const link = linkField[activeType];
+  main.innerHTML = `<div class="admin-top"><div><h2>Manage ${labels[activeType]}</h2><p>Add, update, publish or remove public content.</p></div><button class="admin-btn secondary" id="resetContent">Restore sample content</button></div><div class="admin-grid"><section class="panel"><h3 id="formTitle">Add ${labels[activeType].slice(0,-1)}</h3><form class="editor-form" id="editorForm"><label>Title<input name="title" required></label><label>Description<textarea name="text" required></textarea></label><label>${meta.label}<input name="meta" placeholder="${meta.placeholder}"></label><label>${link.label}<input name="link" type="url" placeholder="${link.placeholder}"><span class="field-help">The button on the website opens this address. Leave it empty to keep the default page link.</span></label>${pictureFieldMarkup()}<label class="check-label"><input name="published" type="checkbox" checked> Publish on the website</label><p class="upload-feedback" id="saveFeedback" role="status" aria-live="polite"></p><button class="admin-btn">Save ${labels[activeType].slice(0,-1)}</button><button type="button" class="admin-btn secondary" id="cancelEdit" hidden>Cancel edit</button></form></section><section class="panel"><h3>Saved ${labels[activeType]}</h3><div id="contentList" class="content-list"></div></section></div>`;
+  document.getElementById('resetContent').onclick = () => { if (confirm('Restore the original sample content?')) { GoldHallStore.reset(); editingId = null; pictureData = ''; uploadedPicture = ''; contentDashboard(); } };
   document.getElementById('editorForm').onsubmit = saveContent;
-  document.getElementById('cancelEdit').onclick = () => { editingId = null; contentDashboard(); };
+  document.getElementById('cancelEdit').onclick = () => { editingId = null; pictureData = ''; uploadedPicture = ''; contentDashboard(); };
+  bindPictureField();
   renderContentList();
 }
 
 function renderContentList() {
   const list = document.getElementById('contentList');
   const items = GoldHallStore.get(activeType);
-  list.innerHTML = items.length ? items.map(item => `<article class="content-row"><div><h4>${safe(item.title)}</h4><p>${safe(item.meta)}</p><span class="status ${item.published ? '' : 'draft'}">${item.published ? 'Published' : 'Draft'}</span></div><div class="row-actions"><button title="Edit" data-edit="${safe(item.id)}"><i class="fas fa-pen"></i></button><button title="Delete" data-delete="${safe(item.id)}"><i class="fas fa-trash"></i></button></div></article>`).join('') : '<p>No content yet. Add your first item using the form.</p>';
+  list.innerHTML = items.length ? items.map(item => `<article class="content-row">
+      <div class="content-row-main">
+        ${item.image ? `<img class="content-thumb" src="${safe(item.image)}" alt="">` : ''}
+        <div>
+          <h4>${safe(item.title)}</h4>
+          ${item.meta ? `<p>${safe(item.meta)}</p>` : ''}
+          ${item.link ? `<p class="content-row-link"><i class="fas fa-link"></i> ${safe(item.link)}</p>` : ''}
+          <span class="status ${item.published ? '' : 'draft'}">${item.published ? 'Published' : 'Draft'}</span>
+        </div>
+      </div>
+      <div class="row-actions"><button title="Edit" data-edit="${safe(item.id)}"><i class="fas fa-pen"></i></button><button title="Delete" data-delete="${safe(item.id)}"><i class="fas fa-trash"></i></button></div>
+    </article>`).join('') : '<p>No content yet. Add your first item using the form.</p>';
   list.querySelectorAll('[data-edit]').forEach(button => button.onclick = () => editContent(button.dataset.edit));
   list.querySelectorAll('[data-delete]').forEach(button => button.onclick = () => { if (confirm('Delete this item?')) { GoldHallStore.remove(activeType, button.dataset.delete); renderContentList(); } });
 }
@@ -48,21 +203,52 @@ function editContent(id) {
   const item = GoldHallStore.get(activeType).find(entry => entry.id === id);
   if (!item) return;
   editingId = id;
+  pictureData = item.image || '';
+  uploadedPicture = pictureData.startsWith('data:') ? pictureData : '';
+  pictureLabel = pictureData ? (uploadedPicture ? 'Uploaded picture' : 'Picture from link') : '';
   const form = document.getElementById('editorForm');
   form.elements.title.value = item.title;
   form.elements.text.value = item.text;
-  form.elements.meta.value = item.meta;
+  form.elements.meta.value = item.meta || '';
+  form.elements.link.value = item.link || '';
+  form.elements.pictureLink.value = uploadedPicture ? '' : pictureData;
   form.elements.published.checked = item.published;
   document.getElementById('formTitle').textContent = `Edit ${labels[activeType].slice(0,-1)}`;
   document.getElementById('cancelEdit').hidden = false;
+  renderPicturePreview();
   form.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* allow friendly entries such as example.com or documents/hall.pdf */
+function normalizeLink(value) {
+  const link = String(value || '').trim();
+  if (!link) return '';
+  if (/^(javascript|data|vbscript):/i.test(link)) return '';
+  if (/^(https?:|mailto:|tel:|\/|#|\.)/i.test(link)) return link;
+  if (/^[\w.-]+\.(html?|pdf|docx?|xlsx?|pptx?)$/i.test(link)) return link;
+  return `https://${link}`;
 }
 
 function saveContent(event) {
   event.preventDefault();
   const values = new FormData(event.currentTarget);
-  GoldHallStore.save(activeType, { id: editingId || `${activeType}-${Date.now()}`, title: values.get('title').trim(), text: values.get('text').trim(), meta: values.get('meta').trim(), published: values.get('published') === 'on' });
+  const feedback = document.getElementById('saveFeedback');
+  const saved = GoldHallStore.save(activeType, {
+    id: editingId || `${activeType}-${Date.now()}`,
+    title: String(values.get('title')).trim(),
+    text: String(values.get('text')).trim(),
+    meta: String(values.get('meta') || '').trim(),
+    link: normalizeLink(values.get('link')),
+    image: pictureData,
+    published: values.get('published') === 'on'
+  });
+  if (!saved) {
+    feedback.textContent = 'Could not save: this browser’s storage is full. Remove an item or upload a smaller picture.';
+    return;
+  }
   editingId = null;
+  pictureData = '';
+  uploadedPicture = '';
   contentDashboard();
 }
 

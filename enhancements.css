@@ -440,3 +440,40 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
   .inner-hero .eyebrow, .inner-hero h1, .inner-hero p, .auth-title, .auth-subtitle, .election-status, .graduated-card { opacity: 1 !important; animation: none !important; }
   .fx-mote, .fx-progress { display: none !important; }
 }
+
+/* ==========================================================================
+   NAVIGATION — tidy six-tab bar (Home · Student Hub · News · Events ·
+   Documents · About Us) with the Student Hub pill highlighted
+   ========================================================================== */
+.main-nav { align-items: center; }
+.main-nav a.nav-highlight {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 9px 6px; padding: 9px 18px; border-radius: 22px;
+  color: var(--primary-dark); font-weight: 600;
+  background: linear-gradient(120deg, rgba(200, 168, 78, .26), rgba(232, 200, 78, .14));
+  box-shadow: inset 0 0 0 1px rgba(200, 168, 78, .6);
+  transition: transform .3s var(--fx-ease), box-shadow .3s, background .3s, color .3s;
+}
+.main-nav a.nav-highlight i { font-size: .82rem; color: var(--fx-gold-deep); }
+.main-nav a.nav-highlight::after { display: none; }
+.main-nav a.nav-highlight:hover, .main-nav a.nav-highlight:focus-visible {
+  transform: translateY(-2px); color: var(--primary-dark);
+  background: linear-gradient(120deg, rgba(200, 168, 78, .38), rgba(232, 200, 78, .22));
+  box-shadow: inset 0 0 0 1px rgba(200, 168, 78, .85), 0 10px 22px rgba(200, 168, 78, .28);
+}
+@media (max-width: 768px) {
+  .main-nav a.nav-highlight {
+    display: flex; margin: 0; padding: 15px 20px; border-radius: 0;
+    box-shadow: none; background: rgba(200, 168, 78, .12);
+    transform: none !important;
+  }
+}
+
+/* ----- managed content: picture + link on public cards ----- */
+.content-card .content-card-link {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
+  font-weight: 700; font-size: .86rem; color: var(--primary-green);
+}
+.content-card .content-card-link i { font-size: .72rem; margin: 0; color: inherit; }
+.content-card .content-card-link:hover { color: var(--fx-gold-deep); }
+.news-card .news-body .news-link { display: inline-flex; align-items: center; gap: 7px; }

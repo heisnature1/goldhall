@@ -32,9 +32,11 @@
       </a>
       <nav class="student-top-nav" aria-label="Main navigation">
         <a href="index.html">Home</a>
-        <a href="students.html">Student Life</a>
         <a href="student.html" class="active" aria-current="page">Student Hub</a>
-        <a href="admin.html">Admin</a>
+        <a href="news.html">News</a>
+        <a href="events.html">Events</a>
+        <a href="documents.html">Documents</a>
+        <a href="about.html">About Us</a>
       </nav>
     </div>
   </header>
@@ -62,7 +64,7 @@
         <div class="auth-card-brand">
           <span class="auth-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
           <h3>Student Hub</h3>
-          <small>Sign in or create your account</small>
+          <small>Sign in or create your account &mdash; students only</small>
         </div>
         <div class="auth-tabs" role="tablist" aria-label="Student account">
           <button class="auth-tab active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login"><i class="fas fa-right-to-bracket"></i> Sign in</button>
@@ -72,6 +74,7 @@
         <p class="demo-disclaimer"><i class="fas fa-circle-info"></i> Student accounts and ballots in this preview are stored in this browser only. Do not enter a reused password.</p>
       </section>
     </section>
+    <!-- filled only when an account has completed school / lost access -->
     <div id="studentDashboard" hidden></div>
   </main>
 
@@ -81,6 +84,7 @@
   </footer>
   <script src="content-store.js"></script>
   <script src="student-portal-store.js"></script>
+  <script src="student-hub.js"></script>
   <script src="student.js"></script>
   <script src="fx.js"></script>
 </body>
