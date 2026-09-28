@@ -3,47 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#173c30">
+  <meta name="theme-color" content="#1a3a2a">
   <title>Student Hub | Gold Refinery Hall</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="student.css">
   <link rel="stylesheet" href="enhancements.css">
 </head>
 <body class="student-page">
+  <div class="student-topbar">
+    <div class="student-topbar-inner">
+      <span class="topbar-loc"><i class="fas fa-map-marker-alt"></i> University of Mines and Technology, Tarkwa</span>
+      <em class="topbar-motto">Excellence &middot; Unity &middot; Leadership</em>
+    </div>
+  </div>
+
   <header class="student-header">
     <div class="student-header-inner">
       <a class="student-brand" href="index.html" aria-label="Gold Refinery Hall home">
-        <span class="brand-gem"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
-        <span><strong>GOLD REFINERY HALL</strong><small>University of Mines and Technology</small></span>
+        <span class="brand-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
+        <span class="brand-text">
+          <strong>GOLD REFINERY HALL</strong>
+          <small>University of Mines and Technology</small>
+        </span>
       </a>
       <nav class="student-top-nav" aria-label="Main navigation">
-        <a href="index.html">Home</a><a href="students.html">Student Life</a><a href="admin.html">Admin</a>
+        <a href="index.html">Home</a>
+        <a href="students.html">Student Life</a>
+        <a href="student.html" class="active" aria-current="page">Student Hub</a>
+        <a href="admin.html">Admin</a>
       </nav>
     </div>
   </header>
 
   <main id="studentApp" class="student-app">
     <section class="auth-shell" id="authShell">
-      <div class="auth-intro">
-        <span class="student-eyebrow"><i class="fas fa-sparkles"></i> YOUR HALL, IN YOUR POCKET</span>
-        <h1>Make your time<br>at Gold Hall count.</h1>
-        <p>One student hub for opportunities, campus transport, learning resources, hall updates and free student polls.</p>
-        <div class="auth-benefits">
-          <span><i class="fas fa-check"></i> Open to every year group</span>
-          <span><i class="fas fa-check"></i> Free to register and vote</span>
-          <span><i class="fas fa-check"></i> Access ends when you complete school</span>
+      <aside class="brand-panel">
+        <div class="brand-panel-inner">
+          <span class="brand-crest-lg" aria-hidden="false"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall crest"></span>
+          <div class="brand-name">
+            <h2>Gold Refinery Hall</h2>
+            <span class="brand-rule"></span>
+            <p>University of Mines and Technology</p>
+          </div>
+          <p class="brand-tagline">Your hall, in your pocket &mdash; opportunities, campus transport, learning resources, hall updates and free student polls in one place.</p>
+          <ul class="auth-benefits">
+            <li><i class="fas fa-check"></i> Open to every year group</li>
+            <li><i class="fas fa-check"></i> Free to register and vote</li>
+            <li><i class="fas fa-check"></i> Access ends when you complete school</li>
+          </ul>
+          <div class="brand-motto"><span>EXCELLENCE</span><i class="fas fa-gem"></i><span>UNITY</span><i class="fas fa-gem"></i><span>LEADERSHIP</span></div>
         </div>
-        <div class="auth-decoration"><span>EXCELLENCE</span><i class="fas fa-gem"></i><span>UNITY</span></div>
-      </div>
+      </aside>
       <section class="auth-card" aria-labelledby="authTitle">
-        <div class="auth-card-head"><span class="auth-logo-ring"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span><span class="auth-head-copy"><strong>GOLD REFINERY HALL</strong><small>Student Hub · University of Mines and Technology</small></span><span class="auth-head-gem" aria-hidden="true"><i class="fas fa-gem"></i></span></div>
+        <div class="auth-card-brand">
+          <span class="auth-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
+          <h3>Student Hub</h3>
+          <small>Sign in or create your account</small>
+        </div>
         <div class="auth-tabs" role="tablist" aria-label="Student account">
-          <button class="auth-tab active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login">Sign in</button>
-          <button class="auth-tab" id="registerTab" type="button" role="tab" aria-selected="false" data-mode="register">Create account</button>
+          <button class="auth-tab active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login"><i class="fas fa-right-to-bracket"></i> Sign in</button>
+          <button class="auth-tab" id="registerTab" type="button" role="tab" aria-selected="false" data-mode="register"><i class="fas fa-user-plus"></i> Create account</button>
         </div>
         <div id="authFormHost"></div>
         <p class="demo-disclaimer"><i class="fas fa-circle-info"></i> Student accounts and ballots in this preview are stored in this browser only. Do not enter a reused password.</p>
@@ -52,7 +75,10 @@
     <div id="studentDashboard" hidden></div>
   </main>
 
-  <footer class="student-footer"><span>© 2026 Gold Refinery Hall · UMaT</span><a href="index.html">Back to the public website <i class="fas fa-arrow-right"></i></a></footer>
+  <footer class="student-footer">
+    <span>&copy; 2026 Gold Refinery Hall &middot; UMaT</span>
+    <a href="index.html">Back to the public website <i class="fas fa-arrow-right"></i></a>
+  </footer>
   <script src="content-store.js"></script>
   <script src="student-portal-store.js"></script>
   <script src="student.js"></script>

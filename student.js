@@ -126,7 +126,7 @@ function showCompleted() {
   sessionStorage.removeItem(SESSION_KEY);
   authShell.hidden = true;
   dashboardHost.hidden = false;
-  dashboardHost.innerHTML = `<section class="graduated-card"><span class="icon"><i class="fas fa-graduation-cap"></i></span><h1>Thank you for being part of Gold Hall.</h1><p>Student Hub access is for currently enrolled students. This account has been marked as completed, so sign-in and voting are no longer available.</p><p>If this status is a mistake, please contact the Gold Hall Admin.</p><a class="hub-button" href="index.html"><i class="fas fa-house"></i> Return to the website</a></section>`;
+  dashboardHost.innerHTML = `<section class="graduated-card"><span class="grad-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span><span class="icon"><i class="fas fa-graduation-cap"></i></span><h1>Thank you for being part of Gold Hall.</h1><p>Student Hub access is for currently enrolled students. This account has been marked as completed, so sign-in and voting are no longer available.</p><p>If this status is a mistake, please contact the Gold Hall Admin.</p><a class="hub-button" href="index.html"><i class="fas fa-house"></i> Return to the website</a></section>`;
 }
 
 function openDashboard(student) {
