@@ -468,6 +468,14 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
     transform: none !important;
   }
 }
+/* Tablets / small laptops: tighten the six tabs + Login so the whole bar
+   always sits on one even row instead of wrapping into two ragged rows. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-nav a { padding: 15px 12px; font-size: .9rem; }
+  .main-nav a::after { left: 12px; right: 12px; }
+  .main-nav a.nav-highlight { margin: 9px 4px; padding: 9px 13px; }
+  .login-btn .btn { padding: 9px 16px; }
+}
 
 /* ----- managed content: picture + link on public cards ----- */
 .content-card .content-card-link {
