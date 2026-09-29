@@ -88,10 +88,7 @@
   ];
 
   function getScholarships() {
-    if (typeof GoldHallStore !== 'undefined') {
-      const items = GoldHallStore.visible('scholarships');
-      if (items && items.length) return items;
-    }
+    if (typeof GoldHallStore !== 'undefined') return GoldHallStore.visible('scholarships');
     return [
       { id: 's1', title: 'Ghana Scholarships Authority', text: 'Government-funded scholarship information and application portal for local and foreign tertiary students across Ghana.', meta: 'Government Funding · All Year Groups', link: 'https://scholarships.gov.gh/', label: 'Visit the Authority', image: '' },
       { id: 's2', title: 'GETFund Tertiary Scholarships', text: 'Financial grant and bursary portal managed by the Ghana Education Trust Fund for undergraduate and postgraduate studies.', meta: 'Tertiary Education · Financial Grant', link: 'https://scholarships.getfund.gov.gh/', label: 'Open GETFund Portal', image: '' },
@@ -101,10 +98,7 @@
   }
 
   function getInternships() {
-    if (typeof GoldHallStore !== 'undefined') {
-      const items = GoldHallStore.visible('internships');
-      if (items && items.length) return items;
-    }
+    if (typeof GoldHallStore !== 'undefined') return GoldHallStore.visible('internships');
     return [
       { id: 'i1', title: 'LinkedIn Ghana Internships & Placements', text: 'Browse and apply for real-time industrial attachment and internship openings with top mining, engineering, and tech firms in Ghana.', meta: 'Engineering, Mining & Tech', link: 'https://www.linkedin.com/jobs/search/?keywords=internship&location=Ghana', label: 'Browse Opportunities', image: '' },
       { id: 'i2', title: 'Indeed Internships Ghana', text: 'Search vacation placements, graduate trainee programmes, and entry-level practical attachments with local and multinational employers.', meta: 'Vacation & Graduate Roles', link: 'https://gh.indeed.com/q-internship-jobs.html', label: 'Browse Listings', image: '' },
@@ -112,6 +106,23 @@
       { id: 'i4', title: 'National Service Scheme & Pre-Service Portal', text: 'Pre-service industrial attachment guidelines, registration, and internship postings for Ghanaian tertiary students.', meta: 'Public & Private Placements', link: 'https://nss.gov.gh/', label: 'Open NSS Portal', image: '' }
     ];
   }
+
+
+  /* one renderer for admin-managed scholarship / internship cards (used on load and on live refresh) */
+  function resourceCards(items, icon, defaultLabel, emptyText) {
+    if (!items.length) return `<p class="hub-empty-note"><i class="fas fa-circle-info"></i> ${esc(emptyText)}</p>`;
+    return items.map(item => `
+            <article class="hub-resource">
+              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
+              <span class="hub-resource-icon"><i class="fas ${icon}"></i></span>
+              <h3>${esc(item.title)}</h3>
+              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
+              <p>${esc(item.text)}</p>
+              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || defaultLabel)} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </article>`).join('');
+  }
+  const scholarshipCards = () => resourceCards(getScholarships(), 'fa-award', 'Apply on Portal', 'No scholarships are listed right now. The Hall Administrator will post new opportunities here.');
+  const internshipCards = () => resourceCards(getInternships(), 'fa-briefcase', 'Browse Opportunities', 'No internships are listed right now. The Hall Administrator will post new placements here.');
 
   function notices() {
     const list = [
@@ -126,9 +137,6 @@
 
   /* ---------- dashboard view markup ---------- */
   function dashboardMarkup(student) {
-    const scholarships = getScholarships();
-    const internships = getInternships();
-
     return `<div class="hub-dashboard">
     <section class="hub-welcome" data-reveal>
       <div>
@@ -165,16 +173,7 @@
           <p>Explore government, corporate and foundation scholarship schemes and application portals.</p>
         </div>
         <div class="hub-resource-grid" id="scholarshipsGrid">
-          ${scholarships.map(item => `
-            <article class="hub-resource">
-              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
-              <span class="hub-resource-icon"><i class="fas fa-award"></i></span>
-              <h3>${esc(item.title)}</h3>
-              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
-              <p>${esc(item.text)}</p>
-              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Apply on Portal')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            </article>
-          `).join('')}
+          ${scholarshipCards()}
         </div>
 
         <div class="hub-section-head hub-subsection-head">
@@ -182,16 +181,7 @@
           <p>Industrial attachments, vacation training and entry-level practical placements.</p>
         </div>
         <div class="hub-resource-grid" id="internshipsGrid">
-          ${internships.map(item => `
-            <article class="hub-resource">
-              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
-              <span class="hub-resource-icon"><i class="fas fa-briefcase"></i></span>
-              <h3>${esc(item.title)}</h3>
-              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
-              <p>${esc(item.text)}</p>
-              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Browse Opportunities')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            </article>
-          `).join('')}
+          ${internshipCards()}
         </div>
 
         <div class="hub-section-head hub-subsection-head">
@@ -611,28 +601,8 @@
         // Refresh scholarships & internships cards
         const sGrid = host.querySelector('#scholarshipsGrid');
         const iGrid = host.querySelector('#internshipsGrid');
-        if (sGrid) {
-          sGrid.innerHTML = getScholarships().map(item => `
-            <article class="hub-resource">
-              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
-              <span class="hub-resource-icon"><i class="fas fa-award"></i></span>
-              <h3>${esc(item.title)}</h3>
-              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
-              <p>${esc(item.text)}</p>
-              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Apply on Portal')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            </article>`).join('');
-        }
-        if (iGrid) {
-          iGrid.innerHTML = getInternships().map(item => `
-            <article class="hub-resource">
-              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
-              <span class="hub-resource-icon"><i class="fas fa-briefcase"></i></span>
-              <h3>${esc(item.title)}</h3>
-              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
-              <p>${esc(item.text)}</p>
-              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Browse Opportunities')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
-            </article>`).join('');
-        }
+        if (sGrid) sGrid.innerHTML = scholarshipCards();
+        if (iGrid) iGrid.innerHTML = internshipCards();
       }
     });
 

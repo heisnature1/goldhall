@@ -92,6 +92,7 @@ async function registerStudent(event) {
   const personalEmail = String(form.get('personalEmail')).trim().toLowerCase();
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+  if (!['100', '200', '300', '400'].includes(String(form.get('year')))) { message('Please select your level (100, 200, 300 or 400).'); return; }
   if (fullName.length < 3) { message('Please enter your full name.'); return; }
   if (!studentId) { message('Please enter your UMaT Student ID.'); return; }
   if (!emailPattern.test(studentEmail)) { message('Enter a valid student email address.'); return; }
