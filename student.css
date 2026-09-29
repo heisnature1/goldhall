@@ -203,3 +203,24 @@
   .gh-dialog-details div { flex-direction: column; gap: 3px; }
   .gh-dialog-details strong { text-align: left; }
 }
+
+/* Student Hub sections */
+.hub-tabs-wrap { margin-top: 28px; }
+.hub-tabs { display: flex; align-items: stretch; gap: 8px; margin-bottom: 24px; padding: 0 4px; border-bottom: 1px solid #dfe7df; overflow-x: auto; scrollbar-width: thin; }
+.hub-tab { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px; flex: 0 0 auto; min-height: 52px; padding: 12px 17px; border: 0; border-radius: 10px 10px 0 0; background: transparent; color: #68786d; font: 600 .88rem 'Inter', sans-serif; cursor: pointer; transition: color .2s ease, background .2s ease; white-space: nowrap; }
+.hub-tab:hover { color: var(--hub-green2); background: #edf3ed; }
+.hub-tab:focus-visible { outline: 3px solid rgba(45, 90, 61, .28); outline-offset: -3px; }
+.hub-tab.active { color: var(--hub-ink); background: #fff; box-shadow: inset 0 -3px 0 var(--hub-gold); }
+.hub-tab.active i { color: #a48635; }
+.hub-tab-panel[hidden] { display: none !important; }
+.hub-tab-panel { padding: 2px 0 4px; }
+.hub-tab-panel > .hub-section-head { margin: 0 0 17px; }
+.hub-tab-panel .hub-resource-grid + .hub-subsection-head { margin-top: 34px; }
+.poll-section-title { margin: 4px 0 0; color: #1c3b2d; font: 700 1.55rem 'Playfair Display', serif; }
+.poll-section-intro { margin: 4px 0 0; color: #818b84; font-size: .82rem; }
+@media (max-width: 700px) {
+  .hub-tabs-wrap { margin-top: 22px; }
+  .hub-tabs { gap: 3px; margin: 0 -2px 18px; }
+  .hub-tab { min-height: 48px; padding: 11px 13px; font-size: .8rem; }
+  .hub-tab-panel > .hub-section-head { gap: 5px; }
+}

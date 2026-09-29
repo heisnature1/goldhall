@@ -88,8 +88,7 @@
     { icon: 'fa-briefcase', title: 'LinkedIn Internships', text: 'Browse internship listings with Ghana location filters.', link: 'https://www.linkedin.com/jobs/search/?keywords=internship&location=Ghana', label: 'Browse opportunities' },
     { icon: 'fa-briefcase', title: 'Indeed Internships', text: 'Search internship openings and entry-level placements.', link: 'https://gh.indeed.com/q-internship-jobs.html', label: 'Browse listings' },
     { icon: 'fa-book-open', title: 'Khan Academy', text: 'Free learning support for maths, science and study skills.', link: 'https://www.khanacademy.org/', label: 'Explore lessons' },
-    { icon: 'fa-book-open', title: 'MIT OpenCourseWare', text: 'Open course materials and lectures across many subjects.', link: 'https://ocw.mit.edu/', label: 'Browse courses' },
-    { icon: 'fa-bus-simple', title: 'Bus schedules', text: 'Check the sample campus shuttle timetable below.', link: '#bus-schedule', label: 'See departures' }
+    { icon: 'fa-book-open', title: 'MIT OpenCourseWare', text: 'Open course materials and lectures across many subjects.', link: 'https://ocw.mit.edu/', label: 'Browse courses' }
   ];
 
   function notices() {
@@ -112,19 +111,31 @@
     <div class="hub-profile-strip" aria-label="Student details" data-reveal style="--fx-delay:.08s">
       <span><i class="fas fa-id-card"></i> ${esc(student.studentId)}</span><span><i class="fas fa-graduation-cap"></i> ${esc(student.programme)}</span><span><i class="fas fa-layer-group"></i> Year ${esc(student.year)}</span><span><i class="fas fa-house"></i> ${esc(student.hallStatus)}${student.room ? ` · ${esc(student.room)}` : ''}</span><span><i class="fas fa-envelope"></i> ${esc(student.studentEmail || 'No student email on file')}</span>${student.personalEmail ? `<span><i class="fas fa-envelope-open-text"></i> ${esc(student.personalEmail)}</span>` : ''}
     </div>
-    <section class="hub-section" aria-labelledby="resourceHeading" data-reveal style="--fx-delay:.14s">
-      <div class="hub-section-head"><div><span class="hub-kicker">Your student toolkit</span><h2 id="resourceHeading">Useful resources</h2></div><p>Open a link to explore more.</p></div>
-      <div class="hub-resource-grid">${resources.map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" ${item.link.startsWith('http') ? 'target="_blank" rel="noopener noreferrer"' : ''}>${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
-    </section>
-    <section class="hub-section hub-lower-grid" data-reveal style="--fx-delay:.2s">
-      <div class="hub-panel"><h3>Hall announcements</h3><p class="hub-panel-intro">Community updates and programmes to look forward to.</p><div class="announcement-list">${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}</div><p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p></div>
-      <div class="hub-panel" id="bus-schedule"><h3>Campus shuttle</h3><p class="hub-panel-intro">Sample weekday departures · UMaT / Gold Hall</p><div class="bus-list"><div class="bus-row"><strong>Morning run</strong><span>6:30 · 7:15 · 8:00</span></div><div class="bus-row"><strong>Midday run</strong><span>12:00 · 13:00</span></div><div class="bus-row"><strong>Evening run</strong><span>16:30 · 17:30 · 18:30</span></div></div><p class="bus-caveat"><i class="fas fa-circle-info"></i> Indicative demo times only. Please confirm the current timetable with the Hall Office before travelling.</p></div>
-    </section>
-    <section class="hub-section" id="student-polls" data-reveal style="--fx-delay:.26s">
-      <div class="election-header"><div><span class="hub-kicker">Your voice matters</span><h2 class="hub-section-head" style="display:block;margin:4px 0 0"><span id="electionTitle"></span></h2><p class="hub-section-head" style="display:block;margin:4px 0 0;color:#818b84;font:400 .82rem 'DM Sans',sans-serif">Free to vote · one ballot per student for each position</p></div><span id="electionStatus" class="election-status"></span></div>
-      <div class="poll-grid" id="pollGrid"></div>
-      <p class="hub-privacy-note"><i class="fas fa-shield-halved"></i> Voting is free. This preview saves votes in this browser and cannot verify student identity or prevent tampering. Use a secured server-side election system for an official or binding result.</p>
-    </section>
+    <div class="hub-section hub-tabs-wrap" data-reveal style="--fx-delay:.14s">
+      <div class="hub-tabs" role="tablist" aria-label="Student Hub sections">
+        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships</button>
+        <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
+        <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
+      </div>
+      <section class="hub-tab-panel" id="panelScholarships" role="tabpanel" aria-labelledby="tabScholarships" tabindex="0">
+        <div class="hub-section-head"><div><span class="hub-kicker">Funding opportunities</span><h2>Scholarships</h2></div><p>Explore scholarship programmes and application information.</p></div>
+        <div class="hub-resource-grid">${resources.filter(item => item.icon === 'fa-award').map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" target="_blank" rel="noopener noreferrer">${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
+        <div class="hub-section-head hub-subsection-head"><div><span class="hub-kicker">More ways to grow</span><h2>Internships &amp; learning</h2></div><p>Career opportunities and open learning resources.</p></div>
+        <div class="hub-resource-grid">${resources.filter(item => item.icon !== 'fa-award').map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" target="_blank" rel="noopener noreferrer">${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
+      </section>
+      <section class="hub-tab-panel" id="panelAnnouncements" role="tabpanel" aria-labelledby="tabAnnouncements" tabindex="0" hidden>
+        <div class="hub-section-head"><div><span class="hub-kicker">Stay connected</span><h2>Hall announcements</h2></div><p>Community updates, programmes and campus information.</p></div>
+        <div class="hub-lower-grid">
+          <div class="hub-panel"><h3>From the Hall</h3><p class="hub-panel-intro">Community updates and programmes to look forward to.</p><div class="announcement-list">${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}</div><p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p></div>
+          <div class="hub-panel" id="bus-schedule"><h3>Campus shuttle</h3><p class="hub-panel-intro">Indicative weekday departures · UMaT / Gold Hall</p><div class="bus-list"><div class="bus-row"><strong>Morning run</strong><span>6:30 · 7:15 · 8:00</span></div><div class="bus-row"><strong>Midday run</strong><span>12:00 · 13:00</span></div><div class="bus-row"><strong>Evening run</strong><span>16:30 · 17:30 · 18:30</span></div></div><p class="bus-caveat"><i class="fas fa-circle-info"></i> These times are indicative; please confirm the current timetable with the Hall Office before travelling.</p></div>
+        </div>
+      </section>
+      <section class="hub-tab-panel" id="panelPolls" role="tabpanel" aria-labelledby="tabPolls" tabindex="0" hidden>
+        <div class="election-header"><div><span class="hub-kicker">Your voice matters</span><h2 class="poll-section-title"><span id="electionTitle"></span></h2><p class="poll-section-intro">Free to vote · one ballot per student for each position</p></div><span id="electionStatus" class="election-status"></span></div>
+        <div class="poll-grid" id="pollGrid"></div>
+        <p class="hub-privacy-note"><i class="fas fa-shield-halved"></i> Voting is free. Votes are saved in this browser and cannot verify student identity or prevent tampering. Use a secured server-side election system for an official or binding result.</p>
+      </section>
+    </div>
     <section class="hub-section" style="display:flex;justify-content:flex-end"><button type="button" class="complete-access" id="completeAccess"><i class="fas fa-graduation-cap"></i> I have completed school — end my access</button></section>
   </div>`;
   }
@@ -170,6 +181,31 @@
     const lost = () => { onAccessLost ? onAccessLost() : blocked(host); };
     host.hidden = false;
     host.innerHTML = dashboardMarkup(student);
+    const tabList = host.querySelector('[role="tablist"]');
+    const tabs = [...tabList.querySelectorAll('[role="tab"]')];
+    const activateTab = (tab, moveFocus = false) => {
+      tabs.forEach(item => {
+        const active = item === tab;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+        host.querySelector(`#${item.getAttribute('aria-controls')}`).hidden = !active;
+      });
+      if (moveFocus) tab.focus();
+    };
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', event => {
+        let nextIndex;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') nextIndex = 0;
+        else if (event.key === 'End') nextIndex = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        activateTab(tabs[nextIndex], true);
+      });
+    });
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
       else { session.end(); window.location.href = 'student.html'; }
