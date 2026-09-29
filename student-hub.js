@@ -1,8 +1,8 @@
 /* ==========================================================================
    GOLD HALL STUDENT HUB — shared layer
-   Session helpers, the pop-up dialog (account created, confirmations) and the
-   members-only dashboard view. Loaded by both student.html (sign in / register)
-   and dashboard.html (the signed-in page that is never listed in the nav).
+   Session helpers, the pop-up dialog (account created, confirmations),
+   dynamic scholarships & internships, grievance desk, and members-only
+   dashboard view. Loaded by both student.html and dashboard.html.
    ========================================================================== */
 (() => {
   const SESSION_KEY = 'goldHallStudentSession';
@@ -80,16 +80,38 @@
 
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && dialogEl) closeDialog(); });
 
-  /* ---------- dashboard data ---------- */
-  const resources = [
-    { icon: 'fa-award', title: 'Ghana Scholarships Authority', text: 'Government-funded scholarship information and applications.', link: 'https://scholarships.gov.gh/', label: 'Visit the Authority' },
-    { icon: 'fa-award', title: 'GETFund Scholarships', text: 'Open the GETFund scholarship application portal.', link: 'https://scholarships.getfund.gov.gh/', label: 'Open the portal' },
-    { icon: 'fa-award', title: 'Mastercard Foundation Scholars', text: 'Learn about the Scholars Program and partner universities.', link: 'https://mastercardfdn.org/all/scholars/', label: 'Explore the programme' },
-    { icon: 'fa-briefcase', title: 'LinkedIn Internships', text: 'Browse internship listings with Ghana location filters.', link: 'https://www.linkedin.com/jobs/search/?keywords=internship&location=Ghana', label: 'Browse opportunities' },
-    { icon: 'fa-briefcase', title: 'Indeed Internships', text: 'Search internship openings and entry-level placements.', link: 'https://gh.indeed.com/q-internship-jobs.html', label: 'Browse listings' },
-    { icon: 'fa-book-open', title: 'Khan Academy', text: 'Free learning support for maths, science and study skills.', link: 'https://www.khanacademy.org/', label: 'Explore lessons' },
-    { icon: 'fa-book-open', title: 'MIT OpenCourseWare', text: 'Open course materials and lectures across many subjects.', link: 'https://ocw.mit.edu/', label: 'Browse courses' }
+  /* ---------- scholarships & internships data ---------- */
+  const learningResources = [
+    { icon: 'fa-book-open', title: 'Khan Academy', text: 'Free learning support for mathematics, physics, engineering and study skills.', link: 'https://www.khanacademy.org/', label: 'Explore lessons' },
+    { icon: 'fa-graduation-cap', title: 'MIT OpenCourseWare', text: 'Open course materials, textbooks and lecture archives across sciences and engineering.', link: 'https://ocw.mit.edu/', label: 'Browse courses' },
+    { icon: 'fa-laptop-code', title: 'Coursera & edX Free Programmes', text: 'Technical coursework, programming certifications and skill tracks from top global institutions.', link: 'https://www.coursera.org/', label: 'View courses' }
   ];
+
+  function getScholarships() {
+    if (typeof GoldHallStore !== 'undefined') {
+      const items = GoldHallStore.visible('scholarships');
+      if (items && items.length) return items;
+    }
+    return [
+      { id: 's1', title: 'Ghana Scholarships Authority', text: 'Government-funded scholarship information and application portal for local and foreign tertiary students across Ghana.', meta: 'Government Funding · All Year Groups', link: 'https://scholarships.gov.gh/', label: 'Visit the Authority', image: '' },
+      { id: 's2', title: 'GETFund Tertiary Scholarships', text: 'Financial grant and bursary portal managed by the Ghana Education Trust Fund for undergraduate and postgraduate studies.', meta: 'Tertiary Education · Financial Grant', link: 'https://scholarships.getfund.gov.gh/', label: 'Open GETFund Portal', image: '' },
+      { id: 's3', title: 'Mastercard Foundation Scholars Program', text: 'Comprehensive educational support covering full tuition, accommodation, study materials, and leadership development for African youth.', meta: 'Full Scholarship · Leadership', link: 'https://mastercardfdn.org/all/scholars/', label: 'Explore Programme', image: '' },
+      { id: 's4', title: 'MTN Ghana Bright Scholarship', text: 'Tuition and accommodation grant for brilliant and needy students in public tertiary universities studying STEM, humanities and technology.', meta: 'Tuition & Stipends · STEM / General', link: 'https://mtn.com.gh/foundation/', label: 'Apply on MTN Portal', image: '' }
+    ];
+  }
+
+  function getInternships() {
+    if (typeof GoldHallStore !== 'undefined') {
+      const items = GoldHallStore.visible('internships');
+      if (items && items.length) return items;
+    }
+    return [
+      { id: 'i1', title: 'LinkedIn Ghana Internships & Placements', text: 'Browse and apply for real-time industrial attachment and internship openings with top mining, engineering, and tech firms in Ghana.', meta: 'Engineering, Mining & Tech', link: 'https://www.linkedin.com/jobs/search/?keywords=internship&location=Ghana', label: 'Browse Opportunities', image: '' },
+      { id: 'i2', title: 'Indeed Internships Ghana', text: 'Search vacation placements, graduate trainee programmes, and entry-level practical attachments with local and multinational employers.', meta: 'Vacation & Graduate Roles', link: 'https://gh.indeed.com/q-internship-jobs.html', label: 'Browse Listings', image: '' },
+      { id: 'i3', title: 'Ghana Chamber of Mines Attachments', text: 'Practical industrial training and vacation internship placements across member mining companies and extraction contractors.', meta: 'Mining & Minerals Engineering', link: 'https://ghanachamberofmines.org/', label: 'Visit Chamber Portal', image: '' },
+      { id: 'i4', title: 'National Service Scheme & Pre-Service Portal', text: 'Pre-service industrial attachment guidelines, registration, and internship postings for Ghanaian tertiary students.', meta: 'Public & Private Placements', link: 'https://nss.gov.gh/', label: 'Open NSS Portal', image: '' }
+    ];
+  }
 
   function notices() {
     const list = [
@@ -102,42 +124,390 @@
     return list;
   }
 
+  /* ---------- dashboard view markup ---------- */
   function dashboardMarkup(student) {
+    const scholarships = getScholarships();
+    const internships = getInternships();
+
     return `<div class="hub-dashboard">
     <section class="hub-welcome" data-reveal>
-      <div><span class="student-eyebrow">STUDENT HUB · MEMBERS ONLY</span><h1>Welcome, ${esc(student.fullName.split(/\s+/)[0])}.</h1><p>Your Gold Hall resources, opportunities and student voice—all in one place.</p></div>
-      <div class="welcome-side"><button class="hub-button" id="signOutButton" type="button"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button></div>
+      <div>
+        <span class="student-eyebrow">STUDENT HUB · MEMBERS ONLY</span>
+        <h1>Welcome, ${esc(student.fullName.split(/\s+/)[0])}.</h1>
+        <p>Your Gold Hall resources, opportunities, student voice and grievance desk—all in one place.</p>
+      </div>
+      <div class="welcome-side">
+        <button class="hub-button" id="signOutButton" type="button"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button>
+      </div>
     </section>
+
     <div class="hub-profile-strip" aria-label="Student details" data-reveal style="--fx-delay:.08s">
-      <span><i class="fas fa-id-card"></i> ${esc(student.studentId)}</span><span><i class="fas fa-graduation-cap"></i> ${esc(student.programme)}</span><span><i class="fas fa-layer-group"></i> Year ${esc(student.year)}</span><span><i class="fas fa-house"></i> ${esc(student.hallStatus)}${student.room ? ` · ${esc(student.room)}` : ''}</span><span><i class="fas fa-envelope"></i> ${esc(student.studentEmail || 'No student email on file')}</span>${student.personalEmail ? `<span><i class="fas fa-envelope-open-text"></i> ${esc(student.personalEmail)}</span>` : ''}
+      <span><i class="fas fa-id-card"></i> ${esc(student.studentId)}</span>
+      <span><i class="fas fa-graduation-cap"></i> ${esc(student.programme)}</span>
+      <span><i class="fas fa-layer-group"></i> Level ${esc(student.year)}</span>
+      <span><i class="fas fa-house"></i> ${esc(student.hallStatus)}${student.room ? ` · ${esc(student.room)}` : ''}</span>
+      <span><i class="fas fa-envelope"></i> ${esc(student.studentEmail || 'No student email on file')}</span>
+      ${student.personalEmail ? `<span><i class="fas fa-envelope-open-text"></i> ${esc(student.personalEmail)}</span>` : ''}
     </div>
+
     <div class="hub-section hub-tabs-wrap" data-reveal style="--fx-delay:.14s">
       <div class="hub-tabs" role="tablist" aria-label="Student Hub sections">
-        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships</button>
+        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships &amp; internships</button>
+        <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i> Grievance desk</button>
         <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
         <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
       </div>
+
+      <!-- TAB 1: Scholarships, Internships & Learning -->
       <section class="hub-tab-panel" id="panelScholarships" role="tabpanel" aria-labelledby="tabScholarships" tabindex="0">
-        <div class="hub-section-head"><div><span class="hub-kicker">Funding opportunities</span><h2>Scholarships</h2></div><p>Explore scholarship programmes and application information.</p></div>
-        <div class="hub-resource-grid">${resources.filter(item => item.icon === 'fa-award').map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" target="_blank" rel="noopener noreferrer">${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
-        <div class="hub-section-head hub-subsection-head"><div><span class="hub-kicker">More ways to grow</span><h2>Internships &amp; learning</h2></div><p>Career opportunities and open learning resources.</p></div>
-        <div class="hub-resource-grid">${resources.filter(item => item.icon !== 'fa-award').map(item => `<article class="hub-resource"><span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span><h3>${item.title}</h3><p>${item.text}</p><a class="resource-link" href="${item.link}" target="_blank" rel="noopener noreferrer">${item.label} <i class="fas fa-arrow-up-right-from-square"></i></a></article>`).join('')}</div>
-      </section>
-      <section class="hub-tab-panel" id="panelAnnouncements" role="tabpanel" aria-labelledby="tabAnnouncements" tabindex="0" hidden>
-        <div class="hub-section-head"><div><span class="hub-kicker">Stay connected</span><h2>Hall announcements</h2></div><p>Community updates, programmes and campus information.</p></div>
-        <div class="hub-lower-grid">
-          <div class="hub-panel"><h3>From the Hall</h3><p class="hub-panel-intro">Community updates and programmes to look forward to.</p><div class="announcement-list">${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}</div><p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p></div>
-          <div class="hub-panel" id="bus-schedule"><h3>Campus shuttle</h3><p class="hub-panel-intro">Indicative weekday departures · UMaT / Gold Hall</p><div class="bus-list"><div class="bus-row"><strong>Morning run</strong><span>6:30 · 7:15 · 8:00</span></div><div class="bus-row"><strong>Midday run</strong><span>12:00 · 13:00</span></div><div class="bus-row"><strong>Evening run</strong><span>16:30 · 17:30 · 18:30</span></div></div><p class="bus-caveat"><i class="fas fa-circle-info"></i> These times are indicative; please confirm the current timetable with the Hall Office before travelling.</p></div>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">Funding opportunities</span><h2>Scholarships</h2></div>
+          <p>Explore government, corporate and foundation scholarship schemes and application portals.</p>
+        </div>
+        <div class="hub-resource-grid" id="scholarshipsGrid">
+          ${scholarships.map(item => `
+            <article class="hub-resource">
+              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
+              <span class="hub-resource-icon"><i class="fas fa-award"></i></span>
+              <h3>${esc(item.title)}</h3>
+              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
+              <p>${esc(item.text)}</p>
+              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Apply on Portal')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </article>
+          `).join('')}
+        </div>
+
+        <div class="hub-section-head hub-subsection-head">
+          <div><span class="hub-kicker">Career &amp; attachments</span><h2>Internships &amp; placements</h2></div>
+          <p>Industrial attachments, vacation training and entry-level practical placements.</p>
+        </div>
+        <div class="hub-resource-grid" id="internshipsGrid">
+          ${internships.map(item => `
+            <article class="hub-resource">
+              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
+              <span class="hub-resource-icon"><i class="fas fa-briefcase"></i></span>
+              <h3>${esc(item.title)}</h3>
+              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
+              <p>${esc(item.text)}</p>
+              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Browse Opportunities')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </article>
+          `).join('')}
+        </div>
+
+        <div class="hub-section-head hub-subsection-head">
+          <div><span class="hub-kicker">Academic support</span><h2>Open learning resources</h2></div>
+          <p>Free tutorial platforms and open courseware for engineering and sciences.</p>
+        </div>
+        <div class="hub-resource-grid">
+          ${learningResources.map(item => `
+            <article class="hub-resource">
+              <span class="hub-resource-icon"><i class="fas ${item.icon}"></i></span>
+              <h3>${esc(item.title)}</h3>
+              <p>${esc(item.text)}</p>
+              <a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label)} <i class="fas fa-arrow-up-right-from-square"></i></a>
+            </article>
+          `).join('')}
         </div>
       </section>
+
+      <!-- TAB 2: Grievance Desk -->
+      <section class="hub-tab-panel" id="panelGrievances" role="tabpanel" aria-labelledby="tabGrievances" tabindex="0" hidden>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">Student voice &amp; welfare</span><h2>Grievance &amp; Complaint Desk</h2></div>
+          <p>Lodge room maintenance requests, utility complaints, security concerns or hall feedback. Hall administration reviews each submission and records actions taken.</p>
+        </div>
+
+        <div class="hub-grievance-layout">
+          <div class="hub-grievance-form-panel">
+            <div class="hub-panel">
+              <h3><i class="fas fa-pen-to-square"></i> Lodge a Complaint</h3>
+              <p class="hub-panel-intro">Submit a new complaint. Maintenance officers and hall administration receive your ticket immediately.</p>
+              <form id="grievanceForm" class="portal-form" novalidate>
+                <div class="form-grid">
+                  <label>Category
+                    <select name="category" required>
+                      <option value="" disabled selected>Select complaint category</option>
+                      <option value="Room Maintenance &amp; Electrical">Room Maintenance &amp; Electrical</option>
+                      <option value="Water &amp; Plumbing Issues">Water &amp; Plumbing Issues</option>
+                      <option value="Sanitation &amp; Waste Disposal">Sanitation &amp; Waste Disposal</option>
+                      <option value="Security &amp; Safety Concerns">Security &amp; Safety Concerns</option>
+                      <option value="Hall Amenities &amp; Wi-Fi">Hall Amenities &amp; Wi-Fi</option>
+                      <option value="Noise &amp; Resident Conflict">Noise &amp; Resident Conflict</option>
+                      <option value="Student Welfare &amp; Health">Student Welfare &amp; Health</option>
+                      <option value="Hall Fees &amp; Administrative">Hall Fees &amp; Administrative</option>
+                      <option value="General Hall Matter">General Hall Matter</option>
+                    </select>
+                  </label>
+                  <label>Urgency / Priority
+                    <select name="priority" required>
+                      <option value="normal" selected>Normal / Routine (within 48 hrs)</option>
+                      <option value="high">High Priority (within 24 hrs)</option>
+                      <option value="urgent">Urgent / Emergency (Safety / utility hazard)</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label>Affected Room / Location
+                  <input name="location" value="${esc(student.room || student.hallStatus)}" placeholder="e.g. Block B · Room 14 or 2nd Floor Washrooms" required maxlength="100">
+                </label>
+
+                <label>Complaint Subject
+                  <input name="subject" placeholder="e.g. Faulty ceiling fan capacitor and loose socket" required maxlength="120">
+                </label>
+
+                <label>Detailed Explanation
+                  <textarea name="description" rows="4" placeholder="Describe the fault or issue clearly: what happened, how long it has persisted, and any safety concerns..." required></textarea>
+                </label>
+
+                <label class="check-label" style="display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:500;color:#3f5446">
+                  <input name="isAnonymous" type="checkbox"> Submit anonymously (hall officers will see the complaint without your name)
+                </label>
+
+                <button class="form-submit" type="submit" id="submitGrievanceBtn">
+                  <i class="fas fa-paper-plane"></i> Submit Complaint to Admin
+                </button>
+                <p class="form-error" id="grievanceFormFeedback" role="status" aria-live="polite"></p>
+              </form>
+            </div>
+          </div>
+
+          <div class="hub-grievance-history-panel">
+            <div class="hub-panel">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+                <div>
+                  <h3><i class="fas fa-list-check"></i> My Submitted Complaints</h3>
+                  <p class="hub-panel-intro" style="margin-bottom:0">Track status updates and official actions taken by the Hall Administration.</p>
+                </div>
+              </div>
+
+              <div class="hub-grievance-filters" id="studentGrievanceFilters">
+                <button type="button" class="hub-filter-pill active" data-filter="all">All</button>
+                <button type="button" class="hub-filter-pill" data-filter="pending">Pending</button>
+                <button type="button" class="hub-filter-pill" data-filter="in-progress">In Progress</button>
+                <button type="button" class="hub-filter-pill" data-filter="resolved">Resolved</button>
+              </div>
+
+              <div id="studentGrievancesList" class="student-grievance-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Announcements -->
+      <section class="hub-tab-panel" id="panelAnnouncements" role="tabpanel" aria-labelledby="tabAnnouncements" tabindex="0" hidden>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">Stay connected</span><h2>Hall announcements</h2></div>
+          <p>Community updates, programmes and campus shuttle transport information.</p>
+        </div>
+        <div class="hub-lower-grid">
+          <div class="hub-panel">
+            <h3>From the Hall</h3>
+            <p class="hub-panel-intro">Community updates and programmes to look forward to.</p>
+            <div class="announcement-list">
+              ${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}
+            </div>
+            <p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p>
+          </div>
+          <div class="hub-panel" id="bus-schedule">
+            <h3>Campus shuttle</h3>
+            <p class="hub-panel-intro">Indicative weekday departures · UMaT / Gold Hall</p>
+            <div class="bus-list">
+              <div class="bus-row"><strong>Morning run</strong><span>6:30 · 7:15 · 8:00</span></div>
+              <div class="bus-row"><strong>Midday run</strong><span>12:00 · 13:00</span></div>
+              <div class="bus-row"><strong>Evening run</strong><span>16:30 · 17:30 · 18:30</span></div>
+            </div>
+            <p class="bus-caveat"><i class="fas fa-circle-info"></i> These times are indicative; please confirm the current timetable with the Hall Office before travelling.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: Hall Polls -->
       <section class="hub-tab-panel" id="panelPolls" role="tabpanel" aria-labelledby="tabPolls" tabindex="0" hidden>
-        <div class="election-header"><div><span class="hub-kicker">Your voice matters</span><h2 class="poll-section-title"><span id="electionTitle"></span></h2><p class="poll-section-intro">Free to vote · one ballot per student for each position</p></div><span id="electionStatus" class="election-status"></span></div>
+        <div class="election-header">
+          <div>
+            <span class="hub-kicker">Your voice matters</span>
+            <h2 class="poll-section-title"><span id="electionTitle"></span></h2>
+            <p class="poll-section-intro">Free to vote · one ballot per student for each position</p>
+          </div>
+          <span id="electionStatus" class="election-status"></span>
+        </div>
         <div class="poll-grid" id="pollGrid"></div>
         <p class="hub-privacy-note"><i class="fas fa-shield-halved"></i> Voting is free. Votes are saved in this browser and cannot verify student identity or prevent tampering. Use a secured server-side election system for an official or binding result.</p>
       </section>
     </div>
-    <section class="hub-section" style="display:flex;justify-content:flex-end"><button type="button" class="complete-access" id="completeAccess"><i class="fas fa-graduation-cap"></i> I have completed school — end my access</button></section>
+
+    <section class="hub-section" style="display:flex;justify-content:flex-end">
+      <button type="button" class="complete-access" id="completeAccess"><i class="fas fa-graduation-cap"></i> I have completed school — end my access</button>
+    </section>
   </div>`;
+  }
+
+  /* ---------- Grievances rendering & submission ---------- */
+  let currentGrievanceFilter = 'all';
+
+  function renderStudentGrievances(student, host, filter = 'all') {
+    const listEl = host.querySelector('#studentGrievancesList');
+    if (!listEl) return;
+
+    let grievances = typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.studentGrievances(student.studentId) : [];
+
+    // If this student has no specific grievances yet in demo, check if they want to see all submitted
+    if (!grievances.length && typeof GoldHallPortal !== 'undefined') {
+      grievances = GoldHallPortal.grievances();
+    }
+
+    if (filter !== 'all') {
+      grievances = grievances.filter(g => g.status === filter);
+    }
+
+    const priorityLabels = { urgent: 'Urgent', high: 'High', normal: 'Normal' };
+    const statusLabels = {
+      pending: 'Pending Review',
+      'in-progress': 'In Progress',
+      resolved: 'Resolved',
+      closed: 'Closed'
+    };
+
+    if (!grievances.length) {
+      listEl.innerHTML = `<div class="empty-student-grievance">
+        <i class="fas fa-clipboard-check"></i>
+        <h4>No complaints in this view</h4>
+        <p>Use the form on the left to submit a maintenance or hall complaint. You will be able to track admin responses here.</p>
+      </div>`;
+      return;
+    }
+
+    listEl.innerHTML = grievances.map(g => {
+      const dateStr = g.createdAt ? new Date(g.createdAt).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      }) : 'Recently';
+
+      const actionDateStr = g.adminActionDate ? new Date(g.adminActionDate).toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      }) : '';
+
+      return `<article class="student-grievance-item ${g.status}">
+        <div class="s-grievance-top">
+          <div class="s-grievance-tags">
+            <span class="s-gid">#${esc(g.id)}</span>
+            <span class="s-status-badge ${g.status}">${statusLabels[g.status] || g.status}</span>
+            <span class="s-priority-badge priority-${g.priority || 'normal'}">${priorityLabels[g.priority] || g.priority}</span>
+            <span class="s-cat-badge"><i class="fas fa-tag"></i> ${esc(g.category)}</span>
+          </div>
+          <span class="s-date"><i class="fas fa-clock"></i> ${dateStr}</span>
+        </div>
+
+        <h4 class="s-subject">${esc(g.subject)}</h4>
+        <p class="s-desc">${esc(g.description)}</p>
+        <div class="s-location"><i class="fas fa-location-dot"></i> Location: <strong>${esc(g.location || g.room || 'Gold Hall')}</strong></div>
+
+        <!-- Admin Action Callout -->
+        ${g.adminAction ? `
+          <div class="s-admin-action-callout ${g.status}">
+            <div class="s-action-head">
+              <span class="s-action-title"><i class="fas fa-shield-halved"></i> Hall Administration Action</span>
+              <span class="s-action-time">${actionDateStr}</span>
+            </div>
+            <p class="s-action-text">${esc(g.adminAction)}</p>
+            ${g.actionHandler ? `<div class="s-action-handler"><i class="fas fa-id-badge"></i> Assigned Officer: <strong>${esc(g.actionHandler)}</strong></div>` : ''}
+          </div>
+        ` : `
+          <div class="s-admin-pending-callout">
+            <i class="fas fa-clock"></i>
+            <div>
+              <strong>Awaiting Administrator Review</strong>
+              <p>Your complaint has been transmitted to Hall Administration. Investigation notes and actions will appear here once an officer is dispatched.</p>
+            </div>
+          </div>
+        `}
+      </article>`;
+    }).join('');
+  }
+
+  function setupGrievanceEvents(student, host) {
+    const form = host.querySelector('#grievanceForm');
+    const feedback = host.querySelector('#grievanceFormFeedback');
+    const filterButtons = host.querySelectorAll('#studentGrievanceFilters button');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentGrievanceFilter = btn.dataset.filter;
+        renderStudentGrievances(student, host, currentGrievanceFilter);
+      });
+    });
+
+    if (form) {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const data = new FormData(form);
+        const category = String(data.get('category') || '').trim();
+        const priority = String(data.get('priority') || 'normal').trim();
+        const location = String(data.get('location') || '').trim();
+        const subject = String(data.get('subject') || '').trim();
+        const description = String(data.get('description') || '').trim();
+        const isAnonymous = data.get('isAnonymous') === 'on';
+
+        if (!category) { feedback.textContent = 'Please select a complaint category.'; return; }
+        if (!location) { feedback.textContent = 'Please enter the affected room or location.'; return; }
+        if (subject.length < 4) { feedback.textContent = 'Please provide a clear subject (at least 4 characters).'; return; }
+        if (description.length < 10) { feedback.textContent = 'Please describe the complaint in detail (at least 10 characters).'; return; }
+
+        feedback.textContent = '';
+        const submitBtn = form.querySelector('#submitGrievanceBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Submitting complaint… <i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+          const newGrievance = GoldHallPortal.saveGrievance({
+            studentId: student.studentId,
+            studentName: student.fullName,
+            studentEmail: student.studentEmail,
+            programme: student.programme,
+            year: student.year,
+            hallStatus: student.hallStatus,
+            room: student.room,
+            category,
+            priority,
+            location,
+            subject,
+            description,
+            isAnonymous
+          });
+
+          form.reset();
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Complaint to Admin';
+
+          dialog({
+            icon: 'fa-circle-check',
+            tone: 'success',
+            eyebrow: `Reference #${newGrievance.id}`,
+            title: 'Complaint Logged Successfully',
+            body: 'Your complaint has been submitted to the Gold Refinery Hall Administration. Hall maintenance and welfare officers will review your ticket and record actions taken.',
+            details: [
+              ['Reference ID', newGrievance.id],
+              ['Category', newGrievance.category],
+              ['Priority', newGrievance.priority.toUpperCase()],
+              ['Location', newGrievance.location],
+              ['Status', 'Pending Review']
+            ],
+            actions: [
+              { label: 'View in Grievance Desk', primary: true, onClick: () => {
+                renderStudentGrievances(student, host, currentGrievanceFilter);
+              }}
+            ]
+          });
+
+          renderStudentGrievances(student, host, currentGrievanceFilter);
+        } catch (err) {
+          feedback.textContent = 'Could not submit complaint. Please try again.';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Complaint to Admin';
+        }
+      });
+    }
   }
 
   function renderPolls(student, host, onAccessLost) {
@@ -189,7 +559,8 @@
         item.classList.toggle('active', active);
         item.setAttribute('aria-selected', String(active));
         item.tabIndex = active ? 0 : -1;
-        host.querySelector(`#${item.getAttribute('aria-controls')}`).hidden = !active;
+        const panel = host.querySelector(`#${item.getAttribute('aria-controls')}`);
+        if (panel) panel.hidden = !active;
       });
       if (moveFocus) tab.focus();
     };
@@ -206,10 +577,12 @@
         activateTab(tabs[nextIndex], true);
       });
     });
+
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
       else { session.end(); window.location.href = 'student.html'; }
     });
+
     host.querySelector('#completeAccess').addEventListener('click', () => {
       dialog({
         icon: 'fa-graduation-cap', tone: 'warn', eyebrow: 'End my access',
@@ -224,12 +597,57 @@
         ]
       });
     });
+
     renderPolls(student, host, lost);
+    renderStudentGrievances(student, host, 'all');
+    setupGrievanceEvents(student, host);
+
+    // Live update when grievances or scholarships are updated in another tab/admin
+    window.addEventListener('storage', event => {
+      if (event.key === 'goldHallGrievances') {
+        renderStudentGrievances(student, host, currentGrievanceFilter);
+      }
+      if (event.key === 'goldHallManagedContent') {
+        // Refresh scholarships & internships cards
+        const sGrid = host.querySelector('#scholarshipsGrid');
+        const iGrid = host.querySelector('#internshipsGrid');
+        if (sGrid) {
+          sGrid.innerHTML = getScholarships().map(item => `
+            <article class="hub-resource">
+              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
+              <span class="hub-resource-icon"><i class="fas fa-award"></i></span>
+              <h3>${esc(item.title)}</h3>
+              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
+              <p>${esc(item.text)}</p>
+              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Apply on Portal')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </article>`).join('');
+        }
+        if (iGrid) {
+          iGrid.innerHTML = getInternships().map(item => `
+            <article class="hub-resource">
+              ${item.image ? `<div class="hub-resource-img"><img src="${esc(item.image)}" alt=""></div>` : ''}
+              <span class="hub-resource-icon"><i class="fas fa-briefcase"></i></span>
+              <h3>${esc(item.title)}</h3>
+              ${item.meta ? `<span class="hub-resource-meta"><i class="fas fa-tag"></i> ${esc(item.meta)}</span>` : ''}
+              <p>${esc(item.text)}</p>
+              ${item.link ? `<a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Browse Opportunities')} <i class="fas fa-arrow-up-right-from-square"></i></a>` : ''}
+            </article>`).join('');
+        }
+      }
+    });
+
     window.GoldHallFX?.observe(host);
   }
 
   function completedMarkup() {
-    return `<section class="graduated-card"><span class="grad-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span><span class="icon"><i class="fas fa-graduation-cap"></i></span><h1>Thank you for being part of Gold Hall.</h1><p>Student Hub access is for currently enrolled students. This account has been marked as completed, so sign-in and voting are no longer available.</p><p>If this status is a mistake, please contact the Gold Hall Admin.</p><a class="hub-button" href="index.html"><i class="fas fa-house"></i> Return to the website</a></section>`;
+    return `<section class="graduated-card">
+      <span class="grad-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
+      <span class="icon"><i class="fas fa-graduation-cap"></i></span>
+      <h1>Thank you for being part of Gold Hall.</h1>
+      <p>Student Hub access is for currently enrolled students. This account has been marked as completed, so sign-in and voting are no longer available.</p>
+      <p>If this status is a mistake, please contact the Gold Hall Admin.</p>
+      <a class="hub-button" href="index.html"><i class="fas fa-house"></i> Return to the website</a>
+    </section>`;
   }
 
   /** Shown when an account is completed / revoked: clears the session and replaces the view. */
