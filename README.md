@@ -1,6 +1,6 @@
 # Gold Refinery Hall website
 
-A static website for Gold Refinery Hall, University of Mines and Technology, with a browser-based Student Hub prototype.
+A static website for Gold Refinery Hall, University of Mines and Technology, with a browser-based Student Hub and Administrator Portal prototype.
 
 ## Design & animations
 
@@ -29,38 +29,40 @@ can open. Registration collects:
 
 - Full name and UMaT Student ID
 - Student email (official UMaT student email) and personal email
-- Programme and year / level
+- Programme and academic level (**Levels 100 to 400**)
 - Room / bedspace and Resident / Non-Resident status
 - A password (8 characters minimum)
 
-The Student Hub includes scholarship and internship links, tutorials, a sample campus shuttle timetable, announcements for Freshers Akwaaba and Hall Week, plus free online polls for hall executive positions and the most fashionable freshman / executive. Students at all year levels can register. A student can mark their studies complete in the hub, and the administrator can also mark an account completed; completed accounts are blocked from signing in and voting.
+The Student Hub includes:
+- **Scholarships & Internships**: Dynamically managed funding schemes, industrial attachments, and application portals with direct links and details updated by the Hall Administrator.
+- **Grievance Desk**: A dedicated complaint and maintenance desk where students can lodge complaints (room repairs, plumbing, electrical, safety, amenities), choose urgency levels, optionally submit anonymously, and track administrative investigation notes and action resolutions in real time.
+- **Hall Announcements & Shuttle Schedule**: Freshers Akwaaba, Hall Week updates, and indicative weekday campus shuttle departures.
+- **Hall Polls**: Free online student voting for executive positions and student honours.
+- **Access Completion**: A student can mark their studies complete in the hub, and the administrator can also mark an account completed; completed accounts are blocked from signing in and voting.
 
 ## Preview administrator
 
-Open `admin.html` and sign in with the existing single preview admin account:
+Open `admin.html` and sign in with the preview admin account:
 
 - Username: `admin`
 - Password: `goldhall`
 
-The admin can continue managing website content, review registered student records, mark accounts completed / restore access, configure poll positions and candidate names, and open or close polls.
+The administrator can:
+- **Manage Scholarships & Internships**: Add, edit, delete, publish/unpublish, and link scholarships and internship listings with custom action button labels, application URLs, categories, deadlines, and picture banners.
+- **Grievance & Complaint Desk**: Review all submitted complaints, filter by status (Pending, In Progress, Resolved, Closed), category, and priority, search tickets, assign maintenance units / officers, record official action notes, and update student resolution statuses.
+- **Manage Website Content**: Add and edit News, Events, Gallery, and Documents with images and link addresses.
+- **Student Access & Polls**: Review registered student accounts, mark accounts completed or restore access, configure poll positions and candidates, and toggle election voting.
 
 ### Editing content (link + picture)
 
-Every content type (News, Events, Gallery, Documents) can be edited with:
+Every content type (News, Events, Gallery, Documents, Scholarships, Internships) can be edited with:
 
-- **Title, description and a category / date / caption label**
-- **Link** — the address the card button opens. Friendly entries such as `example.com/page`
-  are stored as `https://example.com/page`; leave it empty to keep the default page link.
-- **Picture** — either **upload a picture from the device** (a preview appears immediately,
-  the file is scaled down to 1280px before it is stored) **or paste a picture link**. There
-  is no picture ID to enter. Uploaded pictures are stored as data URLs inside
-  `goldHallManagedContent` in the browser.
-
-Saved items show a thumbnail and the link in the list, and pictures/links flow through to the
-home page cards, the Gallery page and the inner pages.
+- **Title, description, category / deadline / eligibility label**
+- **Link & Button Label** — the address the card button opens and optional custom button text.
+- **Picture** — either **upload a picture from the device** (scaled down to 1280px before storage) **or paste a picture link**. Uploaded pictures are stored in `goldHallManagedContent` in the browser.
 
 ## Important security and deployment note
 
-This repository is a static front-end prototype: student records, password hashes, session state, uploaded pictures and ballots are stored in the browser's `localStorage` / `sessionStorage`. The preview admin password is embedded in client-side JavaScript. Browser storage is not shared between users and can be modified or cleared, and a browser-only poll cannot verify student identity or guarantee one person / one vote. Do not use this implementation for sensitive student information or an official / binding election.
+This repository is a static front-end prototype: student records, password hashes, session state, grievances, uploaded pictures and ballots are stored in the browser's `localStorage` / `sessionStorage`. The preview admin password is embedded in client-side JavaScript. Browser storage is not shared between users and can be modified or cleared, and a browser-only poll cannot verify student identity or guarantee one person / one vote. Do not use this implementation for sensitive student information or an official / binding election.
 
-Before production, connect the UI to a secure backend with university identity verification, server-side access expiry / completion status, secure password handling, authorization for the single administrator, and server-side ballot validation, duplicate-vote prevention, audit controls and privacy protections. Scholarship links and the shuttle timetable are sample references and should be verified by the Hall Office. Voting itself does not charge students.
+Before production, connect the UI to a secure backend with university identity verification, server-side access expiry / completion status, secure password handling, authorization for the single administrator, and server-side ballot validation, duplicate-vote prevention, audit controls and privacy protections.

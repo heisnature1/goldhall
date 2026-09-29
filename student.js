@@ -26,7 +26,7 @@ function setMode(mode) {
   if (mode === 'register') {
     authHost.innerHTML = `
       <h2 class="auth-title" id="authTitle">Create your account</h2>
-      <p class="auth-subtitle">For currently enrolled UMaT students at every year level.</p>
+      <p class="auth-subtitle">For currently enrolled UMaT students (Levels 100 to 400).</p>
       <form class="portal-form" id="registerForm" novalidate>
         <label>Full name<input name="fullName" autocomplete="name" placeholder="e.g. Ama Mensah" required maxlength="100"></label>
         <div class="form-grid">
@@ -36,7 +36,7 @@ function setMode(mode) {
         <label>Student email<input name="studentEmail" type="email" autocomplete="email" placeholder="e.g. ama.mensah@st.umat.edu.gh" required maxlength="120"><span class="field-hint"><i class="fas fa-graduation-cap"></i> Your official UMaT student email</span></label>
         <label>Personal email<input name="personalEmail" type="email" autocomplete="email" placeholder="e.g. ama.mensah@gmail.com" required maxlength="120"><span class="field-hint"><i class="fas fa-envelope-open-text"></i> For hall updates and account recovery</span></label>
         <div class="form-grid">
-          <label>Year / level<select name="year" required><option value="" disabled selected>Select year</option>${[100,200,300,400,500,600].map(year => `<option value="${year}">Year ${year}</option>`).join('')}<option value="Other">Other / postgraduate</option></select></label>
+          <label>Level<select name="year" required><option value="" disabled selected>Select level</option>${[100,200,300,400].map(level => `<option value="${level}">Level ${level}</option>`).join('')}</select></label>
           <label>Hall status<select name="hallStatus" id="hallStatus" required><option value="" disabled selected>Select status</option><option>Resident</option><option>Non-Resident</option></select></label>
         </div>
         <label>Room / bedspace <span class="form-note" style="display:inline">(required for residents)</span><input name="room" id="roomInput" placeholder="e.g. Block A · Room 12 · Bed 2" maxlength="80"></label>
@@ -135,7 +135,7 @@ function accountCreatedDialog(student) {
     details: [
       ['Student ID', student.studentId],
       ['Programme', student.programme],
-      ['Year', /^\d+$/.test(student.year) ? `Year ${student.year}` : student.year],
+      ['Level', `Level ${student.year}`],
       ['Hall status', student.hallStatus + (student.room ? ` · ${student.room}` : '')],
       ['Student email', student.studentEmail]
     ],
