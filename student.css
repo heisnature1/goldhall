@@ -328,3 +328,5 @@
   .hub-tab { min-height: 48px; padding: 11px 13px; font-size: .8rem; }
   .hub-tab-panel > .hub-section-head { gap: 5px; }
 }
+
+.hub-empty-note { grid-column: 1 / -1; margin: 0; padding: 18px 20px; border: 1px dashed rgba(184, 134, 11, .45); border-radius: 12px; background: #fffaf0; color: #5b4a1c; font-size: .9rem; display: flex; gap: 10px; align-items: center; }
