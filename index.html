@@ -73,24 +73,24 @@
     <div class="mobile-overlay" id="mobileOverlay"></div>
 
     <!-- NAVIGATION -->
-    <nav class="nav-section" id="navSection">
-        <button class="mobile-nav-close" id="mobileNavClose">
+    <nav class="nav-section" id="navSection" aria-label="Primary navigation">
+        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
             <i class="fas fa-times"></i>
         </button>
         <div class="container">
             <ul class="main-nav">
-                <li><a href="index.html" class="active" aria-current="page">Home</a></li>
-                <li><a href="student.html" class="nav-highlight"><i class="fas fa-graduation-cap"></i> Student Hub</a></li>
-                <li><a href="news.html">News</a></li>
-                <li><a href="events.html">Events</a></li>
-                <li><a href="documents.html">Documents</a></li>
-                <li><a href="about.html">About Us</a></li>
+                <li><a href="index.html" class="active" aria-current="page"><i class="fas fa-house" aria-hidden="true"></i>Home</a></li>
+                <li><a href="student.html" class="nav-highlight"><i class="fas fa-graduation-cap" aria-hidden="true"></i>Student Hub</a></li>
+                <li><a href="news.html"><i class="fas fa-newspaper" aria-hidden="true"></i>News</a></li>
+                <li><a href="events.html"><i class="fas fa-calendar-days" aria-hidden="true"></i>Events</a></li>
+                <li><a href="documents.html"><i class="fas fa-file-lines" aria-hidden="true"></i>Documents</a></li>
+                <li><a href="about.html"><i class="fas fa-landmark" aria-hidden="true"></i>About Us</a></li>
             </ul>
-            <div class="login-btn">
-                <button class="btn">Login <i class="fas fa-chevron-down"></i></button>
-                <div class="login-dropdown">
-                    <a href="student.html"><i class="fas fa-user-graduate"></i> Sign in to Student Hub</a>
-                    <a href="admin.html"><i class="fas fa-user-tie"></i> Admin Portal</a>
+            <div class="login-btn" id="loginMenu">
+                <button class="btn" type="button" aria-haspopup="true" aria-expanded="false"><i class="fas fa-right-to-bracket btn-icon-lead" aria-hidden="true"></i><span>Login</span><i class="fas fa-chevron-down btn-icon-caret" aria-hidden="true"></i></button>
+                <div class="login-dropdown" role="menu" aria-label="Login options">
+                    <a href="student.html" role="menuitem"><i class="fas fa-user-graduate" aria-hidden="true"></i><span>Sign in to Student Hub</span></a>
+                    <a href="admin.html" role="menuitem"><i class="fas fa-user-tie" aria-hidden="true"></i><span>Admin Portal</span></a>
                 </div>
             </div>
         </div>

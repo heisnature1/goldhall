@@ -5,9 +5,25 @@
             }, 1500);
         });
 
-        // ===== HEADER SCROLL EFFECT =====
+        // ===== HEADER SCROLL EFFECT & STICKY NAV OFFSET =====
         const header = document.getElementById('header');
         const backToTop = document.getElementById('backToTop');
+
+        const syncHeaderHeight = () => {
+            if (header && header.offsetHeight) {
+                document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
+            }
+        };
+
+        syncHeaderHeight();
+        window.addEventListener('load', syncHeaderHeight);
+        window.addEventListener('resize', syncHeaderHeight, { passive: true });
+        if (header) {
+            header.addEventListener('transitionend', syncHeaderHeight);
+            if (typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncHeaderHeight).observe(header);
+            }
+        }
 
         window.addEventListener('scroll', () => {
             if (window.scrollY > 100) {
@@ -17,6 +33,7 @@
                 header.classList.remove('scrolled');
                 backToTop.classList.remove('visible');
             }
+            syncHeaderHeight();
         });
 
         // ===== BACK TO TOP =====
@@ -55,6 +72,35 @@
                 }
             });
         });
+
+        // ===== LOGIN BUTTON MENU =====
+        const loginMenu = document.querySelector('.login-btn');
+        const loginToggle = loginMenu ? loginMenu.querySelector('.btn') : null;
+
+        if (loginMenu && loginToggle) {
+            const setLoginOpen = (open) => {
+                loginMenu.classList.toggle('open', open);
+                loginToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            };
+
+            loginToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setLoginOpen(!loginMenu.classList.contains('open'));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!loginMenu.contains(e.target)) {
+                    setLoginOpen(false);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && loginMenu.classList.contains('open')) {
+                    setLoginOpen(false);
+                    loginToggle.focus();
+                }
+            });
+        }
 
         // ===== HERO SLIDER =====
         const slides = document.querySelectorAll('.hero-slide');
