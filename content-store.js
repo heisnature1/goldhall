@@ -7,11 +7,20 @@ const GoldHallStore = (() => {
   const key = 'goldHallManagedContent';
   const seed = {
     executives: [
-      { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', position: '50% 8%', published: true },
+      { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', position: '50% 50%', published: true },
       { id: 'x2', title: 'Dr. Pius Tweneboah', text: 'Providing academic guidance and mentorship to all hall residents.', meta: 'Senior Tutor', link: '', image: '', published: true },
       { id: 'x3', title: 'Emmanuel Asante', text: 'Representing the student body and driving hall development initiatives.', meta: 'JCR President', link: '', image: '', published: true },
-      { id: 'x4', title: 'Emmanuel Addo', text: 'Upholding fairness, discipline and the constitutional order of the hall.', meta: 'Judicial Chairman', link: '', image: 'assets/images/leadership/emmanuel-addo-judicial-chairman.jpg', position: '50% 8%', published: true },
-      { id: 'x5', title: 'Adu Gyamfi John Diego', text: 'Leading academic programmes, study support and the hall’s academic board.', meta: 'Academic Board Chairman', link: '', image: 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg', position: '50% 8%', published: true }
+      { id: 'x4', title: 'Emmanuel Addo', text: 'Upholding fairness, discipline and the constitutional order of the hall.', meta: 'Judicial Chairman', link: '', image: 'assets/images/leadership/emmanuel-addo-judicial-chairman.jpg', position: '50% 50%', published: true },
+      { id: 'x5', title: 'Adu Gyamfi John Diego', text: 'Leading academic programmes, study support and the hall’s academic board.', meta: 'Academic Board Chairman', link: '', image: 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg', position: '50% 50%', published: true },
+      { id: 'x6', title: 'Asante Derrick Gyasi', text: 'Running free, fair and transparent hall elections.', meta: 'Electoral Commissioner', link: '', image: 'assets/images/leadership/asante-derrick-gyasi.jpg', position: '50% 50%', published: true },
+      { id: 'x7', title: 'Kojo Kafui Dayie Osei', text: 'Supporting non-resident students and keeping them connected to the hall.', meta: 'Deputy Non-Resident Chairman', link: '', image: 'assets/images/leadership/kojo-kafui-dayie-osei.jpg', position: '50% 50%', published: true },
+      { id: 'x8', title: 'Ofori Sem Kwaku', text: 'Representing the interests of every non-resident resident.', meta: 'Non-Resident Chairman', link: '', image: 'assets/images/leadership/ofori-sem-kwaku.jpg', position: '50% 50%', published: true },
+      { id: 'x9', title: 'Amoah Godfred Senior', text: 'Overseeing food service, quality and fair prices at the hall canteen.', meta: 'Canteen Chairman', link: '', image: 'assets/images/leadership/amoah-godfred-senior.jpg', position: '50% 50%', published: true },
+      { id: 'x10', title: 'Kingsley Ankamah', text: 'Organising hall sports, inter-hall games and fitness activities.', meta: 'Sports Chairman', link: '', image: 'assets/images/leadership/kingsley-ankamah.jpg', position: '50% 50%', published: true },
+      { id: 'x11', title: 'Meschak Todeme', text: 'Coordinating the executive team and hall administration.', meta: 'Chief of Staff', link: '', image: 'assets/images/leadership/meschak-todeme.jpg', position: '50% 50%', published: true },
+      { id: 'x12', title: 'Amo-Addae Prince', text: 'Supporting study programmes and academic welfare for residents.', meta: 'Deputy Academic Board Chairman', link: '', image: 'assets/images/leadership/amo-addae-prince.jpg', position: '50% 50%', published: true },
+      { id: 'x13', title: 'Owusu Manaseh Danso', text: 'Looking after resident wellbeing, support and pastoral care.', meta: 'Welfare Chairman', link: '', image: 'assets/images/leadership/owusu-manaseh-danso.jpg', position: '50% 50%', published: true },
+      { id: 'x14', title: 'Desmond Karikari', text: 'Supporting hall projects and development works.', meta: 'Deputy Project Manager', link: '', image: 'assets/images/leadership/desmond-karikari.jpg', position: '50% 50%', published: true }
     ],
     events: [
       { id: 'e1', title: 'Hall Week Celebration', text: 'Annual celebration featuring culture, academic competitions and sports events.', meta: '14 February · Main Hall', link: '', image: '', published: true },

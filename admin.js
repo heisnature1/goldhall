@@ -117,9 +117,8 @@ function pictureFieldMarkup() {
     <label>Picture link<input name="pictureLink" id="pictureLink" type="url" placeholder="${linkField[activeType]?.placeholder || 'https://… image URL'}"></label>
     <label>Picture framing<span class="field-help">Choose which part of the picture stays visible when it is cropped to fit a card.</span>
       <select name="picturePosition" id="picturePosition">
-        <option value="50% 8%">Head and shoulders (best for portraits)</option>
-        <option value="50% 50%">Centre</option>
-        <option value="50% 0%">Top</option>
+        <option value="50% 0%">Top — head near the top edge</option>
+        <option value="50% 50%" selected>Centre — recommended for portraits</option>
         <option value="50% 100%">Bottom</option>
       </select>
     </label>
@@ -298,7 +297,7 @@ function renderContentList() {
   const items = GoldHallStore.get(activeType);
   list.innerHTML = items.length ? items.map(item => `<article class="content-row">
       <div class="content-row-main">
-        ${item.image ? `<img class="content-thumb" src="${safe(item.image)}" alt="" style="object-position:${safe(item.position || '50% 8%')}">` : `<div class="content-thumb-placeholder"><i class="fas ${icons[activeType]}"></i></div>`}
+        ${item.image ? `<img class="content-thumb" src="${safe(item.image)}" alt="" style="object-position:${safe(item.position || '50% 50%')}">` : `<div class="content-thumb-placeholder"><i class="fas ${icons[activeType]}"></i></div>`}
         <div>
           <h4>${safe(item.title)}</h4>
           ${item.meta ? `<p class="content-row-meta"><i class="fas fa-tag"></i> ${safe(item.meta)}</p>` : ''}
@@ -336,7 +335,7 @@ function editContent(id) {
   form.elements.link.value = item.link || '';
   if (form.elements.label) form.elements.label.value = item.label || '';
   form.elements.pictureLink.value = uploadedPicture ? '' : pictureData;
-  if (form.elements.picturePosition) form.elements.picturePosition.value = item.position || '50% 8%';
+  if (form.elements.picturePosition) form.elements.picturePosition.value = item.position || '50% 50%';
   form.elements.published.checked = item.published;
   const singular = labels[activeType].endsWith('s') ? labels[activeType].slice(0, -1) : labels[activeType];
   document.getElementById('formTitle').textContent = `Edit ${singular}`;
@@ -366,7 +365,7 @@ function saveContent(event) {
     link: normalizeLink(values.get('link')),
     label: String(values.get('label') || '').trim(),
     image: pictureData,
-    position: String(values.get('picturePosition') || '50% 8%'),
+    position: String(values.get('picturePosition') || '50% 50%'),
     published: values.get('published') === 'on'
   });
   if (!saved) {

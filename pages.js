@@ -65,7 +65,16 @@ const executiveFallback = [
   ['pius-tweneboah', 'Dr. Pius Tweneboah', 'Senior Tutor', 'Providing academic guidance and mentorship to all hall residents.', ''],
   ['emmanuel-asante', 'Emmanuel Asante', 'JCR President', 'Representing the student body and driving hall development initiatives.', ''],
   ['emmanuel-addo', 'Emmanuel Addo', 'Judicial Chairman', 'Upholding fairness, discipline and the constitutional order of the hall.', 'assets/images/leadership/emmanuel-addo-judicial-chairman.jpg'],
-  ['adu-gyamfi-john-diego', 'Adu Gyamfi John Diego', 'Academic Board Chairman', 'Leading academic programmes, study support and the hall’s academic board.', 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg']
+  ['adu-gyamfi-john-diego', 'Adu Gyamfi John Diego', 'Academic Board Chairman', 'Leading academic programmes, study support and the hall’s academic board.', 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg'],
+  ['asante-derrick-gyasi', 'Asante Derrick Gyasi', 'Electoral Commissioner', 'Running free, fair and transparent hall elections.', 'assets/images/leadership/asante-derrick-gyasi.jpg'],
+  ['kojo-kafui-dayie-osei', 'Kojo Kafui Dayie Osei', 'Deputy Non-Resident Chairman', 'Supporting non-resident students and keeping them connected to the hall.', 'assets/images/leadership/kojo-kafui-dayie-osei.jpg'],
+  ['ofori-sem-kwaku', 'Ofori Sem Kwaku', 'Non-Resident Chairman', 'Representing the interests of every non-resident resident.', 'assets/images/leadership/ofori-sem-kwaku.jpg'],
+  ['amoah-godfred-senior', 'Amoah Godfred Senior', 'Canteen Chairman', 'Overseeing food service, quality and fair prices at the hall canteen.', 'assets/images/leadership/amoah-godfred-senior.jpg'],
+  ['kingsley-ankamah', 'Kingsley Ankamah', 'Sports Chairman', 'Organising hall sports, inter-hall games and fitness activities.', 'assets/images/leadership/kingsley-ankamah.jpg'],
+  ['meschak-todeme', 'Meschak Todeme', 'Chief of Staff', 'Coordinating the executive team and hall administration.', 'assets/images/leadership/meschak-todeme.jpg'],
+  ['amo-addae-prince', 'Amo-Addae Prince', 'Deputy Academic Board Chairman', 'Supporting study programmes and academic welfare for residents.', 'assets/images/leadership/amo-addae-prince.jpg'],
+  ['owusu-manaseh-danso', 'Owusu Manaseh Danso', 'Welfare Chairman', 'Looking after resident wellbeing, support and pastoral care.', 'assets/images/leadership/owusu-manaseh-danso.jpg'],
+  ['desmond-karikari', 'Desmond Karikari', 'Deputy Project Manager', 'Supporting hall projects and development works.', 'assets/images/leadership/desmond-karikari.jpg']
 ];
 if (pageKey === 'executives') {
   /* The role gets its own line above the bio — don't repeat it inside the bio. */
@@ -76,7 +85,7 @@ if (pageKey === 'executives') {
      while the fallback uses slugs, so ids alone would duplicate everyone. */
   const known = new Set(page.sections.flatMap(section => [section[0], section[1]]));
   executiveFallback.forEach(([id, name, role, text, picture]) => {
-    if (!known.has(id) && !known.has(name)) page.sections.push([id, name, text, 'fa-user-tie', picture, '', '50% 8%', role]);
+    if (!known.has(id) && !known.has(name)) page.sections.push([id, name, text, 'fa-user-tie', picture, '', '50% 50%', role]);
   });
 }
 /* Every other managed page renders straight from the store. Executives are
