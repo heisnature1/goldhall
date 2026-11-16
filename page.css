@@ -1,5 +1,7 @@
 /* Shared layout for the navigation pages */
-.inner-hero { background: linear-gradient(135deg, rgba(26,58,42,.95), rgba(45,90,61,.82)), url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&h=600&fit=crop') center/cover; color: var(--white); padding: 92px 0; }
+/* Banner behind every inner page. Uses the home page's third hero slide
+   (the hall group photo) instead of a stock image. */
+.inner-hero { background: linear-gradient(135deg, rgba(26,58,42,.92), rgba(45,90,61,.78)), url('assets/images/hero/hero-students.jpg') center 30%/cover; color: var(--white); padding: 92px 0; }
 .inner-hero .eyebrow { color: var(--gold-light); font-size: .85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 .inner-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.1; margin: 10px 0 16px; }
 .inner-hero p { max-width: 680px; font-size: 1.08rem; opacity: .92; }
