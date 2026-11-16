@@ -13,7 +13,7 @@ Visual polish and motion live in two files included by every page:
 
 The main menu is intentionally short and identical on every page:
 
-**Home · Student Hub · News · Events · Documents · About Us**
+**Home · Student Hub · Executives · Events · Gallery · About Us**
 
 The Student Hub entry is highlighted; the rest of the site is reached from the home page
 sections and the footer. The Admin Portal stays available from the **Login** button on the
@@ -50,12 +50,13 @@ Open `admin.html` and sign in with the preview admin account:
 The administrator can:
 - **Manage Scholarships & Internships**: Add, edit, delete, publish/unpublish, and link scholarships and internship listings with custom action button labels, application URLs, categories, deadlines, and picture banners.
 - **Grievance & Complaint Desk**: Review all submitted complaints, filter by status (Pending, In Progress, Resolved, Closed), category, and priority, search tickets, assign maintenance units / officers, record official action notes, and update student resolution statuses.
-- **Manage Website Content**: Add and edit News, Events, Gallery, and Documents with images and link addresses.
+- **Manage Website Content**: Add and edit Executives, Events, Gallery and Scholarships/Internships content with images and link addresses.
+- **Gallery uploads**: Upload photos of what is going on at the hall (freshers' welcome, hall week, sports, projects). Published photos appear both in the home page "Life at Gold Hall" grid and on the Gallery page.
 - **Student Access & Polls**: Review registered student accounts, mark accounts completed or restore access, configure poll positions and candidates, and toggle election voting.
 
 ### Editing content (link + picture)
 
-Every content type (News, Events, Gallery, Documents, Scholarships, Internships) can be edited with:
+Every content type (Executives, Events, Gallery, Scholarships, Internships) can be edited with:
 
 - **Title, description, category / deadline / eligibility label**
 - **Link & Button Label** — the address the card button opens and optional custom button text.

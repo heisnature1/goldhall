@@ -231,3 +231,7 @@ body { background:#f2f5f2; }
   .upload-preview { flex-wrap: wrap; }
   .content-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* Gallery tab hint */
+.gallery-hint { display: flex; gap: 9px; align-items: flex-start; margin: 0 0 16px; padding: 11px 13px; border-radius: 9px; background: #f6f9f4; border: 1px solid #e3ece1; color: #4f6155; font-size: .82rem; line-height: 1.5; }
+.gallery-hint i { color: var(--primary-green); margin-top: 2px; }
