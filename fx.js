@@ -106,21 +106,93 @@
   spawnMotes(document.querySelector('.hero'), 16);
   spawnMotes(document.querySelector('.hub-spotlight'), 10);
 
-  /* ----- Gentle 3D tilt (delegated, works for dynamically rendered cards) ----- */
-  const tiltSelector = '.leader-card, .hub-resource, .content-card';
-  if (!reduced && window.matchMedia('(pointer: fine)').matches) {
+  /* ----- 3D tilt, delegated so JS-rendered cards get it too ----- */
+  const tiltSelector = '.leader-card, .hub-resource, .content-card, .stat-item, .event-card, .quick-link-card';
+  const canTilt = !reduced && window.matchMedia('(pointer: fine)').matches;
+  const MAX_TILT = 7;          // degrees, kept gentle so text stays readable
+  let activeCard = null;
+
+  const resetCard = card => {
+    if (!card) return;
+    card.classList.remove('fx-tilting');
+    card.style.transform = '';
+    card.style.removeProperty('--fx-mx');
+    card.style.removeProperty('--fx-my');
+    if (activeCard === card) activeCard = null;
+  };
+
+  const tiltTo = (card, clientX, clientY) => {
+    const rect = card.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const px = (clientX - rect.left) / rect.width;
+    const py = (clientY - rect.top) / rect.height;
+    const x = px - 0.5;
+    const y = py - 0.5;
+    card.classList.add('fx-3d', 'fx-tilting');
+    card.style.setProperty('--fx-mx', `${(px * 100).toFixed(1)}%`);
+    card.style.setProperty('--fx-my', `${(py * 100).toFixed(1)}%`);
+    card.style.transform =
+      `perspective(900px) rotateX(${(-y * MAX_TILT).toFixed(2)}deg) ` +
+      `rotateY(${(x * MAX_TILT).toFixed(2)}deg) translateY(-6px) scale(1.012)`;
+    activeCard = card;
+  };
+
+  if (canTilt) {
     document.addEventListener('pointermove', event => {
       const card = event.target.closest ? event.target.closest(tiltSelector) : null;
-      if (!card) return;
-      const rect = card.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      card.style.transform = `perspective(750px) rotateX(${(-y * 4).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg) translateY(-4px)`;
+      if (card !== activeCard) resetCard(activeCard);
+      if (card) tiltTo(card, event.clientX, event.clientY);
     }, { passive: true });
+
+    /* pointerout fires as the cursor leaves the card; relatedTarget is the
+       element being entered, so staying inside the card (a child) is ignored. */
     document.addEventListener('pointerout', event => {
       const card = event.target.closest ? event.target.closest(tiltSelector) : null;
-      if (card && !card.contains(event.relatedTarget)) card.style.transform = '';
-    });
+      if (!card) return;
+      if (card.contains(event.relatedTarget)) return;
+      resetCard(card);
+    }, { passive: true });
+
+    document.addEventListener('pointerleave', () => resetCard(activeCard));
+    document.addEventListener('mouseleave', () => resetCard(activeCard));
+    window.addEventListener('blur', () => resetCard(activeCard));
+    window.addEventListener('scroll', () => resetCard(activeCard), { passive: true });
+  }
+
+  /* ----- Hero parallax: copy and background drift on different planes ----- */
+  const heroCopy = document.querySelector('.hero .hero-content');
+  if (heroCopy && !reduced) {
+    let raf = 0;
+    const paintHero = () => {
+      const y = Math.min(window.scrollY, window.innerHeight);
+      if (y < 0) return;
+      heroCopy.style.transform = `translate3d(0, ${(y * 0.16).toFixed(1)}px, 0) rotateX(${(y * 0.012).toFixed(2)}deg)`;
+      raf = 0;
+    };
+    window.addEventListener('scroll', () => {
+      if (raf) return;
+      raf = requestAnimationFrame(paintHero);
+    }, { passive: true });
+  }
+
+  /* ----- Stagger 3D card reveals column by column ----- */
+  if (!reduced) {
+    const stagger = scope => {
+      const groups = new Map();
+      (scope.querySelectorAll ? scope.querySelectorAll('.leader-card, .content-card, .event-card, .gallery-item, .quick-link-card') : [])
+        .forEach(card => {
+          const key = card.parentElement;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(card);
+        });
+      groups.forEach(cards => cards.forEach((card, i) => {
+        if (card.style.getPropertyValue('--fx-delay')) return;
+        card.style.setProperty('--fx-delay', `${(i * 0.06).toFixed(2)}s`);
+      }));
+    };
+    stagger(document);
+    // re-run for content rendered later (admin-driven grids)
+    new MutationObserver(() => stagger(document)).observe(document.body, { childList: true, subtree: true });
   }
 
   /* ----- Public hook for JS-rendered views ----- */

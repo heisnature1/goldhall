@@ -128,6 +128,17 @@ const mainSection = pageKey === 'gallery'
 
 document.title = `${page.title} | Gold Refinery Hall`;
 document.body.innerHTML = `
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-emblem" aria-hidden="true">
+      <span class="loader-ring loader-ring-outer"></span>
+      <span class="loader-ring loader-ring-mid"></span>
+      <span class="loader-ring loader-ring-inner"></span>
+      <span class="loader-glow"></span>
+      <img class="loader-logo" src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo">
+    </div>
+    <div class="loader-text">GOLD REFINERY HALL</div>
+    <div class="loader-bar" aria-hidden="true"><span></span></div>
+  </div>
   <header class="header" id="header"><div class="container">
     <a class="logo-section" href="index.html"><div class="logo-img"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></div><div class="logo-text"><h1>GOLD REFINERY HALL</h1><p>University of Mines and Technology</p></div></a>
     <div class="header-right"><div class="admin-section"><div class="admin-icon"><img src="assets/logo/pius-tweneboah-administration-logo.png" alt="Pius and Tweneboah administration logo"></div><div class="admin-text"><h3>Gold Hall</h3><p>UMaT, Tarkwa</p></div></div></div>
@@ -140,6 +151,15 @@ document.body.innerHTML = `
     <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="student.html">Open the Student Hub</a></section>
   </main>
   <footer class="page-footer"><div class="container"><span>© 2026 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
+
+/* Page loader: same emblem transition as the home page. */
+const pageLoader = document.getElementById('pageLoader');
+if (pageLoader) {
+  const dismiss = () => setTimeout(() => pageLoader.classList.add('hidden'), 700);
+  if (document.readyState === 'complete') dismiss();
+  else window.addEventListener('load', dismiss, { once: true });
+  setTimeout(() => pageLoader.classList.add('hidden'), 3500); // never trap the page
+}
 
 /* Gallery lightbox */
 const pageLightbox = document.getElementById('pageLightbox');

@@ -153,7 +153,11 @@
             });
         }, observerOptions);
 
+        // Elements carrying their own reveal treatment (e.g. the 3D hinge
+        // headings) are handled by fx.js; observing them here would fight
+        // that animation with an inline fadeInUp.
         document.querySelectorAll('.animate-on-scroll').forEach(el => {
+            if (el.hasAttribute('data-reveal')) return;
             observer.observe(el);
         });
 
