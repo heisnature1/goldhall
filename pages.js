@@ -63,14 +63,35 @@ const page = pages[pageKey] || pages.about;
 const executiveFallback = [
   ['pius-clinton', 'Pius Clinton', 'President of Goldhall', 'Leading Goldhall with vision and dedication to academic excellence.', 'assets/images/leadership/pius-clinton-president.jpg'],
   ['pius-tweneboah', 'Dr. Pius Tweneboah', 'Senior Tutor', 'Providing academic guidance and mentorship to all hall residents.', ''],
-  ['emmanuel-asante', 'Emmanuel Asante', 'JCR President', 'Representing the student body and driving hall development initiatives.', '']
+  ['emmanuel-asante', 'Emmanuel Asante', 'JCR President', 'Representing the student body and driving hall development initiatives.', ''],
+  ['emmanuel-addo', 'Emmanuel Addo', 'Judicial Chairman', 'Upholding fairness, discipline and the constitutional order of the hall.', 'assets/images/leadership/emmanuel-addo-judicial-chairman.jpg'],
+  ['adu-gyamfi-john-diego', 'Adu Gyamfi John Diego', 'Academic Board Chairman', 'Leading academic programmes, study support and the hall’s academic board.', 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg'],
+  ['asante-derrick-gyasi', 'Asante Derrick Gyasi', 'Electoral Commissioner', 'Running free, fair and transparent hall elections.', 'assets/images/leadership/asante-derrick-gyasi.jpg'],
+  ['kojo-kafui-dayie-osei', 'Kojo Kafui Dayie Osei', 'Deputy Non-Resident Chairman', 'Supporting non-resident students and keeping them connected to the hall.', 'assets/images/leadership/kojo-kafui-dayie-osei.jpg'],
+  ['ofori-sem-kwaku', 'Ofori Sem Kwaku', 'Non-Resident Chairman', 'Representing the interests of every non-resident resident.', 'assets/images/leadership/ofori-sem-kwaku.jpg'],
+  ['amoah-godfred-senior', 'Amoah Godfred Senior', 'Canteen Chairman', 'Overseeing food service, quality and fair prices at the hall canteen.', 'assets/images/leadership/amoah-godfred-senior.jpg'],
+  ['kingsley-ankamah', 'Kingsley Ankamah', 'Sports Chairman', 'Organising hall sports, inter-hall games and fitness activities.', 'assets/images/leadership/kingsley-ankamah.jpg'],
+  ['meschak-todeme', 'Meschak Todeme', 'Chief of Staff', 'Coordinating the executive team and hall administration.', 'assets/images/leadership/meschak-todeme.jpg'],
+  ['amo-addae-prince', 'Amo-Addae Prince', 'Deputy Academic Board Chairman', 'Supporting study programmes and academic welfare for residents.', 'assets/images/leadership/amo-addae-prince.jpg'],
+  ['owusu-manaseh-danso', 'Owusu Manaseh Danso', 'Welfare Chairman', 'Looking after resident wellbeing, support and pastoral care.', 'assets/images/leadership/owusu-manaseh-danso.jpg'],
+  ['desmond-karikari', 'Desmond Karikari', 'Deputy Project Manager', 'Supporting hall projects and development works.', 'assets/images/leadership/desmond-karikari.jpg']
 ];
 if (pageKey === 'executives') {
-  page.sections = (typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : []).map(item => [item.id, item.title, `${item.meta ? `${item.meta}\n` : ''}${item.text}`, 'fa-user-tie', item.image || '', item.link || '', item.position || '']);
-  if (!page.sections.length) page.sections = executiveFallback.map(([id, name, role, text, picture]) => [id, name, `${role}\n${text}`, 'fa-user-tie', picture, '']);
+  /* The role gets its own line above the bio — don't repeat it inside the bio. */
+  page.sections = (typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : []).map(item => [item.id, item.title, item.text, 'fa-user-tie', item.image || '', item.link || '', item.position || '', item.meta || '']);
+  /* If browser storage predates the newer executives, top the list up from the
+     fallback so newly added people still appear. */
+  /* Match on name as well as id: stored items use generated ids (x1, x2…)
+     while the fallback uses slugs, so ids alone would duplicate everyone. */
+  const known = new Set(page.sections.flatMap(section => [section[0], section[1]]));
+  executiveFallback.forEach(([id, name, role, text, picture]) => {
+    if (!known.has(id) && !known.has(name)) page.sections.push([id, name, text, 'fa-user-tie', picture, '', '50% 50%', role]);
+  });
 }
-if (typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey)) {
-  const icons = { executives: 'fa-users', events: 'fa-calendar-days', gallery: 'fa-image', scholarships: 'fa-award', internships: 'fa-briefcase' };
+/* Every other managed page renders straight from the store. Executives are
+   handled above because they also need the role line. */
+if (pageKey !== 'executives' && typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey)) {
+  const icons = { events: 'fa-calendar-days', gallery: 'fa-image', scholarships: 'fa-award', internships: 'fa-briefcase' };
   page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey], item.image || '', item.link || '', item.position || '']);
 }
 const links = [
@@ -88,7 +109,7 @@ const mainSection = pageKey === 'gallery'
       ? `<div class="page-gallery">${galleryItems.map(([id, title, text, icon, picture, link, position]) => `<figure class="page-gallery-item" data-caption="${esc(title)}"><img src="${esc(picture)}" alt="${esc(title)}" loading="lazy"${position ? ` style="object-position:${esc(position)}"` : ''}></figure>`).join('')}</div>`
       : `<p class="page-empty"><i class="fas fa-image"></i> No photos have been published yet. Check back soon.</p>`}</div></section>
     <div class="page-lightbox" id="pageLightbox" hidden><span class="page-lightbox-close" aria-label="Close">&times;</span><img id="pageLightboxImg" alt=""></div>`
-  : `<section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link, position]) => `<article id="${esc(id)}" class="content-card">${picture ? `<div class="content-media"><img class="managed-image" src="${esc(picture)}" alt="${esc(title)}"${position ? ` style="object-position:${esc(position)}"` : ''}></div>` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>`;
+  : `<section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link, position, sectionRole]) => `<article id="${esc(id)}" class="content-card">${picture ? `<div class="content-media"><img class="managed-image" src="${esc(picture)}" alt="${esc(title)}"${position ? ` style="object-position:${esc(position)}"` : ''}></div>` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3>${pageKey === 'executives' && sectionRole ? `<p class="content-card-role">${esc(sectionRole)}</p>` : ''}<p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>`;
 
 document.title = `${page.title} | Gold Refinery Hall`;
 document.body.innerHTML = `

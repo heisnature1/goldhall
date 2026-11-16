@@ -5,18 +5,22 @@
   const pictureOf = item => item.image || (/^(https?:|data:image\/|assets\/)/i.test(item.meta || '') ? item.meta : '');
   const blankFor = href => /^https?:/i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
 
+  let homeHasMoreExecutives = false;
   const leaders = document.querySelector('[data-executives]');
   const events = document.querySelector('.events-grid');
   const gallery = document.querySelector('.gallery-grid');
 
   if (leaders && typeof GoldHallStore !== 'undefined') {
-    const executives = GoldHallStore.visible('executives');
+    const all = GoldHallStore.visible('executives');
+    /* The home grid previews the team; the full list lives on the Executives page. */
+    const executives = all.slice(0, 6);
+    if (all.length > 6) homeHasMoreExecutives = true;
     if (executives.length) {
       leaders.innerHTML = executives.map(item => {
         const picture = pictureOf(item);
         return `<div class="leader-card">
           <div class="leader-image">
-            ${picture ? `<img src="${escape(picture)}" alt="${escape(item.title)}" style="object-position:${escape(item.position || '50% 8%')}">` : `<div class="leader-image-fallback"><i class="fas fa-user-tie"></i></div>`}
+            ${picture ? `<img src="${escape(picture)}" alt="${escape(item.title)}" style="object-position:${escape(item.position || '50% 50%')}">` : `<div class="leader-image-fallback"><i class="fas fa-user-tie"></i></div>`}
             <div class="leader-image-overlay"></div>
           </div>
           <div class="leader-info">
@@ -31,6 +35,10 @@
           </div>
         </div>`;
       }).join('');
+      if (homeHasMoreExecutives) {
+        leaders.insertAdjacentHTML('afterend',
+          '<p class="leaders-more"><a href="executives.html">Meet all ' + all.length + ' executives <i class="fas fa-arrow-right"></i></a></p>');
+      }
     }
   }
 
