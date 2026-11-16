@@ -10,7 +10,21 @@
 .content-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .content-card { background: var(--white); border-radius: 12px; padding: 28px; box-shadow: var(--shadow); border-top: 4px solid var(--gold); }
 .content-card i { color: var(--primary-green); font-size: 1.6rem; margin-bottom: 15px; }
-.content-card .managed-image { width: calc(100% + 56px); height: 180px; object-fit: cover; display: block; margin: -28px -28px 20px; border-radius: 8px 8px 0 0; }
+/* Managed picture fills the card edge to edge. The wrapper carries the bleed
+   (negative margins against the card's 28px padding) so the image itself can be
+   a plain 100% wide element — no fight with the global img { max-width: 100% }.
+   The frame is portrait-friendly so faces stay in view instead of being cropped
+   to the torso. */
+.content-card .content-media { margin: -28px -28px 20px; }
+.content-card .content-media img {
+  display: block;
+  width: 100%;
+  height: clamp(200px, 24vw, 260px);
+  object-fit: cover;
+  object-position: 50% 8%;       /* head sits at y≈110/1080 — 8% keeps headroom in every layout */
+  border-radius: 8px 8px 0 0;
+  background: #eef2ee;
+}
 .content-card h3 { color: var(--primary-dark); font-family: 'Montserrat', sans-serif; margin-bottom: 10px; }
 .content-card p, .content-card li { color: var(--text-gray); font-size: .94rem; }
 .content-card ul { list-style: disc; padding-left: 18px; }
@@ -26,7 +40,7 @@
 @media (max-width: 850px) { .content-grid { grid-template-columns: 1fr; } .inner-hero { padding: 68px 0; } }
 
 /* managed pictures + links added from the admin portal */
-.content-card .managed-image { background: #eef2ee; }
+
 .content-card .content-card-link { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; font-weight: 700; font-size: .86rem; color: var(--primary-green); }
 .content-card .content-card-link i { font-size: .72rem; margin: 0; color: inherit; }
 .content-card .content-card-link:hover { color: #a4862f; }
