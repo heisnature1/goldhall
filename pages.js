@@ -3,9 +3,11 @@ const pageKey = document.body.dataset.page;
 const pages = {
   about: {
     title: 'About Gold Refinery Hall', eyebrow: 'Our Story',
-    intro: 'A residence where academic ambition, friendship, and service come together.',
+    intro: 'From a decommissioned gold refinery to a home for 250 students on the hills above UMaT, Tarkwa.',
     sections: [
-      ['history', 'Our History', 'Established to provide a welcoming home for UMaT students, Gold Refinery Hall has grown into a community known for excellence and belonging.', 'fa-landmark'],
+      ['history', 'Our History', 'Gold Refinery Hall — commonly called Gold Hall — stands at the University of Mines and Technology in Tarkwa, Ghana, and its origin is bound up with the mining history of the Western Region. The building began life as a working gold refinery facility. In September 2001 the decommissioned refinery was rehabilitated and converted into a hall of residence for students, and it has housed generations of residents ever since.', 'fa-landmark'],
+      ['capacity', 'Capacity & Setting', 'The hall accommodates approximately 250 students. It stands on elevated, hilly ground on the northern outskirts of the UMaT campus, where residents famously climb more than 200 stairs to reach it — a daily climb that has become part of Gold Hall identity.', 'fa-mountain-sun'],
+      ['amenities', 'Hall Amenities', 'Like other UMaT residences, Gold Hall has its own dining hall and kitchen facilities, together with junior and senior common rooms for student life, study and social activities.', 'fa-utensils'],
       ['mission', 'Mission & Vision', 'We create a safe, inclusive and inspiring living environment that supports every resident’s academic and personal growth.', 'fa-compass'],
       ['values', 'Core Values', 'Excellence, integrity, respect, service and shared responsibility guide how we live and lead together.', 'fa-gem']
     ]
@@ -104,6 +106,19 @@ const links = [
 const galleryItems = pageKey === 'gallery'
   ? (page.sections || []).filter(section => section[4])
   : [];
+/* About page gets a short milestones timeline beneath the cards. */
+const aboutTimeline = pageKey === 'about'
+  ? `<section class="page-section alt"><div class="container">
+      <h2 class="page-title">Milestones</h2>
+      <p class="page-intro">How a decommissioned gold refinery became one of UMaT's best-known halls of residence.</p>
+      <ol class="history-timeline">
+        <li><span class="year">Refinery era</span><p>The building was constructed and operated as a gold refinery, serving the mining industry around Tarkwa.</p></li>
+        <li><span class="year">September 2001</span><p>The decommissioned refinery was rehabilitated, repurposed and converted into a hall of residence for UMaT students.</p></li>
+        <li><span class="year">Today</span><p>The hall houses approximately 250 students on elevated ground at the northern edge of campus, with its own dining hall, kitchen and junior and senior common rooms.</p></li>
+      </ol>
+    </div></section>`
+  : '';
+
 const mainSection = pageKey === 'gallery'
   ? `<section class="page-section"><div class="container"><h2 class="page-title">Photos from the hall</h2><p class="page-intro">Freshers’ welcome, hall week, sports, projects and everyday life at Gold Refinery Hall — updated by the Hall Administrator.</p>${galleryItems.length
       ? `<div class="page-gallery">${galleryItems.map(([id, title, text, icon, picture, link, position]) => `<figure class="page-gallery-item" data-caption="${esc(title)}"><img src="${esc(picture)}" alt="${esc(title)}" loading="lazy"${position ? ` style="object-position:${esc(position)}"` : ''}></figure>`).join('')}</div>`
@@ -121,6 +136,7 @@ document.body.innerHTML = `
   <main>
     <section class="inner-hero"><div class="container"><span class="eyebrow">${esc(page.eyebrow)}</span><h1>${esc(page.title)}</h1><p>${esc(page.intro)}</p></div></section>
     ${mainSection}
+    ${aboutTimeline}
     <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="student.html">Open the Student Hub</a></section>
   </main>
   <footer class="page-footer"><div class="container"><span>© 2026 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
