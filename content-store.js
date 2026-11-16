@@ -9,7 +9,9 @@ const GoldHallStore = (() => {
     executives: [
       { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', position: '50% 8%', published: true },
       { id: 'x2', title: 'Dr. Pius Tweneboah', text: 'Providing academic guidance and mentorship to all hall residents.', meta: 'Senior Tutor', link: '', image: '', published: true },
-      { id: 'x3', title: 'Emmanuel Asante', text: 'Representing the student body and driving hall development initiatives.', meta: 'JCR President', link: '', image: '', published: true }
+      { id: 'x3', title: 'Emmanuel Asante', text: 'Representing the student body and driving hall development initiatives.', meta: 'JCR President', link: '', image: '', published: true },
+      { id: 'x4', title: 'Emmanuel Addo', text: 'Upholding fairness, discipline and the constitutional order of the hall.', meta: 'Judicial Chairman', link: '', image: 'assets/images/leadership/emmanuel-addo-judicial-chairman.jpg', position: '50% 8%', published: true },
+      { id: 'x5', title: 'Adu Gyamfi John Diego', text: 'Leading academic programmes, study support and the hall’s academic board.', meta: 'Academic Board Chairman', link: '', image: 'assets/images/leadership/adu-gyamfi-john-diego-academic-board-chairman.jpg', position: '50% 8%', published: true }
     ],
     events: [
       { id: 'e1', title: 'Hall Week Celebration', text: 'Annual celebration featuring culture, academic competitions and sports events.', meta: '14 February · Main Hall', link: '', image: '', published: true },
@@ -127,6 +129,12 @@ const GoldHallStore = (() => {
       if (!Array.isArray(data[type])) {
         data[type] = clone(seed[type]);
       }
+      /* Top up from the seed so people added to the site later still appear
+         for browsers that saved an older list. Nothing is overwritten. */
+      const known = new Set(data[type].map(item => item.id));
+      seed[type].forEach(item => {
+        if (!known.has(item.id)) data[type].push(clone(item));
+      });
       data[type] = data[type].map(item => {
         const next = { ...item, link: item.link || '', image: item.image || '', label: item.label || '', position: item.position || '' };
         if (type === 'gallery' && !next.image && isPicture(next.meta)) { next.image = next.meta; next.meta = ''; }

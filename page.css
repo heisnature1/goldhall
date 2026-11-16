@@ -73,3 +73,5 @@
 .page-lightbox-close { position: absolute; top: 18px; right: 26px; color: #fff; font-size: 2rem; line-height: 1; cursor: pointer; }
 .page-lightbox-close:hover { color: var(--gold); }
 @media (max-width: 560px) { .page-gallery { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+/* Role line above the bio on executive cards */
+.content-card .content-card-role { color: #a4862f; font-weight: 700; font-size: .82rem; letter-spacing: .3px; margin: -4px 0 10px; }
