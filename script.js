@@ -240,8 +240,8 @@
         const sectionTab = {
             'student-hub': 'student.html',
             about: 'about.html',
-            news: 'news.html',
-            events: 'events.html'
+            events: 'events.html',
+            gallery: 'gallery.html'
         };
 
         const syncActiveTab = () => {

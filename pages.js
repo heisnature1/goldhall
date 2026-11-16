@@ -10,14 +10,10 @@ const pages = {
       ['values', 'Core Values', 'Excellence, integrity, respect, service and shared responsibility guide how we live and lead together.', 'fa-gem']
     ]
   },
-  leadership: {
-    title: 'Hall Leadership', eyebrow: 'Meet the Team',
-    intro: 'Dedicated mentors and student leaders help keep our hall supportive, vibrant and well organised.',
-    sections: [
-      ['hall-master', 'Hall Master', 'The Hall Master provides strategic direction, pastoral support and oversight for the Gold Refinery Hall community.', 'fa-user-tie'],
-      ['senior-tutor', 'Senior Tutor', 'The Senior Tutor supports residents’ welfare and academic progress while helping students connect to university services.', 'fa-chalkboard-teacher'],
-      ['executives', 'Student Executives', 'Our elected executives represent residents, lead programmes and make student voices heard.', 'fa-users']
-    ]
+  executives: {
+    title: 'Hall Executives', eyebrow: 'Meet the Team',
+    intro: 'The executives and tutors who lead Gold Refinery Hall, keep it organised and make sure every resident is heard.',
+    sections: []
   },
   students: {
     title: 'Student Life', eyebrow: 'For Residents',
@@ -26,15 +22,6 @@ const pages = {
       ['council', 'Student Council', 'Your elected council plans hall activities, represents resident interests and strengthens our shared community.', 'fa-people-group'],
       ['clubs', 'Clubs & Societies', 'Find opportunities to compete, create, volunteer and connect through our student-led groups.', 'fa-star'],
       ['support', 'Academic Support', 'Study groups, mentoring and practical resources help residents stay focused and succeed.', 'fa-book-open']
-    ]
-  },
-  news: {
-    title: 'News & Updates', eyebrow: 'Stay Informed',
-    intro: 'The latest announcements, achievements and stories from our hall community.',
-    sections: [
-      ['news-1', 'Hall Week Preparations Begin', 'Residents and executives are preparing a lively programme of culture, sport and academic activities.', 'fa-bullhorn'],
-      ['news-2', 'Academic Excellence Recognised', 'We celebrate residents whose hard work and leadership continue to make the hall proud.', 'fa-award'],
-      ['news-3', 'New Study Spaces Open', 'Newly improved common areas give residents more comfortable places to collaborate and focus.', 'fa-lightbulb']
     ]
   },
   events: {
@@ -55,15 +42,6 @@ const pages = {
       ['memories', 'Our Memories', 'Every year brings stories worth sharing and remembering.', 'fa-images']
     ]
   },
-  documents: {
-    title: 'Documents & Resources', eyebrow: 'Useful Information',
-    intro: 'Find the key policies and resources residents use throughout the academic year.',
-    sections: [
-      ['constitution', 'Hall Constitution', 'Guiding principles, governance and resident responsibilities.', 'fa-file-lines'],
-      ['calendar', 'Academic Calendar', 'Important university dates, deadlines and breaks.', 'fa-calendar-check'],
-      ['faqs', 'Frequently Asked Questions', 'Quick answers about residence life, support and services.', 'fa-circle-question']
-    ]
-  },
   contact: {
     title: 'Contact Us', eyebrow: 'We’re Here to Help',
     intro: 'Reach out to the Gold Refinery Hall office for support, questions or general information.',
@@ -76,18 +54,41 @@ const pages = {
 };
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
-const linkLabels = { news: 'Read the full story', events: 'Event details', gallery: 'View picture', documents: 'Open document' };
+const linkLabels = { executives: 'View profile', events: 'Event details', gallery: 'View picture', scholarships: 'Open link', internships: 'Open link' };
 const blankFor = href => /^https?:/i.test(href) ? ' target="_blank" rel="noopener noreferrer"' : '';
 
 const page = pages[pageKey] || pages.about;
+/* Executives are managed from the admin portal — fall back to the seed list
+   so the page is never empty if browser storage is unavailable. */
+const executiveFallback = [
+  ['pius-clinton', 'Pius Clinton', 'President of Goldhall', 'Leading Goldhall with vision and dedication to academic excellence.', 'assets/images/leadership/pius-clinton-president.jpg'],
+  ['pius-tweneboah', 'Dr. Pius Tweneboah', 'Senior Tutor', 'Providing academic guidance and mentorship to all hall residents.', ''],
+  ['emmanuel-asante', 'Emmanuel Asante', 'JCR President', 'Representing the student body and driving hall development initiatives.', '']
+];
+if (pageKey === 'executives') {
+  page.sections = (typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : []).map(item => [item.id, item.title, `${item.meta ? `${item.meta}\n` : ''}${item.text}`, 'fa-user-tie', item.image || '', item.link || '']);
+  if (!page.sections.length) page.sections = executiveFallback.map(([id, name, role, text, picture]) => [id, name, `${role}\n${text}`, 'fa-user-tie', picture, '']);
+}
 if (typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey)) {
-  const icons = { news: 'fa-newspaper', events: 'fa-calendar-days', gallery: 'fa-image', documents: 'fa-file-lines' };
+  const icons = { executives: 'fa-users', events: 'fa-calendar-days', gallery: 'fa-image', scholarships: 'fa-award', internships: 'fa-briefcase' };
   page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey], item.image || '', item.link || '']);
 }
 const links = [
-  ['Home', 'index.html', 'fa-house'], ['Student Hub', 'student.html', 'fa-graduation-cap'], ['News', 'news.html', 'fa-newspaper'],
-  ['Events', 'events.html', 'fa-calendar-days'], ['Documents', 'documents.html', 'fa-file-lines'], ['About Us', 'about.html', 'fa-landmark']
+  ['Home', 'index.html', 'fa-house'], ['Student Hub', 'student.html', 'fa-graduation-cap'], ['Executives', 'executives.html', 'fa-users'],
+  ['Events', 'events.html', 'fa-calendar-days'], ['Gallery', 'gallery.html', 'fa-images'], ['About Us', 'about.html', 'fa-landmark']
 ];
+
+/* The Gallery page shows the photos the admin uploads as a photo grid with a
+   lightbox, instead of the generic content cards used by the other pages. */
+const galleryItems = pageKey === 'gallery'
+  ? (page.sections || []).filter(section => section[4])
+  : [];
+const mainSection = pageKey === 'gallery'
+  ? `<section class="page-section"><div class="container"><h2 class="page-title">Photos from the hall</h2><p class="page-intro">Freshers’ welcome, hall week, sports, projects and everyday life at Gold Refinery Hall — updated by the Hall Administrator.</p>${galleryItems.length
+      ? `<div class="page-gallery">${galleryItems.map(([id, title, text, icon, picture]) => `<figure class="page-gallery-item" data-caption="${esc(title)}"><img src="${esc(picture)}" alt="${esc(title)}" loading="lazy"></figure>`).join('')}</div>`
+      : `<p class="page-empty"><i class="fas fa-image"></i> No photos have been published yet. Check back soon.</p>`}</div></section>
+    <div class="page-lightbox" id="pageLightbox" hidden><span class="page-lightbox-close" aria-label="Close">&times;</span><img id="pageLightboxImg" alt=""></div>`
+  : `<section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link]) => `<article id="${esc(id)}" class="content-card">${picture ? `<img class="managed-image" src="${esc(picture)}" alt="${esc(title)}">` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>`;
 
 document.title = `${page.title} | Gold Refinery Hall`;
 document.body.innerHTML = `
@@ -98,10 +99,29 @@ document.body.innerHTML = `
   <nav class="nav-section inner-nav" aria-label="Primary navigation"><div class="container"><ul class="main-nav">${links.map(([label, href, icon]) => `<li><a href="${href}" class="${href === 'student.html' ? 'nav-highlight' : ''} ${href === `${pageKey}.html` ? 'active' : ''}"><i class="fas ${icon}" aria-hidden="true"></i>${label}</a></li>`).join('')}</ul></div></nav>
   <main>
     <section class="inner-hero"><div class="container"><span class="eyebrow">${esc(page.eyebrow)}</span><h1>${esc(page.title)}</h1><p>${esc(page.intro)}</p></div></section>
-    <section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link]) => `<article id="${esc(id)}" class="content-card">${picture ? `<img class="managed-image" src="${esc(picture)}" alt="${esc(title)}">` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>
+    ${mainSection}
     <section class="page-cta"><h2>Be part of our community</h2><p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p><a class="page-button" href="student.html">Open the Student Hub</a></section>
   </main>
   <footer class="page-footer"><div class="container"><span>© 2026 Gold Refinery Hall, UMaT.</span><a href="index.html">Return to home</a></div></footer>`;
+
+/* Gallery lightbox */
+const pageLightbox = document.getElementById('pageLightbox');
+if (pageLightbox) {
+  const lightboxImg = document.getElementById('pageLightboxImg');
+  const closeIt = () => { pageLightbox.hidden = true; document.body.style.overflow = ''; };
+  document.querySelectorAll('.page-gallery-item').forEach(item => {
+    item.addEventListener('click', () => {
+      lightboxImg.src = item.querySelector('img').src;
+      lightboxImg.alt = item.dataset.caption || '';
+      pageLightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  pageLightbox.addEventListener('click', event => {
+    if (event.target === pageLightbox || event.target.classList.contains('page-lightbox-close')) closeIt();
+  });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !pageLightbox.hidden) closeIt(); });
+}
 
 const innerHeader = document.getElementById('header');
 const syncInnerHeaderHeight = () => {

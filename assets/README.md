@@ -11,10 +11,9 @@ Add the hall's own images to the folders below. Keep the suggested filenames so 
 | Home hero slide 2 | `assets/images/hero/` | `hero-campus-life.jpg` | 1920 × 1080 px or larger, landscape |
 | Home hero slide 3 | `assets/images/hero/` | `hero-students.jpg` | 1920 × 1080 px or larger, landscape |
 | About section | `assets/images/about/` | `hall-building.jpg` | 1200 × 900 px, landscape |
-| Hall Master portrait | `assets/images/leadership/` | `hall-master.jpg` | 800 × 800 px, square portrait |
+| Executive portrait | `assets/images/leadership/` | `president.jpg`, `senior-tutor.jpg`, etc. | 800 × 800 px, square portrait |
 | Senior Tutor portrait | `assets/images/leadership/` | `senior-tutor.jpg` | 800 × 800 px, square portrait |
 | JCR President portrait | `assets/images/leadership/` | `jcr-president.jpg` | 800 × 800 px, square portrait |
-| News story images | `assets/images/news/` | `news-01.jpg`, `news-02.jpg`, etc. | 1200 × 800 px, landscape |
 | Event images | `assets/images/events/` | `event-01.jpg`, `event-02.jpg`, etc. | 1200 × 800 px, landscape |
 | Gallery images | `assets/images/gallery/` | `gallery-01.jpg`, `gallery-02.jpg`, etc. | 1600 × 1200 px or larger |
 

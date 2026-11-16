@@ -1,21 +1,19 @@
 const app = document.getElementById('adminApp');
 const labels = {
-  news: 'News',
+  executives: 'Executives',
   events: 'Events',
   gallery: 'Gallery',
-  documents: 'Documents',
   scholarships: 'Scholarships',
   internships: 'Internships'
 };
 const icons = {
-  news: 'fa-newspaper',
+  executives: 'fa-users',
   events: 'fa-calendar-days',
   gallery: 'fa-image',
-  documents: 'fa-file-lines',
   scholarships: 'fa-award',
   internships: 'fa-briefcase'
 };
-let activeType = 'news';
+let activeType = 'executives';
 let activeView = 'content'; // 'content' | 'portal' | 'grievances'
 let editingId = null;
 
@@ -87,19 +85,17 @@ function dashboard() {
 }
 
 const metaField = {
-  news: { label: 'Category or label', placeholder: 'e.g. Achievement' },
+  executives: { label: 'Position or role', placeholder: 'e.g. President of Goldhall' },
   events: { label: 'Date and location', placeholder: 'e.g. 14 February · Main Hall' },
-  gallery: { label: 'Caption (optional)', placeholder: 'e.g. Main entrance at sunset' },
-  documents: { label: 'Category or label', placeholder: 'e.g. Policy' },
+  gallery: { label: 'Caption or album (optional)', placeholder: 'e.g. Freshers’ Akwaaba' },
   scholarships: { label: 'Category, eligibility or deadline', placeholder: 'e.g. Government Funding · Deadline: 30 Nov' },
   internships: { label: 'Field, industry or eligibility', placeholder: 'e.g. Engineering & Mining · Vacation Trainee' }
 };
 
 const linkField = {
-  news: { label: 'Read-more link', placeholder: 'https://… leave empty to link to the News page' },
+  executives: { label: 'Profile link (optional)', placeholder: 'https://… email, LinkedIn or bio link' },
   events: { label: 'Event link', placeholder: 'https://… ticket, map or meeting link (optional)' },
   gallery: { label: 'Picture link', placeholder: 'https://… picture address (optional)' },
-  documents: { label: 'Document link', placeholder: 'https://… download or view link (optional)' },
   scholarships: { label: 'Application or scholarship website link', placeholder: 'https://scholarships.gov.gh/' },
   internships: { label: 'Application or listings link', placeholder: 'https://www.linkedin.com/jobs/...' }
 };
@@ -112,7 +108,7 @@ let pictureLabel = '';
 function pictureFieldMarkup() {
   return `<fieldset class="upload-field">
     <legend>Picture or banner (optional)</legend>
-    <p class="field-help">Upload a picture from your device <strong>or</strong> paste a picture link. Displayed on cards and resource listings.</p>
+    <p class="field-help" id="pictureHelp">Upload a picture from your device <strong>or</strong> paste a picture link. Displayed on cards and resource listings.</p>
     <label class="upload-drop" id="uploadDrop" for="pictureFile">
       <i class="fas fa-cloud-arrow-up"></i>
       <span><strong>Choose a picture to upload</strong><small>PNG, JPG, WEBP or GIF · up to 6 MB · you can also drop the file here</small></span>
@@ -247,6 +243,7 @@ function contentDashboard() {
   <div class="admin-grid">
     <section class="panel">
       <h3 id="formTitle">Add ${singular}</h3>
+      ${activeType === 'gallery' ? `<p class="field-help gallery-hint"><i class="fas fa-circle-info"></i> Add photos of what is going on at the hall — freshers’ welcome, hall week, sports, projects and everyday life. Published photos appear on the home page and the Gallery page.</p>` : ''}
       <form class="editor-form" id="editorForm">
         <label>Title<input name="title" required placeholder="e.g. Official Programme or Organisation Name"></label>
         <label>Description / Details<textarea name="text" required placeholder="Describe what the opportunity offers, eligibility criteria, coverage or important instructions..."></textarea></label>

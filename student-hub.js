@@ -130,7 +130,7 @@
       { icon: 'fa-flag', title: 'Hall Week', text: 'The annual week brings residents together for culture, sports, service and academic activities. Watch the Events page for confirmed dates.' }
     ];
     if (typeof GoldHallStore !== 'undefined') {
-      GoldHallStore.visible('news').slice(0, 2).forEach(item => list.push({ icon: 'fa-bullhorn', title: item.title, text: item.text }));
+      GoldHallStore.visible('events').slice(0, 2).forEach(item => list.push({ icon: 'fa-calendar-days', title: item.title, text: item.text }));
     }
     return list;
   }

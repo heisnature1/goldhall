@@ -1,26 +1,25 @@
 /**
- * Gold Hall managed content store (News, Events, Gallery, Documents, Scholarships, Internships).
+ * Gold Hall managed content store (Executives, Events, Gallery, Scholarships, Internships).
  * Each item can carry a picture (uploaded file or link) and a link address.
  * Stored in this browser only — see the README security note.
  */
 const GoldHallStore = (() => {
   const key = 'goldHallManagedContent';
   const seed = {
-    news: [
-      { id: 'n1', title: 'Hall Week Preparations Begin', text: 'Residents and executives are preparing a lively programme of culture, sport and academic activities.', meta: 'Development', link: '', image: '', published: true },
-      { id: 'n2', title: 'Academic Excellence Recognised', text: 'We celebrate residents whose hard work and leadership continue to make the hall proud.', meta: 'Achievement', link: '', image: '', published: true }
+    executives: [
+      { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', published: true },
+      { id: 'x2', title: 'Dr. Pius Tweneboah', text: 'Providing academic guidance and mentorship to all hall residents.', meta: 'Senior Tutor', link: '', image: '', published: true },
+      { id: 'x3', title: 'Emmanuel Asante', text: 'Representing the student body and driving hall development initiatives.', meta: 'JCR President', link: '', image: '', published: true }
     ],
     events: [
       { id: 'e1', title: 'Hall Week Celebration', text: 'Annual celebration featuring culture, academic competitions and sports events.', meta: '14 February · Main Hall', link: '', image: '', published: true },
       { id: 'e2', title: 'Career Development Workshop', text: 'Interactive session with industry professionals on career planning and development.', meta: '5 March · Conference Room', link: '', image: '', published: true }
     ],
     gallery: [
-      { id: 'g1', title: 'Our Campus', text: 'A beautiful setting for study, connection and discovery.', meta: 'Campus', link: '', image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop', published: true },
-      { id: 'g2', title: 'Student Life', text: 'Residents come together for events, service and celebration.', meta: 'Community', link: '', image: 'https://images.unsplash.com/photo-1523050854058-8df90110c476?w=800&h=600&fit=crop', published: true }
-    ],
-    documents: [
-      { id: 'd1', title: 'Hall Constitution', text: 'Guiding principles, governance and resident responsibilities.', meta: 'Policy', link: '', image: '', published: true },
-      { id: 'd2', title: 'Academic Calendar', text: 'Important university dates, deadlines and breaks.', meta: 'Calendar', link: '', image: '', published: true }
+      { id: 'g1', title: 'Freshers’ Akwaaba', text: 'Residents and executives welcoming new students at the hall entrance.', meta: 'Freshers’ welcome', link: '', image: 'assets/images/gallery/gallery-01.jpg', published: true },
+      { id: 'g2', title: 'Our Campus', text: 'A beautiful setting for study, connection and discovery.', meta: 'Campus', link: '', image: 'assets/images/hero/hero-hall-building.jpg', published: true },
+      { id: 'g3', title: 'Hall Community', text: 'Residents come together for events, service and celebration.', meta: 'Community', link: '', image: 'assets/images/hero/hero-students.jpg', published: true },
+      { id: 'g4', title: 'Student Life', text: 'Friendships and everyday moments that shape life at Gold Hall.', meta: 'Social life', link: '', image: 'assets/images/hero/hero-campus-life.jpg', published: true }
     ],
     scholarships: [
       {
@@ -108,7 +107,11 @@ const GoldHallStore = (() => {
     ]
   };
 
-  const isPicture = value => /^(https?:|data:image\/)/i.test(String(value || '').trim());
+  /* Categories that no longer exist on the site — keep them out of saved data
+     so old News/Documents entries cannot resurface anywhere. */
+  const retired = ['news', 'documents'];
+
+  const isPicture = value => /^(https?:|data:image\/|assets\/)/i.test(String(value || '').trim());
   const clone = value => JSON.parse(JSON.stringify(value));
 
   const read = () => {
@@ -118,7 +121,8 @@ const GoldHallStore = (() => {
     } catch (_) {
       data = clone(seed);
     }
-    // ensure all seed types exist even if localStorage was created before scholarships/internships were added
+    retired.forEach(type => delete data[type]);
+    // ensure all seed types exist even if localStorage was created before executives was added
     Object.keys(seed).forEach(type => {
       if (!Array.isArray(data[type])) {
         data[type] = clone(seed[type]);
