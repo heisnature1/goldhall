@@ -67,14 +67,73 @@ html.fx-ready [data-reveal="right"] { transform: translateX(42px); }
 html.fx-ready [data-reveal="zoom"] { transform: scale(.93) translateY(18px); }
 html.fx-ready [data-reveal].fx-in { opacity: 1; transform: none; }
 
-/* ----- 4. Page loader upgrade ----- */
-.page-loader { background: radial-gradient(circle at 50% 30%, #1d4732, #0f2b20 70%); }
-.loader-spinner { position: relative; border-width: 3px; }
-.loader-spinner::after {
-  content: ''; position: absolute; inset: -12px; border-radius: 50%;
-  border: 1px dashed rgba(216, 180, 92, .5); animation: fxSpinSlow 6s linear infinite;
+/* ----- 4. Page loader: hall logo with gold rings orbiting it ----- */
+.page-loader { background: radial-gradient(circle at 50% 34%, #1d4732, #0b2018 72%); }
+
+.loader-emblem {
+  position: relative; width: 168px; height: 168px;
+  display: grid; place-items: center; margin-bottom: 26px;
 }
-.loader-text { animation: fxLetterSpace 1.2s var(--fx-ease) both; text-transform: uppercase; font-size: 1rem; }
+.loader-logo {
+  position: relative; z-index: 3;
+  width: 92px; height: 92px; border-radius: 12px;
+  object-fit: contain; background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 0 0 1px rgba(216, 180, 92, .45);
+  animation: loaderLogoIn .8s var(--fx-ease) both;
+}
+/* soft breathing glow behind the crest */
+.loader-glow {
+  position: absolute; z-index: 1; width: 116px; height: 116px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 200, 78, .42), rgba(232, 200, 78, 0) 68%);
+  animation: loaderPulse 2.4s ease-in-out infinite;
+}
+/* the three rings: a faint full circle plus one bright arc that travels round */
+.loader-ring {
+  position: absolute; z-index: 2; border-radius: 50%;
+  border: 2px solid rgba(216, 180, 92, .16);
+  animation: loaderOrbit var(--dur, 3s) linear infinite;
+}
+/* bright arc sweeping the ring: conic gradient masked into a hairline */
+.loader-ring::after {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  padding: 2px;
+  background: conic-gradient(from 0deg,
+    rgba(232, 200, 78, 0) 0deg,
+    rgba(232, 200, 78, .12) 70deg,
+    #f5e6b0 150deg,
+    #e8c84e 190deg,
+    rgba(232, 200, 78, 0) 250deg,
+    rgba(232, 200, 78, 0) 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 5px rgba(232, 200, 78, .75));
+}
+.loader-ring-outer { width: 168px; height: 168px; --dur: 3.4s; }
+.loader-ring-mid   { width: 132px; height: 132px; --dur: 2.4s; animation-direction: reverse; }
+.loader-ring-mid::after { border-top-color: #f3e3a4; border-right-color: rgba(243, 227, 164, .4); }
+.loader-ring-inner { width: 112px; height: 112px; --dur: 1.7s; }
+
+.loader-text {
+  animation: fxLetterSpace 1.2s var(--fx-ease) both;
+  text-transform: uppercase; font-size: 1rem;
+  color: var(--fx-gold, #d8b45c); text-shadow: 0 0 18px rgba(232, 200, 78, .35);
+}
+.loader-bar {
+  width: 148px; height: 2px; margin-top: 16px; border-radius: 2px;
+  background: rgba(216, 180, 92, .18); overflow: hidden;
+}
+.loader-bar span {
+  display: block; width: 45%; height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #e8c84e, #f5e6b0);
+  animation: loaderBar 1.5s ease-in-out infinite;
+}
+
+@keyframes loaderOrbit { to { transform: rotate(360deg); } }
+@keyframes loaderPulse { 0%, 100% { transform: scale(.92); opacity: .55; } 50% { transform: scale(1.08); opacity: 1; } }
+@keyframes loaderBar { 0% { transform: translateX(-120%); } 100% { transform: translateX(260%); } }
+@keyframes loaderLogoIn { from { opacity: 0; transform: scale(.72) rotate(-6deg); } to { opacity: 1; transform: none; } }
 
 /* ----- 5. Top bar, header & nav micro-interactions ----- */
 .top-bar-social a { transition: transform .3s var(--fx-ease-spring), color .3s, background .3s; }
@@ -508,3 +567,88 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
 .leaders-more a { display: inline-flex; align-items: center; gap: 9px; padding: 12px 26px; border-radius: 999px; background: var(--primary-dark); color: var(--white); font-weight: 700; font-size: .92rem; transition: var(--transition); }
 .leaders-more a:hover { background: var(--gold); color: var(--primary-dark); transform: translateY(-2px); }
 .leaders-more a i { font-size: .8rem; }
+
+/* ==========================================================================
+   3D DEPTH LAYER
+   Perspective-based depth for hero, cards, stats and section headings.
+   Everything here is additive: without JS the page is unchanged, and the
+   reduced-motion block below disables all of it.
+   ========================================================================== */
+
+/* ----- Hero: real depth with layered parallax ----- */
+.hero { perspective: 1200px; transform-style: preserve-3d; }
+.hero .hero-content { transform-style: preserve-3d; will-change: transform; }
+html.fx-ready .hero .hero-content > * { transform-style: preserve-3d; }
+/* each line of the hero sits on its own depth plane */
+html.fx-ready .hero .welcome-text { transform: translateZ(26px); }
+html.fx-ready .hero .hero-content h2 { transform: translateZ(58px); }
+html.fx-ready .hero .university-name { transform: translateZ(34px); }
+html.fx-ready .hero .hero-desc { transform: translateZ(16px); }
+html.fx-ready .hero .hero-btn { transform: translateZ(44px); }
+/* the slider sits behind the copy in 3D space */
+.hero .hero-slider { transform: translateZ(-60px) scale(1.06); transform-style: preserve-3d; }
+.hero .hero-overlay { transform: translateZ(-40px) scale(1.04); }
+
+/* ----- Cards: 3D tilt target + specular sheen ----- */
+.fx-3d { position: relative; transform-style: preserve-3d; will-change: transform; }
+.fx-3d::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(420px circle at var(--fx-mx, 50%) var(--fx-my, 50%),
+    rgba(255, 255, 255, .22), rgba(255, 255, 255, 0) 42%);
+  opacity: 0; transition: opacity .35s var(--fx-ease);
+}
+.fx-3d.fx-tilting::after { opacity: 1; }
+/* children float slightly above the card surface */
+.fx-3d > * { transform: translateZ(0); }
+.fx-3d.fx-tilting .leader-image,
+.fx-3d.fx-tilting .content-media { transform: translateZ(24px); }
+.fx-3d.fx-tilting .leader-info,
+.fx-3d.fx-tilting .content-card h3 { transform: translateZ(14px); }
+
+/* ----- Section headings: hinged reveal ----- */
+html.fx-ready [data-reveal="hinge"] {
+  opacity: 0; transform: perspective(900px) rotateX(-26deg) translateY(34px);
+  transform-origin: 50% 100%;
+  transition: opacity .85s var(--fx-ease), transform .95s var(--fx-ease);
+  transition-delay: var(--fx-delay, 0s);
+}
+html.fx-ready [data-reveal="hinge"].fx-in { opacity: 1; transform: none; }
+
+/* ----- Stats: lift off the page ----- */
+.stat-item { perspective: 700px; }
+.stat-icon { transition: transform .5s var(--fx-ease-spring); }
+.stat-item:hover .stat-icon { transform: translateZ(30px) rotateY(12deg) scale(1.08); }
+
+/* ----- Gallery tiles: 3D pop ----- */
+.gallery-item, .page-gallery-item { transition: transform .5s var(--fx-ease), box-shadow .5s; transform-style: preserve-3d; }
+.gallery-item:hover, .page-gallery-item:hover { transform: translateY(-6px) rotateX(2.5deg) rotateY(-2.5deg) scale(1.02); box-shadow: 0 26px 50px rgba(10, 30, 20, .3); }
+
+/* ----- Buttons: pressable depth ----- */
+.hero-btn, .about-btn, .page-button, .cta-btn-primary, .cta-btn-secondary, .form-submit, .hub-button { transform-style: preserve-3d; }
+.hero-btn:hover, .about-btn:hover, .page-button:hover, .cta-btn-primary:hover, .cta-btn-secondary:hover { transform: translateY(-3px) translateZ(14px); }
+
+/* ----- Nav tabs: raised active state ----- */
+.main-nav a { transition: transform .35s var(--fx-ease), background .35s, color .35s; }
+.main-nav a:hover { transform: translateY(-2px) translateZ(10px); }
+.main-nav a.active { transform: translateY(-2px) translateZ(14px); }
+
+/* ----- Footer / CTA panels: subtle float ----- */
+.cta-content { transform-style: preserve-3d; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-3d, .fx-3d::after, .gallery-item, .page-gallery-item, .main-nav a,
+  .stat-icon, .hero-btn, .about-btn, .page-button { transform: none !important; }
+  .fx-3d::after { display: none !important; }
+  html.fx-ready [data-reveal="hinge"] { opacity: 1 !important; transform: none !important; }
+}
+
+/* Loader on small screens: shrink the emblem so it stays proportionate */
+@media (max-width: 480px) {
+  .loader-emblem { width: 132px; height: 132px; margin-bottom: 20px; }
+  .loader-ring-outer { width: 132px; height: 132px; }
+  .loader-ring-mid { width: 104px; height: 104px; }
+  .loader-ring-inner { width: 88px; height: 88px; }
+  .loader-logo { width: 72px; height: 72px; }
+  .loader-glow { width: 92px; height: 92px; }
+  .loader-text { font-size: .88rem; letter-spacing: 2px; }
+}
