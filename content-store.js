@@ -7,7 +7,7 @@ const GoldHallStore = (() => {
   const key = 'goldHallManagedContent';
   const seed = {
     executives: [
-      { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', published: true },
+      { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', position: '50% 8%', published: true },
       { id: 'x2', title: 'Dr. Pius Tweneboah', text: 'Providing academic guidance and mentorship to all hall residents.', meta: 'Senior Tutor', link: '', image: '', published: true },
       { id: 'x3', title: 'Emmanuel Asante', text: 'Representing the student body and driving hall development initiatives.', meta: 'JCR President', link: '', image: '', published: true }
     ],
@@ -128,7 +128,7 @@ const GoldHallStore = (() => {
         data[type] = clone(seed[type]);
       }
       data[type] = data[type].map(item => {
-        const next = { ...item, link: item.link || '', image: item.image || '', label: item.label || '' };
+        const next = { ...item, link: item.link || '', image: item.image || '', label: item.label || '', position: item.position || '' };
         if (type === 'gallery' && !next.image && isPicture(next.meta)) { next.image = next.meta; next.meta = ''; }
         return next;
       });

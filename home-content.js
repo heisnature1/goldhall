@@ -16,7 +16,7 @@
         const picture = pictureOf(item);
         return `<div class="leader-card">
           <div class="leader-image">
-            ${picture ? `<img src="${escape(picture)}" alt="${escape(item.title)}"${/leadership\/pius-clinton/.test(picture) ? ' style="object-position: top center;"' : ''}>` : `<div class="leader-image-fallback"><i class="fas fa-user-tie"></i></div>`}
+            ${picture ? `<img src="${escape(picture)}" alt="${escape(item.title)}" style="object-position:${escape(item.position || '50% 8%')}">` : `<div class="leader-image-fallback"><i class="fas fa-user-tie"></i></div>`}
             <div class="leader-image-overlay"></div>
           </div>
           <div class="leader-info">
@@ -44,7 +44,7 @@
   if (gallery) {
     gallery.innerHTML = GoldHallStore.visible('gallery').slice(0, 5).map(item => {
       const picture = pictureOf(item);
-      return `<div class="gallery-item" onclick="openLightbox(this)"><img src="${escape(picture)}" alt="${escape(item.title)}"><div class="gallery-overlay"><i class="fas fa-search-plus"></i></div></div>`;
+      return `<div class="gallery-item" onclick="openLightbox(this)"><img src="${escape(picture)}" alt="${escape(item.title)}" style="object-position:${escape(item.position || '50% 50%')}"><div class="gallery-overlay"><i class="fas fa-search-plus"></i></div></div>`;
     }).join('') || '<p>No published gallery items at the moment.</p>';
   }
 })();

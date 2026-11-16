@@ -66,12 +66,12 @@ const executiveFallback = [
   ['emmanuel-asante', 'Emmanuel Asante', 'JCR President', 'Representing the student body and driving hall development initiatives.', '']
 ];
 if (pageKey === 'executives') {
-  page.sections = (typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : []).map(item => [item.id, item.title, `${item.meta ? `${item.meta}\n` : ''}${item.text}`, 'fa-user-tie', item.image || '', item.link || '']);
+  page.sections = (typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : []).map(item => [item.id, item.title, `${item.meta ? `${item.meta}\n` : ''}${item.text}`, 'fa-user-tie', item.image || '', item.link || '', item.position || '']);
   if (!page.sections.length) page.sections = executiveFallback.map(([id, name, role, text, picture]) => [id, name, `${role}\n${text}`, 'fa-user-tie', picture, '']);
 }
 if (typeof GoldHallStore !== 'undefined' && GoldHallStore.types.includes(pageKey)) {
   const icons = { executives: 'fa-users', events: 'fa-calendar-days', gallery: 'fa-image', scholarships: 'fa-award', internships: 'fa-briefcase' };
-  page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey], item.image || '', item.link || '']);
+  page.sections = GoldHallStore.visible(pageKey).map(item => [item.id, item.title, `${item.text}${item.meta ? `\n${item.meta}` : ''}`, icons[pageKey], item.image || '', item.link || '', item.position || '']);
 }
 const links = [
   ['Home', 'index.html', 'fa-house'], ['Student Hub', 'student.html', 'fa-graduation-cap'], ['Executives', 'executives.html', 'fa-users'],
@@ -85,10 +85,10 @@ const galleryItems = pageKey === 'gallery'
   : [];
 const mainSection = pageKey === 'gallery'
   ? `<section class="page-section"><div class="container"><h2 class="page-title">Photos from the hall</h2><p class="page-intro">Freshers’ welcome, hall week, sports, projects and everyday life at Gold Refinery Hall — updated by the Hall Administrator.</p>${galleryItems.length
-      ? `<div class="page-gallery">${galleryItems.map(([id, title, text, icon, picture]) => `<figure class="page-gallery-item" data-caption="${esc(title)}"><img src="${esc(picture)}" alt="${esc(title)}" loading="lazy"></figure>`).join('')}</div>`
+      ? `<div class="page-gallery">${galleryItems.map(([id, title, text, icon, picture, link, position]) => `<figure class="page-gallery-item" data-caption="${esc(title)}"><img src="${esc(picture)}" alt="${esc(title)}" loading="lazy"${position ? ` style="object-position:${esc(position)}"` : ''}></figure>`).join('')}</div>`
       : `<p class="page-empty"><i class="fas fa-image"></i> No photos have been published yet. Check back soon.</p>`}</div></section>
     <div class="page-lightbox" id="pageLightbox" hidden><span class="page-lightbox-close" aria-label="Close">&times;</span><img id="pageLightboxImg" alt=""></div>`
-  : `<section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link]) => `<article id="${esc(id)}" class="content-card">${picture ? `<img class="managed-image" src="${esc(picture)}" alt="${esc(title)}">` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>`;
+  : `<section class="page-section"><div class="container"><h2 class="page-title">Explore</h2><p class="page-intro">Discover the people, programmes and resources that make Gold Refinery Hall a place to thrive.</p><div class="content-grid">${page.sections.map(([id, title, text, icon, picture, link, position]) => `<article id="${esc(id)}" class="content-card">${picture ? `<div class="content-media"><img class="managed-image" src="${esc(picture)}" alt="${esc(title)}"${position ? ` style="object-position:${esc(position)}"` : ''}></div>` : `<i class="fas ${esc(icon)}"></i>`}<h3>${esc(title)}</h3><p>${esc(text).replace(/\n/g, '<br>')}</p>${link ? `<a class="content-card-link" href="${esc(link)}"${blankFor(link)}>${linkLabels[pageKey] || 'Open link'} <i class="fas fa-arrow-right"></i></a>` : ''}</article>`).join('')}</div></div></section>`;
 
 document.title = `${page.title} | Gold Refinery Hall`;
 document.body.innerHTML = `
