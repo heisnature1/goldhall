@@ -1,7 +1,15 @@
 /* Shared layout for the navigation pages */
-/* Banner behind every inner page (Executives, Events, Gallery, About, Contact).
-   Uses the hall residents' photo rather than a stock image. */
+/* Banner behind the inner pages. Both variants are real photos of the hall —
+   no stock imagery. Contact and Student Life keep the residents standing
+   against the hall wall; the four pages below use the resident reading in the
+   hall, anchored high so his head stays in frame in the short banner strip. */
 .inner-hero { background: linear-gradient(135deg, rgba(26,58,42,.90), rgba(45,90,61,.76)), url('assets/images/hero/hero-banner.jpg') center 16%/cover; color: var(--white); padding: 92px 0; }
+body[data-page="executives"] .inner-hero,
+body[data-page="events"] .inner-hero,
+body[data-page="gallery"] .inner-hero,
+body[data-page="about"] .inner-hero {
+  background: linear-gradient(135deg, rgba(26,58,42,.84), rgba(45,90,61,.62)), url('assets/images/hero/hero-banner-team.jpg') center 12%/cover;
+}
 .inner-hero .eyebrow { color: var(--gold-light); font-size: .85rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 .inner-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.1; margin: 10px 0 16px; }
 .inner-hero p { max-width: 680px; font-size: 1.08rem; opacity: .92; }
