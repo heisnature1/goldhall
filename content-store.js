@@ -20,7 +20,9 @@ const GoldHallStore = (() => {
       { id: 'x11', title: 'Meshack Todeme', text: 'Coordinating the executive team and hall administration.', meta: 'Chief of Staff', link: '', image: 'assets/images/leadership/meshack-todeme.jpg', position: '50% 50%', published: true },
       { id: 'x12', title: 'Amo-Addae Prince', text: 'Supporting study programmes and academic welfare for residents.', meta: 'Deputy Academic Board Chairman', link: '', image: 'assets/images/leadership/amo-addae-prince.jpg', position: '50% 50%', published: true },
       { id: 'x13', title: 'Owusu Manaseh Danso', text: 'Looking after resident wellbeing, support and pastoral care.', meta: 'Welfare Chairman', link: '', image: 'assets/images/leadership/owusu-manaseh-danso.jpg', position: '50% 50%', published: true },
-      { id: 'x14', title: 'Desmond Karikari', text: 'Supporting hall projects and development works.', meta: 'Deputy Project Manager', link: '', image: 'assets/images/leadership/desmond-karikari.jpg', position: '50% 50%', published: true }
+      { id: 'x14', title: 'Desmond Karikari', text: 'Supporting hall projects and development works.', meta: 'Deputy Project Manager', link: '', image: 'assets/images/leadership/desmond-karikari.jpg', position: '50% 50%', published: true },
+      { id: 'x15', title: 'Brown Ekow Papa', text: 'Overseeing hall projects, works and the physical development of Gold Hall.', meta: 'Project Manager', link: '', image: 'assets/images/leadership/brown-ekow-papa-project-manager.jpg', position: '50% 50%', published: true },
+      { id: 'x16', title: 'Adam Faizatu Bandaw', text: 'Keeping the hall records, correspondence and executive minutes in order.', meta: 'General Secretary', link: '', image: 'assets/images/leadership/adam-faizatu-bandaw-general-secretary.jpg', position: '50% 50%', published: true }
     ],
     events: [
       { id: 'e1', title: 'Hall Week Celebration', text: 'Annual celebration featuring culture, academic competitions and sports events.', meta: '14 February · Main Hall', link: '', image: '', published: true },
