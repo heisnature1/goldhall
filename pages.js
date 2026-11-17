@@ -73,7 +73,7 @@ const executiveFallback = [
   ['ofori-sem-kwaku', 'Ofori Sem Kwaku', 'Non-Resident Chairman', 'Representing the interests of every non-resident resident.', 'assets/images/leadership/ofori-sem-kwaku.jpg'],
   ['amoah-godfred-senior', 'Amoah Godfred Senior', 'Canteen Chairman', 'Overseeing food service, quality and fair prices at the hall canteen.', 'assets/images/leadership/amoah-godfred-senior.jpg'],
   ['kingsley-ankamah', 'Kingsley Ankamah', 'Sports Chairman', 'Organising hall sports, inter-hall games and fitness activities.', 'assets/images/leadership/kingsley-ankamah.jpg'],
-  ['meschak-todeme', 'Meschak Todeme', 'Chief of Staff', 'Coordinating the executive team and hall administration.', 'assets/images/leadership/meschak-todeme.jpg'],
+  ['meshack-todeme', 'Meshack Todeme', 'Chief of Staff', 'Coordinating the executive team and hall administration.', 'assets/images/leadership/meshack-todeme.jpg'],
   ['amo-addae-prince', 'Amo-Addae Prince', 'Deputy Academic Board Chairman', 'Supporting study programmes and academic welfare for residents.', 'assets/images/leadership/amo-addae-prince.jpg'],
   ['owusu-manaseh-danso', 'Owusu Manaseh Danso', 'Welfare Chairman', 'Looking after resident wellbeing, support and pastoral care.', 'assets/images/leadership/owusu-manaseh-danso.jpg'],
   ['desmond-karikari', 'Desmond Karikari', 'Deputy Project Manager', 'Supporting hall projects and development works.', 'assets/images/leadership/desmond-karikari.jpg']
