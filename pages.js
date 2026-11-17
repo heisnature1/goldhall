@@ -76,7 +76,9 @@ const executiveFallback = [
   ['meshack-todeme', 'Meshack Todeme', 'Chief of Staff', 'Coordinating the executive team and hall administration.', 'assets/images/leadership/meshack-todeme.jpg'],
   ['amo-addae-prince', 'Amo-Addae Prince', 'Deputy Academic Board Chairman', 'Supporting study programmes and academic welfare for residents.', 'assets/images/leadership/amo-addae-prince.jpg'],
   ['owusu-manaseh-danso', 'Owusu Manaseh Danso', 'Welfare Chairman', 'Looking after resident wellbeing, support and pastoral care.', 'assets/images/leadership/owusu-manaseh-danso.jpg'],
-  ['desmond-karikari', 'Desmond Karikari', 'Deputy Project Manager', 'Supporting hall projects and development works.', 'assets/images/leadership/desmond-karikari.jpg']
+  ['desmond-karikari', 'Desmond Karikari', 'Deputy Project Manager', 'Supporting hall projects and development works.', 'assets/images/leadership/desmond-karikari.jpg'],
+  ['brown-ekow-papa', 'Brown Ekow Papa', 'Project Manager', 'Overseeing hall projects, works and the physical development of Gold Hall.', 'assets/images/leadership/brown-ekow-papa-project-manager.jpg'],
+  ['adam-faizatu-bandaw', 'Adam Faizatu Bandaw', 'General Secretary', 'Keeping the hall records, correspondence and executive minutes in order.', 'assets/images/leadership/adam-faizatu-bandaw-general-secretary.jpg']
 ];
 if (pageKey === 'executives') {
   /* The role gets its own line above the bio — don't repeat it inside the bio. */
