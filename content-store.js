@@ -17,7 +17,7 @@ const GoldHallStore = (() => {
       { id: 'x8', title: 'Ofori Sem Kwaku', text: 'Representing the interests of every non-resident resident.', meta: 'Non-Resident Chairman', link: '', image: 'assets/images/leadership/ofori-sem-kwaku.jpg', position: '50% 50%', published: true },
       { id: 'x9', title: 'Amoah Godfred Senior', text: 'Overseeing food service, quality and fair prices at the hall canteen.', meta: 'Canteen Chairman', link: '', image: 'assets/images/leadership/amoah-godfred-senior.jpg', position: '50% 50%', published: true },
       { id: 'x10', title: 'Kingsley Ankamah', text: 'Organising hall sports, inter-hall games and fitness activities.', meta: 'Sports Chairman', link: '', image: 'assets/images/leadership/kingsley-ankamah.jpg', position: '50% 50%', published: true },
-      { id: 'x11', title: 'Meschak Todeme', text: 'Coordinating the executive team and hall administration.', meta: 'Chief of Staff', link: '', image: 'assets/images/leadership/meschak-todeme.jpg', position: '50% 50%', published: true },
+      { id: 'x11', title: 'Meshack Todeme', text: 'Coordinating the executive team and hall administration.', meta: 'Chief of Staff', link: '', image: 'assets/images/leadership/meshack-todeme.jpg', position: '50% 50%', published: true },
       { id: 'x12', title: 'Amo-Addae Prince', text: 'Supporting study programmes and academic welfare for residents.', meta: 'Deputy Academic Board Chairman', link: '', image: 'assets/images/leadership/amo-addae-prince.jpg', position: '50% 50%', published: true },
       { id: 'x13', title: 'Owusu Manaseh Danso', text: 'Looking after resident wellbeing, support and pastoral care.', meta: 'Welfare Chairman', link: '', image: 'assets/images/leadership/owusu-manaseh-danso.jpg', position: '50% 50%', published: true },
       { id: 'x14', title: 'Desmond Karikari', text: 'Supporting hall projects and development works.', meta: 'Deputy Project Manager', link: '', image: 'assets/images/leadership/desmond-karikari.jpg', position: '50% 50%', published: true }
@@ -122,6 +122,23 @@ const GoldHallStore = (() => {
      so old News/Documents entries cannot resurface anywhere. */
   const retired = ['news', 'documents'];
 
+  /* Corrections that must reach browsers which already saved an earlier list.
+     read() only tops up missing ids, so a renamed or retitled entry would
+     otherwise keep its old value in localStorage forever. Keyed by id so an
+     entry someone has genuinely edited themselves is left alone. */
+  const corrections = {
+    x11: { title: 'Meshack Todeme' }
+  };
+
+  const applyCorrections = data => Object.entries(corrections).forEach(([id, fix]) => {
+    Object.values(data).forEach(list => {
+      if (!Array.isArray(list)) return;
+      list.forEach(item => {
+        if (item && item.id === id) Object.assign(item, fix);
+      });
+    });
+  });
+
   const isPicture = value => /^(https?:|data:image\/|assets\/)/i.test(String(value || '').trim());
   const clone = value => JSON.parse(JSON.stringify(value));
 
@@ -150,6 +167,7 @@ const GoldHallStore = (() => {
         return next;
       });
     });
+    applyCorrections(data);
     return data;
   };
 
