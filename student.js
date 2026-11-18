@@ -364,9 +364,18 @@ async function signIn(event) {
   const form = new FormData(formEl);
   const submit = document.getElementById('loginSubmit');
 
-  if (supabaseAuth) return signInWithSupabase(form, submit);
+  /* The server-rendered form uses one "identifier" field so it can accept
+     either an email (Auth) or a Student ID (prototype); the script-rendered
+     variants post `email` or `studentId`. Accept all three. */
+  const identifier = String(form.get('identifier') || '').trim();
+  const asEmail = String(form.get('email') || identifier).trim().toLowerCase();
+  const asStudentId = String(form.get('studentId') || identifier).trim().toUpperCase();
 
-  const studentId = String(form.get('studentId') || '').trim().toUpperCase();
+  if (supabaseAuth) {
+    return signInWithSupabase({ get: key => (key === 'email' ? asEmail : form.get(key)) }, submit);
+  }
+
+  const studentId = asStudentId;
   const password = String(form.get('password') || '');
   if (!studentId || !password) {
     message('Enter your Student ID and password.');
@@ -487,6 +496,9 @@ function blocked(student) {
  */
 function paintFallbackForm() {
   try {
+    /* If student.php already shipped the form, keep it and just wire it up:
+       re-rendering would throw away what the browser has already painted. */
+    if (bindShippedLogin()) return;
     setMode('login');
   } catch (error) {
     /* Never let a rendering problem leave a blank card. */
@@ -494,6 +506,25 @@ function paintFallbackForm() {
       <p class="form-error" role="status">The sign-in form could not be drawn.
       Please reload the page, and contact the Hall Administrator if this continues.</p>`;
   }
+}
+
+/**
+ * Wire up the sign-in form that student.php renders into the HTML.
+ *
+ * Returns true when it found and bound one. Until Auth resolves, an email or a
+ * Student ID both go through the browser-only path, which is the same thing
+ * the page did before Supabase existed.
+ */
+function bindShippedLogin() {
+  const form = document.getElementById('loginForm');
+  if (!form || form.dataset.bound === '1') return !!form;
+
+  form.dataset.bound = '1';
+  form.addEventListener('submit', signIn);
+
+  const forgot = document.getElementById('forgotLink');
+  if (forgot) forgot.addEventListener('click', () => setMode('forgot'));
+  return true;
 }
 
 async function boot() {

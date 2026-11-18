@@ -75,7 +75,32 @@ goldhall_loader();
           <button class="auth-tab active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login"><i class="fas fa-right-to-bracket"></i> Sign in</button>
           <button class="auth-tab" id="registerTab" type="button" role="tab" aria-selected="false" data-mode="register"><i class="fas fa-user-plus"></i> Create account</button>
         </div>
-        <div id="authFormHost"></div>
+        <div id="authFormHost">
+          <!--
+            The sign-in form ships in the HTML, not only from student.js.
+
+            It used to be injected by script after `await AUTH.status()`, so a
+            slow fetch, a blocked CDN or any script error left the card empty
+            with nothing to explain itself. Rendering it here means the page is
+            usable the moment it paints; student.js re-renders it in place when
+            Supabase Auth resolves, switching the identifier to email.
+          -->
+          <h2 class="auth-title" id="authTitle">Welcome back</h2>
+          <p class="auth-subtitle">Sign in with your email address or your student ID to open your hall hub.</p>
+          <form class="portal-form" id="loginForm" novalidate>
+            <label>Email address or Student ID
+              <input name="identifier" type="text" autocomplete="username"
+                     placeholder="e.g. ama.mensah@st.umat.edu.gh" required maxlength="160">
+            </label>
+            <label>Password
+              <input name="password" type="password" autocomplete="current-password"
+                     placeholder="Your password" required>
+            </label>
+            <button class="form-submit" type="submit" id="loginSubmit">Sign in to Student Hub <i class="fas fa-arrow-right"></i></button>
+            <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>
+            <p class="auth-links"><button type="button" class="auth-link" id="forgotLink">Forgot your password?</button></p>
+          </form>
+        </div>
         <p class="demo-disclaimer"><i class="fas fa-circle-info"></i> Checking how student accounts are stored…</p>
       </section>
     </section>
