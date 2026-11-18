@@ -66,8 +66,11 @@ goldhall_loader();
                      placeholder="e.g. ama.mensah@st.umat.edu.gh" required maxlength="160">
             </label>
             <label>Password
-              <input name="password" type="password" autocomplete="current-password"
-                     placeholder="Your password" required>
+              <input name="password" type="password" id="loginPassword" autocomplete="current-password"
+                     placeholder="Your password" data-password required>
+            </label>
+            <label class="reset-show">
+              <input type="checkbox" data-show-password="loginPassword"> Show password
             </label>
             <button class="form-submit" type="submit" id="loginSubmit">Sign in to Student Hub <i class="fas fa-arrow-right"></i></button>
             <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>

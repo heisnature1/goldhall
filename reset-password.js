@@ -49,13 +49,14 @@
       </p>
       <form class="portal-form" id="resetForm" novalidate>
         <label>New password
-          <input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+          <input name="password" type="password" id="resetPassword" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
         </label>
         <label>Confirm new password
-          <input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Enter it again" required>
+          <input name="confirmPassword" type="password" id="resetConfirm" autocomplete="new-password" minlength="8" placeholder="Enter it again" required>
         </label>
         <label class="reset-show">
-          <input type="checkbox" id="showPassword"> Show passwords
+          <input type="checkbox" id="showPassword"
+                 data-show-password="resetPassword,resetConfirm"> Show passwords
         </label>
         <button class="form-submit" type="submit" id="resetSubmit">Save new password <i class="fas fa-arrow-right"></i></button>
         <p class="form-error" id="resetMessage" role="status" aria-live="polite"></p>
@@ -71,10 +72,14 @@
       message.textContent = text || '';
     };
 
+    /* Hold the field references, not a live query. Selecting
+       input[type="password"] at change time finds nothing once the fields have
+       been switched to text, so unticking used to leave them revealed. */
+    const secretFields = [document.getElementById('resetPassword'), document.getElementById('resetConfirm')]
+      .filter(Boolean);
+
     show.addEventListener('change', () => {
-      form.querySelectorAll('input[type="password"]').forEach(input => {
-        input.type = show.checked ? 'text' : 'password';
-      });
+      secretFields.forEach(input => { input.type = show.checked ? 'text' : 'password'; });
     });
 
     form.addEventListener('submit', async event => {
