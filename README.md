@@ -67,23 +67,6 @@ php -S localhost:8000 router.php     # or: composer serve
 
 `router.php` mirrors the `.htaccess` rules so pretty URLs (`/about`, `/executives`) work locally. On Apache, point a virtual host at the directory, set `AllowOverride All`, and `.htaccess` handles the rest. `DirectoryIndex` is `index.php`.
 
-### Hosting
-
-The site runs on any PHP host — Apache/cPanel, DigitalOcean, Hostinger, a VPS, or Laravel Forge. Upload the files, point the domain at the folder, enable `AllowOverride All`, and it works. **No build step, no dependencies.**
-
-Two things need writing on that kind of host:
-
-- `data/` — the content file the admin portal saves to
-- `assets/uploads/` — pictures uploaded through the portal
-
-Both return a clear error if they are not writable, rather than losing the edit silently.
-
-#### Vercel
-
-Vercel is supported through `vercel.json`: it runs PHP with `vercel-php@0.9.0` under `api/`, and `api/index.php` dispatches every page request since Vercel only executes PHP inside `api/`.
-
-**One limitation to know about:** Vercel's filesystem is **read-only**, so the admin portal cannot write `data/content.json` there. On its own, Vercel therefore shows the seed content and editing is disabled with a clear message. Connect Supabase (below) and editing works normally — including picture uploads.
-
 ### Content in Supabase
 
 Supabase is optional. Set these two environment variables and the whole content layer moves to Supabase; leave them unset and the site uses `data/content.json` exactly as before.
@@ -122,6 +105,28 @@ How it behaves:
 - To reset content, run `truncate public.content_items;` in the SQL Editor and reload — the seed is re-imported.
 
 ### Hosting
+
+The site runs on any PHP host — Apache/cPanel, DigitalOcean, Hostinger, a VPS — with no build step and no dependencies. Two things need writing on that kind of host: `data/` (the content file) and `assets/uploads/` (portal pictures). Both return a clear error if they are not writable.
+
+#### Vercel
+
+Vercel runs PHP through `vercel.json`: `vercel-php@0.9.0` under `api/`, with `api/index.php` dispatching every page because Vercel only executes PHP inside `api/`.
+
+Three rules keep it working, and each one exists because of a real failure:
+
+1. **PHP outside `api/` is never executed.** Every page request is rewritten to `api/index.php`, which `require`s the real page from the project root.
+2. **Redirects run before the filesystem, rewrites after it.** Because a real `index.php` sits in the root, a bare `/` matched that file and was *downloaded* instead of rendered. `/` now redirects to `/index`, which is not a file and therefore reaches the dispatcher. Do not remove that redirect.
+3. **Anything not ignored under `.vercelignore` becomes a public static asset.** `supabase-schema.sql`, `.env.example` and `composer.json` are excluded for that reason.
+
+The root and `/index.php` are served with `Cache-Control: no-store`: a previously cached copy of the broken static response is what kept `/` failing after the fix shipped. If a change seems not to apply, hard-refresh once — and check that the deployment is built from the latest commit.
+
+#### Vercel's read-only filesystem
+
+Vercel cannot write files, so `data/content.json` and `assets/uploads/` do not persist there. Without Supabase the site shows the seed content and the portal refuses to save, with a message saying why. Connect Supabase (above) and editing, deleting and picture uploads all work normally.
+
+#### Other hosts
+
+On Apache, point a virtual host at the directory, set `AllowOverride All`, and `.htaccess` handles pretty URLs; `DirectoryIndex` is `index.php`.
 
 ### What each page is
 

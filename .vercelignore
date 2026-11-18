@@ -7,6 +7,16 @@ README.md
 .git
 node_modules
 
+# Setup and tooling files have no business being downloadable. Vercel serves
+# anything it is given as a static asset, so without these lines
+# /supabase-schema.sql and /.env.example return their contents to anyone who
+# guesses the path. Neither holds a secret, but neither is public either.
+supabase-schema.sql
+.env.example
+composer.json
+.env
+.env.local
+
 # Never upload local runtime data: the deployed site recreates data/content.json
 # from includes/seed-content.php on first request.
 data/content.json
