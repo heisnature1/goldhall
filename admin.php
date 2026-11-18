@@ -13,9 +13,15 @@ require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/supabase.php';
 
-goldhall_session();
-
+/* No PHP session: the sign-in is a signed cookie, so it survives between
+   serverless instances. See includes/auth.php. */
 $error = '';
+
+/* Establish the CSRF nonce now, before anything is printed. It is a cookie, and
+   creating it lazily inside the form would come after output has started, where
+   the header can no longer be sent: the token would then change on every
+   request and every sign-in attempt would be rejected as expired. */
+goldhall_csrf_nonce();
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     if (isset($_POST['logout'])) {
