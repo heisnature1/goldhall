@@ -1,0 +1,5 @@
+# The live content file is generated from includes/seed-content.php on first
+# request. Keep it out of version control so admin edits are not overwritten,
+# and so a deploy never clobbers live content.
+content.json
+*.tmp

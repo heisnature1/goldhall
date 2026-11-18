@@ -7,7 +7,7 @@ const hubHost = document.getElementById('studentDashboard');
 const membersNote = document.getElementById('membersNote');
 const studentChip = document.getElementById('studentChip');
 const headerSignOut = document.getElementById('headerSignOut');
-const SIGN_IN_URL = 'student.html';
+const SIGN_IN_URL = 'student.php';
 
 function leaveToSignIn() {
   GoldHallSession.end();
@@ -49,7 +49,14 @@ if (!GoldHallSession.id() || !account) {
 } else {
   hubHost.hidden = false;
   showName(account);
-  GoldHallHub.mount(hubHost, account, { onSignOut: signOutNow, onAccessLost: accessLost });
+  /* Content (scholarships, internships, events) now comes from the server, so
+     paint once it has arrived. The seed paints immediately as a fallback. */
+  const paint = () => GoldHallHub.mount(hubHost, account, { onSignOut: signOutNow, onAccessLost: accessLost });
+  if (typeof GoldHallStore !== 'undefined' && GoldHallStore.ready) {
+    GoldHallStore.ready().then(paint, paint);
+  } else {
+    paint();
+  }
 }
 
 /* the admin (or another tab) can end access while this page is open */

@@ -1,9 +1,21 @@
 // ===== PAGE LOADER =====
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('pageLoader').classList.add('hidden');
-            }, 1500);
-        });
+        // Same timing as before, but guarded: if the loader is missing (or a
+        // page is being rendered without one) this must not throw.
+        const dismissLoader = () => {
+            const loader = document.getElementById('pageLoader');
+            if (!loader) return;
+            setTimeout(() => loader.classList.add('hidden'), 1500);
+        };
+        if (document.readyState === 'complete') {
+            dismissLoader();
+        } else {
+            window.addEventListener('load', dismissLoader, { once: true });
+        }
+        // Safety net: a stalled asset must never leave the loader covering the page.
+        setTimeout(() => {
+            const loader = document.getElementById('pageLoader');
+            if (loader) loader.classList.add('hidden');
+        }, 6000);
 
         // ===== HEADER SCROLL EFFECT & STICKY NAV OFFSET =====
         const header = document.getElementById('header');
@@ -242,10 +254,10 @@
         // owning the section currently under the header while scrolling.
         const sections = document.querySelectorAll('section[id]');
         const sectionTab = {
-            'student-hub': 'student.html',
-            about: 'about.html',
-            events: 'events.html',
-            gallery: 'gallery.html'
+            'student-hub': 'student.php',
+            about: 'about.php',
+            events: 'events.php',
+            gallery: 'gallery.php'
         };
 
         const syncActiveTab = () => {
@@ -257,7 +269,7 @@
                 }
             });
 
-            const activeHref = sectionTab[current] || 'index.html';
+            const activeHref = sectionTab[current] || 'index.php';
             document.querySelectorAll('.main-nav a').forEach(link => {
                 link.classList.toggle('active', link.getAttribute('href') === activeHref);
             });

@@ -1,10 +1,20 @@
 /**
  * Gold Hall managed content store (Executives, Events, Gallery, Scholarships, Internships).
- * Each item can carry a picture (uploaded file or link) and a link address.
- * Stored in this browser only — see the README security note.
+ *
+ * Since the move to PHP, the authoritative content lives in data/content.json
+ * on the server, rendered by includes/content.php and read here through
+ * api/content.php. The seed below is only a fallback for when that request
+ * fails (file opened directly, offline, endpoint unavailable).
+ *
+ * The admin portal writes through admin.php; nothing here persists to
+ * localStorage any more.
  */
 const GoldHallStore = (() => {
   const key = 'goldHallManagedContent';
+  const endpoint = 'api/content.php';
+  /* Last successful server response, so repeated reads are cheap. */
+  let remote = null;
+  let pending = null;
   const seed = {
     executives: [
       { id: 'x1', title: 'Pius Clinton', text: 'Leading Goldhall with vision and dedication to academic excellence.', meta: 'President of Goldhall', link: '', image: 'assets/images/leadership/pius-clinton-president.jpg', position: '50% 50%', published: true },
@@ -144,7 +154,23 @@ const GoldHallStore = (() => {
   const isPicture = value => /^(https?:|data:image\/|assets\/)/i.test(String(value || '').trim());
   const clone = value => JSON.parse(JSON.stringify(value));
 
+  /* Fetch from the server once; later calls reuse the result. */
+  const load = () => {
+    if (remote) return Promise.resolve(remote);
+    if (pending) return pending;
+    pending = fetch(endpoint, { headers: { Accept: 'application/json' } })
+      .then(response => (response.ok ? response.json() : null))
+      .then(payload => {
+        remote = payload && typeof payload === 'object' ? payload : null;
+        return remote;
+      })
+      .catch(() => null);
+    return pending;
+  };
+
+  /** Synchronous read for templates; returns the seed until load() resolves. */
   const read = () => {
+    if (remote) return remote;
     let data;
     try {
       data = JSON.parse(localStorage.getItem(key) || JSON.stringify(seed));
@@ -173,33 +199,15 @@ const GoldHallStore = (() => {
     return data;
   };
 
-  const write = data => {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-      return true;
-    } catch (_) {
-      return false; // storage full (usually a large uploaded picture)
-    }
-  };
-
   return {
     types: Object.keys(seed),
+    /** Resolves once server content has been loaded (or failed). */
+    ready: load,
     get: type => read()[type] || [],
-    save: (type, item) => {
-      const data = read();
-      const items = data[type] || [];
-      const index = items.findIndex(entry => entry.id === item.id);
-      if (index < 0) items.unshift(item);
-      else items[index] = item;
-      data[type] = items;
-      return write(data);
-    },
-    remove: (type, id) => {
-      const data = read();
-      data[type] = (data[type] || []).filter(item => item.id !== id);
-      return write(data);
-    },
-    reset: () => localStorage.removeItem(key),
-    visible: type => (read()[type] || []).filter(item => item.published)
+    visible: type => (read()[type] || []).filter(item => item.published),
+    /* Writes are handled server-side by admin.php, which owns the JSON file. */
+    save: () => false,
+    remove: () => false,
+    reset: () => localStorage.removeItem(key)
   };
 })();

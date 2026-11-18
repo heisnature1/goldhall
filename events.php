@@ -1,0 +1,5 @@
+<?php
+/** events page. Content and layout live in includes/page-template.php. */
+declare(strict_types=1);
+$page_key = 'events';
+require __DIR__ . '/includes/page-template.php';

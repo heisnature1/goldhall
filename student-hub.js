@@ -296,7 +296,7 @@
             <div class="announcement-list">
               ${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}
             </div>
-            <p style="margin:13px 0 0"><a class="resource-link" href="events.html">All hall events <i class="fas fa-arrow-right"></i></a></p>
+            <p style="margin:13px 0 0"><a class="resource-link" href="events.php">All hall events <i class="fas fa-arrow-right"></i></a></p>
           </div>
           <div class="hub-panel" id="bus-schedule">
             <h3>Campus shuttle</h3>
@@ -570,7 +570,7 @@
 
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
-      else { session.end(); window.location.href = 'student.html'; }
+      else { session.end(); window.location.href = 'student.php'; }
     });
 
     host.querySelector('#completeAccess').addEventListener('click', () => {
@@ -616,7 +616,7 @@
       <h1>Thank you for being part of Gold Hall.</h1>
       <p>Student Hub access is for currently enrolled students. This account has been marked as completed, so sign-in and voting are no longer available.</p>
       <p>If this status is a mistake, please contact the Gold Hall Admin.</p>
-      <a class="hub-button" href="index.html"><i class="fas fa-house"></i> Return to the website</a>
+      <a class="hub-button" href="index.php"><i class="fas fa-house"></i> Return to the website</a>
     </section>`;
   }
 
