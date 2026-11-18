@@ -15,19 +15,86 @@
     }
   },
   "redirects": [
-    { "source": "/index.php", "destination": "/index", "permanent": false },
-    { "source": "/", "destination": "/index", "permanent": false },
-    { "source": "/about.php", "destination": "/about", "permanent": false },
-    { "source": "/executives.php", "destination": "/executives", "permanent": false },
-    { "source": "/events.php", "destination": "/events", "permanent": false },
-    { "source": "/gallery.php", "destination": "/gallery", "permanent": false },
-    { "source": "/contact.php", "destination": "/contact", "permanent": false },
-    { "source": "/students.php", "destination": "/students", "permanent": false },
-    { "source": "/student.php", "destination": "/student", "permanent": false },
-    { "source": "/dashboard.php", "destination": "/dashboard", "permanent": false },
-    { "source": "/admin.php", "destination": "/admin", "permanent": false }
+    {
+      "source": "/index.php",
+      "destination": "/index",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "destination": "/index",
+      "permanent": false
+    },
+    {
+      "source": "/about.php",
+      "destination": "/about",
+      "permanent": false
+    },
+    {
+      "source": "/executives.php",
+      "destination": "/executives",
+      "permanent": false
+    },
+    {
+      "source": "/events.php",
+      "destination": "/events",
+      "permanent": false
+    },
+    {
+      "source": "/gallery.php",
+      "destination": "/gallery",
+      "permanent": false
+    },
+    {
+      "source": "/contact.php",
+      "destination": "/contact",
+      "permanent": false
+    },
+    {
+      "source": "/students.php",
+      "destination": "/students",
+      "permanent": false
+    },
+    {
+      "source": "/student.php",
+      "destination": "/student",
+      "permanent": false
+    },
+    {
+      "source": "/dashboard.php",
+      "destination": "/dashboard",
+      "permanent": false
+    },
+    {
+      "source": "/admin.php",
+      "destination": "/admin",
+      "permanent": false
+    }
   ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/api/index.php" }
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/api/index.php"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/index.php",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    }
   ]
 }
