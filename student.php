@@ -12,7 +12,7 @@ require_once __DIR__ . '/includes/functions.php';
 
 $page_title = 'Student Hub | Gold Refinery Hall';
 $extra_styles = ['student.css'];
-$extra_scripts = ['content-store.js', 'student-portal-store.js', 'student-hub.js', 'student.js'];
+$extra_scripts = ['content-store.js', 'student-portal-store.js', 'student-hub.js', 'auth-client.js', 'student.js'];
 $body_class = 'student-page';
 
 require __DIR__ . '/includes/head.php';
@@ -76,7 +76,7 @@ goldhall_loader();
           <button class="auth-tab" id="registerTab" type="button" role="tab" aria-selected="false" data-mode="register"><i class="fas fa-user-plus"></i> Create account</button>
         </div>
         <div id="authFormHost"></div>
-        <p class="demo-disclaimer"><i class="fas fa-circle-info"></i> Student accounts and ballots are stored only in this browser. For your security, do not reuse a password.</p>
+        <p class="demo-disclaimer"><i class="fas fa-circle-info"></i> Checking how student accounts are stored…</p>
       </section>
     </section>
     <!-- filled only when an account has completed school / lost access -->
