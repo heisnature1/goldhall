@@ -174,36 +174,93 @@
         });
 
         // ===== COUNTER ANIMATION =====
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counters = entry.target.querySelectorAll('.stat-number');
-                    counters.forEach(counter => {
-                        const target = parseInt(counter.dataset.count);
-                        const duration = 2000;
-                        const step = target / (duration / 16);
-                        let current = 0;
-
-                        const updateCounter = () => {
-                            current += step;
-                            if (current < target) {
-                                counter.textContent = Math.floor(current).toLocaleString();
-                                requestAnimationFrame(updateCounter);
-                            } else {
-                                counter.textContent = target.toLocaleString() + '+';
-                            }
-                        };
-
-                        updateCounter();
-                    });
-                    counterObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.3 });
-
+        // The markup ships "0" in each .stat-number and the numbers are only
+        // ever written by this script, so every path out of here has to leave a
+        // real figure on screen: an unobserved section, a missed observer tick
+        // (fast scroll, restored scroll position, jump-to-anchor) or reduced
+        // motion must not leave four zeros behind.
         const statsSection = document.querySelector('.stats-section');
-        if (statsSection) {
-            counterObserver.observe(statsSection);
+        const counters = statsSection ? Array.from(statsSection.querySelectorAll('.stat-number')) : [];
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let countersDone = false;
+
+        const finalValue = counter => {
+            const target = parseInt(counter.dataset.count, 10);
+            return Number.isFinite(target) ? target.toLocaleString() + '+' : counter.textContent;
+        };
+
+        // Write the finished numbers straight away. Also the fallback for
+        // anything that never starts the animation.
+        const showFinalCounts = () => {
+            if (countersDone) return;
+            countersDone = true;
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.count, 10);
+                if (Number.isFinite(target)) counter.textContent = target.toLocaleString() + '+';
+            });
+        };
+
+        const animateCounters = () => {
+            if (countersDone || !counters.length) return;
+            countersDone = true;
+
+            if (reduceMotion) {
+                counters.forEach(counter => { counter.textContent = finalValue(counter); });
+                return;
+            }
+
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.count, 10);
+                if (!Number.isFinite(target)) return;
+
+                const duration = 2000;
+                const start = performance.now();
+
+                const tick = now => {
+                    // Clamp both ends: a timestamp from a different clock (or a
+                    // paused tab) must not produce a negative or runaway value.
+                    const elapsed = Number.isFinite(now) ? now - start : duration;
+                    const progress = Math.max(0, Math.min(elapsed / duration, 1));
+                    // easeOutCubic: quick start, gentle landing.
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    if (progress < 1) {
+                        counter.textContent = Math.round(target * eased).toLocaleString();
+                        requestAnimationFrame(tick);
+                    } else {
+                        counter.textContent = target.toLocaleString() + '+';
+                    }
+                };
+
+                requestAnimationFrame(tick);
+            });
+        };
+
+        if (statsSection && counters.length) {
+            if (typeof IntersectionObserver === 'function') {
+                const counterObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting) return;
+                        animateCounters();
+                        counterObserver.disconnect();
+                    });
+                }, { threshold: 0.15 });
+
+                counterObserver.observe(statsSection);
+
+                // Already on screen at load? The observer fires on the next
+                // frame; if it does not, this catches it.
+                setTimeout(() => {
+                    if (countersDone) return;
+                    const box = statsSection.getBoundingClientRect();
+                    if (box.top < window.innerHeight && box.bottom > 0) animateCounters();
+                }, 800);
+            } else {
+                animateCounters();
+            }
+
+            // Last resort: whatever happened, real numbers are on screen within
+            // a few seconds. Nothing is left at zero.
+            setTimeout(showFinalCounts, 6000);
         }
 
         // ===== LIGHTBOX =====
