@@ -33,6 +33,28 @@ function message(text, tone = 'error') {
   el.textContent = text || '';
 }
 
+/**
+ * Wire every show-password checkbox inside a container.
+ *
+ * One checkbox may drive several fields: registration reveals both the
+ * password and its confirmation, since the point there is comparing them.
+ * Re-run after each render because the forms are rebuilt from template
+ * strings, which throws away the listeners.
+ */
+function bindShowPassword(container) {
+  if (!container) return;
+  container.querySelectorAll('[data-show-password]').forEach(box => {
+    const ids = String(box.dataset.showPassword || '').split(',').map(id => id.trim()).filter(Boolean);
+    const fields = ids
+      .map(id => document.getElementById(id) || container.querySelector(`[name="${id}"]`))
+      .filter(Boolean);
+    if (!fields.length) return;
+    box.addEventListener('change', () => {
+      fields.forEach(field => { field.type = box.checked ? 'text' : 'password'; });
+    });
+  });
+}
+
 /* ---------- auth forms ---------- */
 function setMode(mode) {
   authMode = mode;
@@ -61,7 +83,10 @@ function renderLogin() {
         ? `<label>Email address<input name="email" type="email" autocomplete="email" placeholder="e.g. ama.mensah@st.umat.edu.gh" required maxlength="160"></label>`
         : `<label>Student ID<input name="studentId" autocomplete="username" placeholder="Your UMaT student ID" required maxlength="40"></label>`}
       <label>Password
-        <input name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+        <input name="password" type="password" id="loginPassword" autocomplete="current-password" placeholder="Your password" data-password required>
+      </label>
+      <label class="reset-show">
+        <input type="checkbox" data-show-password="loginPassword"> Show password
       </label>
       <button class="form-submit" type="submit" id="loginSubmit">Sign in to Student Hub <i class="fas fa-arrow-right"></i></button>
       <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>
@@ -69,6 +94,7 @@ function renderLogin() {
     </form>`;
   document.getElementById('loginForm').addEventListener('submit', signIn);
   document.getElementById('forgotLink').addEventListener('click', () => setMode('forgot'));
+  bindShowPassword(authHost);
 }
 
 /* ---------- forgot password ---------- */
@@ -156,10 +182,14 @@ function renderRegister() {
       </div>
       <label>Room / bedspace <span class="form-note" style="display:inline">(required for residents)</span><input name="room" id="roomInput" placeholder="e.g. Block A · Room 12 · Bed 2" maxlength="80"></label>
       <label>Password
-        <input name="password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
+        <input name="password" type="password" id="registerPassword" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" data-password required>
       </label>
       <label>Confirm password
-        <input name="confirmPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Enter your password again" required>
+        <input name="confirmPassword" type="password" id="registerConfirm" autocomplete="new-password" minlength="8" placeholder="Enter your password again" data-password required>
+        <span class="field-hint" id="passwordMatch"></span>
+      </label>
+      <label class="reset-show">
+        <input type="checkbox" data-show-password="registerPassword,registerConfirm"> Show passwords
       </label>
       <p class="form-note">
         ${supabaseAuth
@@ -169,6 +199,28 @@ function renderRegister() {
       <button class="form-submit" type="submit" id="registerSubmit">Create student account <i class="fas fa-arrow-right"></i></button>
       <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>
     </form>`;
+
+  const pw = document.getElementById('registerPassword');
+  const pwConfirm = document.getElementById('registerConfirm');
+  const pwHint = document.getElementById('passwordMatch');
+
+  /* Say it while they type, not after they submit. Empty until they have
+     typed into both, so the field does not start out complaining. */
+  const checkMatch = () => {
+    if (!pwHint) return;
+    const hasBoth = pw.value !== '' && pwConfirm.value !== '';
+    if (!hasBoth) {
+      pwHint.textContent = '';
+      pwHint.className = 'field-hint';
+      return;
+    }
+    const same = pw.value === pwConfirm.value;
+    pwHint.textContent = same ? 'Passwords match.' : 'These passwords do not match yet.';
+    pwHint.className = same ? 'field-hint ok' : 'field-hint warn';
+  };
+  pw.addEventListener('input', checkMatch);
+  pwConfirm.addEventListener('input', checkMatch);
+  bindShowPassword(authHost);
 
   const status = document.getElementById('hallStatus');
   const room = document.getElementById('roomInput');

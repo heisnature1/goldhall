@@ -384,6 +384,8 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
 /* Email field hint */
 .field-hint { display: flex; align-items: center; gap: 6px; color: #8d9a90; font-size: .69rem; font-weight: 500; letter-spacing: .01em; }
 .field-hint i { color: var(--fx-gold-deep); font-size: .66rem; }
+.field-hint.ok { color: #2f8f57; }
+.field-hint.warn { color: #b4453c; }
 
 .form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 .form-error { animation: fxRiseSmall .3s var(--fx-ease); }
