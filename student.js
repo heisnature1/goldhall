@@ -474,8 +474,32 @@ function blocked(student) {
 }
 
 /* ---------- boot ---------- */
+
+/*
+ * Paint the form immediately, before anything is awaited.
+ *
+ * `setMode('login')` used to run only after `await AUTH.status()`, and that
+ * awaits the config fetch, the CDN script and the client. Any stall in that
+ * chain left the card completely empty — no form, no message, no clue — which
+ * is indistinguishable from a broken page. The form now renders at once using
+ * the safe fallback (Student ID), and is re-rendered once the real status is
+ * known. A student can see and touch the page within a frame.
+ */
+function paintFallbackForm() {
+  try {
+    setMode('login');
+  } catch (error) {
+    /* Never let a rendering problem leave a blank card. */
+    authHost.innerHTML = `
+      <p class="form-error" role="status">The sign-in form could not be drawn.
+      Please reload the page, and contact the Hall Administrator if this continues.</p>`;
+  }
+}
+
 async function boot() {
   tabs.forEach(tab => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
+
+  paintFallbackForm();
 
   let authStatus = 'unconfigured';
   try {
@@ -498,7 +522,8 @@ async function boot() {
     }
   }
 
-  setMode('login');
+  /* Redraw with the resolved mode (email vs Student ID). */
+  if (authMode === 'login') setMode('login');
 
   const sessionStudent = GoldHallSession.student();
   if (!GoldHallSession.id()) return;
