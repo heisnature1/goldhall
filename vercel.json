@@ -15,7 +15,8 @@
     }
   },
   "redirects": [
-    { "source": "/index.php", "destination": "/", "permanent": false },
+    { "source": "/index.php", "destination": "/index", "permanent": false },
+    { "source": "/", "destination": "/index", "permanent": false },
     { "source": "/about.php", "destination": "/about", "permanent": false },
     { "source": "/executives.php", "destination": "/executives", "permanent": false },
     { "source": "/events.php", "destination": "/events", "permanent": false },
