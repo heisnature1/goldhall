@@ -4,7 +4,6 @@
    hub, and a completed account gets the "access ended" view.
    ========================================================================== */
 const hubHost = document.getElementById('studentDashboard');
-const membersNote = document.getElementById('membersNote');
 const SIGN_IN_URL = 'student';
 
 /*
@@ -42,7 +41,6 @@ function showName(student) {
     headerSignOut.hidden = false;
     headerSignOut.addEventListener('click', signOutNow);
   }
-  if (membersNote) membersNote.hidden = false;
 }
 
 function accessLost() {
