@@ -153,7 +153,13 @@ const GoldHallStore = (() => {
   const isPicture = value => /^(https?:|data:image\/|assets\/)/i.test(String(value || '').trim());
   const clone = value => JSON.parse(JSON.stringify(value));
 
-  /* Fetch from the server once; later calls reuse the result. */
+  /* Fetch from the server once; later calls reuse the result.
+   *
+   * `pending` must be cleared when the request settles. It used to hold a
+   * resolved promise for the life of the page, so reset() cleared `remote` and
+   * then handed back that stale promise: the list re-rendered from the same
+   * old data, and a newly saved item never appeared.
+   */
   const load = () => {
     if (remote) return Promise.resolve(remote);
     if (pending) return pending;
@@ -163,7 +169,8 @@ const GoldHallStore = (() => {
         remote = payload && typeof payload === 'object' ? payload : null;
         return remote;
       })
-      .catch(() => null);
+      .catch(() => null)
+      .finally(() => { pending = null; });
     return pending;
   };
 
