@@ -503,12 +503,12 @@ function portalDashboard() {
     <div class="panel-heading-row">
       <div>
         <h3>Live poll results</h3>
-        <p>Live tally from ballots saved in this browser.</p>
+        <p>Live tally from ballots saved in this browser only, not from students voting on their own devices.</p>
       </div>
     </div>
     <div class="election-results">${results}</div>
   </section>
-  <p class="admin-security-note"><i class="fas fa-circle-info"></i> This preview stores student records, password hashes and votes in each browser. The demo sign-in is not real identity verification; do not use it for sensitive student data or official elections without a backend, verified university accounts, server-side vote controls and secure administration.</p>`;
+  <p class="admin-security-note"><i class="fas fa-circle-info"></i> Sign-in is real: accounts are held by Supabase Auth, passwords never reach this site, and students confirm their email before they can enter. What is still local to one browser is everything in this panel: the student roster, the grievance desk and the ballots. A student who registers on their phone will not appear here, and their grievance will not reach you. Treat this list as a register you keep yourself, not a live view of the hub, and do not run an official election on it until these records live on a server.</p>`;
 
   main.querySelectorAll('[data-status]').forEach(button => button.onclick = () => {
     const accessStatus = button.dataset.next;

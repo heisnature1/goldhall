@@ -160,7 +160,19 @@ function goldhall_supabase_upsert_rows(array $rows): bool
     return $response['ok'];
 }
 
-/** Insert or update one item. */
+/**
+ * Insert or update one item.
+ *
+ * `sort` decides the order inside a section, and the site reads
+ * `order by type, sort`. The row builder does not carry it, so it has to be
+ * set here: without it every save upserted the column back to its default of
+ * 0, which sent the item to the top of its section. That looked like the admin
+ * form had a mind of its own: a typo fix would promote an executive above
+ * the President.
+ *
+ * A new item takes the lowest sort value in its section, so it appears first;
+ * an existing item keeps the value it already had.
+ */
 function goldhall_supabase_save(string $type, array $item): bool
 {
     /* The admin form sends a data URL for a freshly picked picture. On the
@@ -174,15 +186,54 @@ function goldhall_supabase_save(string $type, array $item): bool
         $item['image'] = $stored['url'];
     }
 
+    $row = goldhall_item_to_row($type, $item);
+    $row['sort'] = goldhall_supabase_sort_for($type, (string) $row['id']);
+
     $response = goldhall_supabase(
         'POST',
         '/rest/v1/content_items',
         ['on_conflict' => 'id'],
-        [goldhall_item_to_row($type, $item)],
+        [$row],
         ['Prefer: resolution=merge-duplicates,return=minimal']
     );
 
     return $response['ok'];
+}
+
+/**
+ * The `sort` value to store for one item.
+ *
+ * Existing items keep their position. A new one is placed first, at one below
+ * the current minimum, which leaves the other rows untouched.
+ *
+ * A failed read falls back to 0 rather than blocking the save: an item landing
+ * in the wrong place is a nuisance, losing the edit is worse.
+ */
+function goldhall_supabase_sort_for(string $type, string $id): int
+{
+    $response = goldhall_supabase('GET', '/rest/v1/content_items', [
+        'select' => 'id,sort',
+        'type'   => 'eq.' . $type,
+        'order'  => 'sort.asc',
+    ]);
+
+    if (!$response['ok'] || !is_array($response['json'])) {
+        return 0;
+    }
+
+    $lowest = null;
+    foreach ($response['json'] as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        if ((string) ($row['id'] ?? '') === $id) {
+            return (int) ($row['sort'] ?? 0);
+        }
+        $sort = (int) ($row['sort'] ?? 0);
+        $lowest = $lowest === null ? $sort : min($lowest, $sort);
+    }
+
+    return $lowest === null ? 0 : $lowest - 1;
 }
 
 /** Delete one item by id. */
