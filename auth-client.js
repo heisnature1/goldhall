@@ -158,6 +158,21 @@ window.GoldHallAuth = (() => {
    * credentials"). Rewrite the ones a student can act on, and never leak raw
    * API text into the page.
    */
+  /**
+   * A PKCE exchange can only succeed in the browser that asked for the link,
+   * because the code verifier never leaves that browser's storage. Say so in
+   * plain words instead of surfacing the library's message about SSR setup.
+   */
+  function explainPkce(error) {
+    const message = String(error?.message || error || '').toLowerCase();
+    if (message.includes('pkce') || message.includes('code verifier')) {
+      return 'This link was created on a different browser or device from the one '
+        + 'it was requested on, so it cannot be used here. Request a new link on '
+        + 'this device, or open the original link in the browser you requested it from.';
+    }
+    return explain(error);
+  }
+
   function explain(error) {
     const message = String(error?.message || error || '').trim();
     const code = String(error?.code || '');
@@ -303,17 +318,44 @@ window.GoldHallAuth = (() => {
       };
     }
 
-    /* Newer projects send ?code=… which the client exchanges automatically. */
-    if (search.get('code') && supabase.auth.exchangeCodeForSession) {
+    /* Preferred path: the emailed link carries ?token_hash=…&type=recovery
+       (or signup / email_change). The hash is verified server-side and comes
+       back as a session, so it works in whichever browser opens the link, and
+       it survives an email scanner following the URL first.
+
+       This matters because the link and the request it belongs to are often
+       in different browsers: a student requests a reset on a laptop and opens
+       the mail on a phone. The ?code= flow (PKCE) binds the link to a verifier
+       kept in the requesting browser's localStorage, so on any other device it
+       fails with "PKCE code verifier not found in storage". */
+    const tokenHash = search.get('token_hash') || new URLSearchParams(hash).get('token_hash');
+    const otpType = search.get('type') || new URLSearchParams(hash).get('type') || '';
+
+    if (tokenHash && supabase.auth.verifyOtp) {
+      const types = otpType ? [otpType] : ['recovery', 'signup', 'email_change', 'magiclink', 'invite'];
+      let lastError = null;
+
+      for (const type of types) {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+        if (!error) {
+          lastError = null;
+          break;
+        }
+        lastError = error;
+      }
+
+      if (lastError) return { ok: false, reason: 'error', message: explain(lastError) };
+    } else if (search.get('code') && supabase.auth.exchangeCodeForSession) {
+      /* Legacy ?code= path, kept for links already in the wild. */
       const { error } = await supabase.auth.exchangeCodeForSession(search.get('code'));
-      if (error) return { ok: false, reason: 'error', message: explain(error) };
+      if (error) return { ok: false, reason: 'error', message: explainPkce(error) };
     }
 
     /* Give detectSessionInUrl a moment to store the session. */
     const session = await currentSession();
     if (session) {
       /* Clean the tokens out of the address bar once they are in storage. */
-      if (window.location.hash || search.get('code')) {
+      if (window.location.hash || search.get('code') || tokenHash) {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       return { ok: true, session };

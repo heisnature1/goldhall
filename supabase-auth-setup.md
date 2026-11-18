@@ -75,16 +75,46 @@ Dashboard → **Authentication → Sign In / Providers → Email**.
 - **Secure email change**: on.
 - **Minimum password length**: 8 (the form enforces the same).
 
-Dashboard → **Authentication → Emails → Templates**:
+Dashboard → **Authentication → Emails → Templates**.
 
-- *Confirm signup* — subject and body. Use `{{ .ConfirmationURL }}` for the link;
-  it already contains the correct site URL and token.
-- *Reset password* — same, with `{{ .ConfirmationURL }}`.
-- Add the hall's name and a line saying the link expires shortly, so students
-  do not sit on it.
+**Point the links at `{{ .TokenHash }}`, not `{{ .ConfirmationURL }}`.**
+`ConfirmationURL` sends `?code=…`, which is a PKCE link: the matching verifier
+is held in the localStorage of the browser that *requested* it. A student who
+asks for a password reset on a laptop and opens the mail on a phone therefore
+gets
+
+> PKCE code verifier not found in storage. This can happen if the auth flow
+> was initiated in a different browser or device…
+
+`{{ .TokenHash }}` carries no such binding: it is verified server-side and
+returns a session in whichever browser opens the link. It also survives the
+corporate mail scanners that follow links before the reader does, which is the
+other common way these links burn themselves.
+
+*Confirm signup*
+
+```html
+<h2>Confirm your Gold Hall account</h2>
+<p>Hello,</p>
+<p>Open the link below to activate your Student Hub account.</p>
+<p><a href="{{ .SiteURL }}/confirm-email?token_hash={{ .TokenHash }}&type=signup">Confirm my email</a></p>
+<p>This link can only be used once, and it expires shortly. If you did not create an account, ignore this email.</p>
+```
+
+*Reset password*
+
+```html
+<h2>Reset your Gold Hall password</h2>
+<p>Hello,</p>
+<p>Open the link below to choose a new password.</p>
+<p><a href="{{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}&type=recovery">Choose a new password</a></p>
+<p>This link can only be used once, and it expires shortly. If you did not ask for a reset, ignore this email: your password has not changed.</p>
+```
 
 Both templates are edited in Supabase, not in this repo — changing them here
-would do nothing.
+would do nothing. The pages accept the old `?code=` links as well, for any mail
+already sitting in an inbox, and explain the device mismatch in plain words
+when one cannot be used.
 
 ## 5. Rate limits
 
