@@ -92,6 +92,15 @@ switch ($action) {
         }
 
         $type = (string) $input['type'];
+
+        /* Supabase: one row upsert is enough, no need to rewrite the set. */
+        if (goldhall_uses_supabase()) {
+            if (!goldhall_supabase_save($type, $item)) {
+                admin_json(500, ['error' => 'Could not save to Supabase: ' . goldhall_write_error()]);
+            }
+            admin_json(200, ['ok' => true, 'item' => $item, 'replaced' => false]);
+        }
+
         $data = goldhall_content();
         $list = $data[$type] ?? [];
 
@@ -108,6 +117,15 @@ switch ($action) {
         }
 
         $data[$type] = array_values($list);
+
+        /* Saving an item brings it back: drop any tombstone for it. */
+        if (!empty($data['_deleted']) && is_array($data['_deleted'])) {
+            $data['_deleted'] = array_values(array_filter(
+                $data['_deleted'],
+                static fn ($value): bool => (string) $value !== $item['id']
+            ));
+        }
+
         if (!goldhall_save_content($data)) {
             admin_json(500, ['error' => goldhall_write_error()]);
         }
@@ -120,6 +138,13 @@ switch ($action) {
             admin_json(422, ['error' => 'A valid content type and id are required.']);
         }
 
+        if (goldhall_uses_supabase()) {
+            if (!goldhall_supabase_delete($type, $id)) {
+                admin_json(500, ['error' => 'Could not delete from Supabase: ' . goldhall_write_error()]);
+            }
+            admin_json(200, ['ok' => true]);
+        }
+
         $data = goldhall_content();
         $before = count($data[$type] ?? []);
         $data[$type] = array_values(array_filter(
@@ -130,6 +155,12 @@ switch ($action) {
         if (count($data[$type]) === $before) {
             admin_json(404, ['error' => 'That item no longer exists.']);
         }
+
+        /* Remember the deletion, otherwise the seed top-up in goldhall_content()
+           would restore the item on the next page load. */
+        $deleted = is_array($data['_deleted'] ?? null) ? $data['_deleted'] : [];
+        $deleted[] = $id;
+        $data['_deleted'] = array_values(array_unique($deleted));
         if (!goldhall_save_content($data)) {
             admin_json(500, ['error' => goldhall_write_error()]);
         }
@@ -151,6 +182,15 @@ switch ($action) {
         $allowed = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_GIF => 'gif', IMAGETYPE_WEBP => 'webp'];
         if ($info === false || !isset($allowed[$info[2]])) {
             admin_json(415, ['error' => 'Please upload a PNG, JPG, WEBP or GIF image.']);
+        }
+
+        /* Supabase first: serverless hosts cannot keep files on disk. */
+        if (goldhall_uses_supabase()) {
+            $stored = goldhall_supabase_upload((string) $file['tmp_name'], $allowed[$info[2]]);
+            if ($stored['url'] === '') {
+                admin_json(500, ['error' => 'Could not store the picture in Supabase: ' . $stored['error']]);
+            }
+            admin_json(200, ['ok' => true, 'url' => $stored['url']]);
         }
 
         $dir = goldhall_upload_dir();

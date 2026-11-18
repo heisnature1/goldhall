@@ -55,7 +55,7 @@ Every content type (Executives, Events, Gallery, Scholarships, Internships) can 
 
 - **Title, description, category / deadline / eligibility label**
 - **Link & Button Label** — the address the card button opens and optional custom button text.
-- **Picture** — either **upload a picture from the device** (scaled down to 1280px before it is sent) **or paste a picture link**. Uploads go to `assets/uploads/` on the server, validated as real images and renamed; the content itself is saved to `data/content.json`.
+- **Picture** — either **upload a picture from the device** (scaled down to 1280px before it is sent) **or paste a picture link**. Uploads are validated as real images and renamed; they go to the `uploads` bucket on Supabase when it is configured, and to `assets/uploads/` on the server otherwise.
 
 ## Running it
 
@@ -82,9 +82,35 @@ Both return a clear error if they are not writable, rather than losing the edit 
 
 Vercel is supported through `vercel.json`: it runs PHP with `vercel-php@0.9.0` under `api/`, and `api/index.php` dispatches every page request since Vercel only executes PHP inside `api/`.
 
-**One important limitation:** Vercel's filesystem is **read-only**, so the admin portal cannot save content there — content falls back to `includes/seed-content.php`. Everything else (all pages, the design, the animations, the Student Hub) works normally. To edit content in production on Vercel, the content layer in `includes/content.php` needs to be pointed at a database (Supabase fits the existing `id/title/text/meta/link/image/position/published` shape well).
+**One limitation to know about:** Vercel's filesystem is **read-only**, so the admin portal cannot write `data/content.json` there. On its own, Vercel therefore shows the seed content and editing is disabled with a clear message. Connect Supabase (below) and editing works normally — including picture uploads.
 
-For a hall site where the executives change a couple of times a year, normal PHP hosting is the simpler choice; Vercel is fine if you only need the site to render.
+### Content in Supabase
+
+Supabase is optional. Set these two environment variables and the whole content layer moves to Supabase; leave them unset and the site uses `data/content.json` exactly as before.
+
+```
+GOLDHALL_SUPABASE_URL=https://your-project-ref.supabase.co
+GOLDHALL_SUPABASE_KEY=<service_role key>
+GOLDHALL_SUPABASE_BUCKET=uploads        # optional, this is the default
+```
+
+`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` are accepted as fallbacks. On Vercel they go in **Settings → Environment Variables**, then redeploy. Locally, put them in a `.env` file in the project root (gitignored).
+
+Setup, once per project:
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. **SQL Editor → New query**, paste `supabase-schema.sql`, run it. That creates the `content_items` table, enables row-level security (public read, no public write) and creates a public `uploads` storage bucket.
+3. Copy the **Project URL** and the **service_role** key from *Project Settings → API* into the environment variables.
+4. Deploy, then open the admin portal. The table is empty at that point, so the site imports the 30 seed items into Supabase on the first page load — no manual data entry.
+
+How it behaves:
+
+- Public pages read from Supabase on every request; the service_role key never leaves the server.
+- The admin portal's save, delete and upload go straight to Supabase (`content_items` rows and the `uploads` bucket).
+- If Supabase is unreachable, the site falls back to the local seed instead of showing an empty page.
+- To reset content, run `truncate public.content_items;` in the SQL Editor and reload — the seed is re-imported.
+
+### Hosting
 
 ### What each page is
 
@@ -101,7 +127,8 @@ For a hall site where the executives change a couple of times a year, normal PHP
 ```
 includes/
   functions.php      escaping and link helpers
-  content.php        reads/writes data/content.json
+  content.php        content layer: Supabase, else data/content.json, else seed
+  supabase.php       tiny REST client for Supabase (no dependencies)
   seed-content.php   the default content (executives, events, gallery, …)
   pages.php          copy for the inner pages
   head.php           shared <head> + <body>
@@ -116,15 +143,16 @@ api/
 data/
   content.json       created on first request from seed-content.php (gitignored)
 assets/uploads/      pictures uploaded through the admin portal
+supabase-schema.sql  one-time Supabase setup (table + storage bucket)
 ```
 
 ### Editing content
 
-Content lives in `data/content.json` and is created from `includes/seed-content.php` the first time a page is requested. From then on the **Admin Portal** (`admin.php`) is the way to edit it — add, edit, delete and publish executives, events, gallery photos, scholarships and internships, with pictures and links. Changes appear immediately on the public pages, which are rendered from that file.
+Content lives in Supabase when it is configured, and in `data/content.json` otherwise; both start from `includes/seed-content.php`, which is created the first time a page is requested. From then on the **Admin Portal** (`admin.php`) is the way to edit it — add, edit, delete and publish executives, events, gallery photos, scholarships and internships, with pictures and links. Changes appear immediately on the public pages, which are rendered on the server.
 
 To reset everything to the shipped content, delete `data/content.json`; it is regenerated from the seed on the next request.
 
-> On Vercel this file cannot be written (read-only filesystem), so the site always shows the seed content there. See **Hosting** above.
+> On Vercel the filesystem is read-only, so connect Supabase (see **Content in Supabase** above) to edit content there.
 
 ### Administrator sign-in
 
