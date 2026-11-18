@@ -5,9 +5,16 @@
    ========================================================================== */
 const hubHost = document.getElementById('studentDashboard');
 const membersNote = document.getElementById('membersNote');
+const SIGN_IN_URL = 'student';
+
+/*
+ * The page no longer carries the site header, so the name chip and the header
+ * sign out button are gone with it. Signing out is still reachable: the hub
+ * renders its own Sign out button and passes this handler to it. Each lookup
+ * is guarded so a missing element can never stop the page rendering.
+ */
 const studentChip = document.getElementById('studentChip');
 const headerSignOut = document.getElementById('headerSignOut');
-const SIGN_IN_URL = 'student';
 
 function leaveToSignIn() {
   GoldHallSession.end();
@@ -27,16 +34,20 @@ function signOutNow() {
 }
 
 function showName(student) {
-  studentChip.innerHTML = `<i class="fas fa-user-graduate"></i> ${student.fullName.split(/\s+/)[0]} · ${student.studentId}`;
-  studentChip.hidden = false;
-  headerSignOut.hidden = false;
-  headerSignOut.addEventListener('click', signOutNow);
-  membersNote.hidden = false;
+  if (studentChip) {
+    studentChip.innerHTML = `<i class="fas fa-user-graduate"></i> ${student.fullName.split(/\s+/)[0]} · ${student.studentId}`;
+    studentChip.hidden = false;
+  }
+  if (headerSignOut) {
+    headerSignOut.hidden = false;
+    headerSignOut.addEventListener('click', signOutNow);
+  }
+  if (membersNote) membersNote.hidden = false;
 }
 
 function accessLost() {
-  studentChip.hidden = true;
-  headerSignOut.hidden = true;
+  if (studentChip) studentChip.hidden = true;
+  if (headerSignOut) headerSignOut.hidden = true;
   GoldHallHub.blocked(hubHost);
 }
 

@@ -20,33 +20,6 @@ require __DIR__ . '/includes/head.php';
 goldhall_loader();
 ?>
 
-  <div class="student-topbar">
-    <div class="student-topbar-inner">
-      <span class="topbar-loc"><i class="fas fa-map-marker-alt"></i> University of Mines and Technology, Tarkwa</span>
-      <em class="topbar-motto">Excellence &middot; Unity &middot; Leadership</em>
-    </div>
-  </div>
-
-  <header class="student-header">
-    <div class="student-header-inner">
-      <a class="student-brand" href="" aria-label="Gold Refinery Hall home">
-        <span class="brand-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
-        <span class="brand-text">
-          <strong>GOLD REFINERY HALL</strong>
-          <small>University of Mines and Technology</small>
-        </span>
-      </a>
-      <nav class="student-top-nav" aria-label="Main navigation">
-        <a href="">Home</a>
-        <a href="student" class="active" aria-current="page">Student Hub</a>
-        <a href="executives">Executives</a>
-        <a href="events">Events</a>
-        <a href="gallery">Gallery</a>
-        <a href="about">About Us</a>
-      </nav>
-    </div>
-  </header>
-
   <main class="student-app">
     <section class="auth-shell auth-shell-single">
       <section class="auth-card" aria-labelledby="confirmTitle">
@@ -67,10 +40,6 @@ goldhall_loader();
     </section>
   </main>
 
-  <footer class="student-footer">
-    <span>&copy; <?= date('Y') ?> Gold Refinery Hall &middot; UMaT</span>
-    <a href="">Back to the public website <i class="fas fa-arrow-right"></i></a>
-  </footer>
 
 <?php
 /* Emit this page's scripts ($extra_scripts) and fx.js.
