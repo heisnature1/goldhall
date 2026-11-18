@@ -5,6 +5,48 @@
 
 declare(strict_types=1);
 
+/**
+ * Read a local .env file into the environment.
+ *
+ * Most hosts (Vercel, cPanel, DigitalOcean) set real environment variables and
+ * this does nothing. On a local PHP server there is no such thing, so a .env
+ * file in the project root — never committed, see .gitignore — fills the gap.
+ * Real environment variables always win.
+ */
+function goldhall_load_env(): void
+{
+    static $loaded = false;
+    if ($loaded) {
+        return;
+    }
+    $loaded = true;
+
+    $path = dirname(__DIR__) . '/.env';
+    if (!is_file($path)) {
+        return;
+    }
+
+    $lines = @file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) {
+        return;
+    }
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#' || !str_contains($line, '=')) {
+            continue;
+        }
+        [$key, $value] = explode('=', $line, 2);
+        $key   = trim($key);
+        $value = trim($value, " \t\"'");
+        if ($key !== '' && getenv($key) === false) {
+            putenv($key . '=' . $value);
+        }
+    }
+}
+
+goldhall_load_env();
+
 /** Escape for HTML output. Every dynamic value goes through this. */
 function goldhall_e(?string $value): string
 {

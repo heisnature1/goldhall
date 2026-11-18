@@ -3,3 +3,4 @@
 # and so a deploy never clobbers live content.
 content.json
 *.tmp
+# Deleted-item tombstones live in the same file, so nothing else to ignore.
