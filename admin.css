@@ -261,8 +261,6 @@ body { background:#f2f5f2; }
    ========================================================================= */
 .admin-store-bar { display: flex; align-items: flex-start; gap: 10px; width: min(1240px, calc(100% - 40px)); margin: 16px auto 0; padding: 12px 16px; border-radius: 12px; font-size: .86rem; line-height: 1.5; border: 1px solid #d9e2dc; background: #f4f7f5; color: #2c4a3a; animation: adminStoreIn .35s ease both; }
 .admin-store-bar i { margin-top: 3px; flex: none; }
-.admin-store-ok { background: #f1f8f3; border-color: #c9e3d2; color: #1f5b38; }
-.admin-store-ok i { color: #2f8f57; }
 .admin-store-warn { background: #fdf6e7; border-color: #f0dfb2; color: #7a5b16; }
 .admin-store-warn i { color: #c08a1c; }
 .admin-store-local { background: #f4f7f5; border-color: #d9e2dc; color: #45564c; }

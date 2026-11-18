@@ -63,16 +63,21 @@ require __DIR__ . '/includes/head.php';
 ?>
 <?php if ($signedIn) : ?>
 <?php
-/* Where content is stored, so a save that cannot work is obvious before the
-   administrator types anything. */
+/* Where content is stored. The healthy state is intentionally silent: knowing
+   the item count and the backing service is developer detail, not something the
+   administrator needs on every page. Only a state that will stop a save from
+   working is announced, because then it is the difference between the portal
+   working and quietly losing what was typed. */
 $store = goldhall_supabase_status();
 ?>
+<?php if (!$store['ok']) : ?>
     <div class="admin-store-slot" id="adminStoreBar">
-        <div class="admin-store-bar admin-store-<?= $store['ok'] ? 'ok' : ($store['configured'] ? 'warn' : 'local') ?>" role="status">
-            <i class="fas <?= $store['ok'] ? 'fa-circle-check' : ($store['configured'] ? 'fa-triangle-exclamation' : 'fa-hard-drive') ?>"></i>
+        <div class="admin-store-bar admin-store-<?= $store['configured'] ? 'warn' : 'local' ?>" role="status">
+            <i class="fas <?= $store['configured'] ? 'fa-triangle-exclamation' : 'fa-hard-drive' ?>"></i>
             <span><?= goldhall_e($store['message']) ?></span>
         </div>
     </div>
+<?php endif; ?>
     <form method="post" action="admin.php" class="admin-signout" hidden id="adminSignOut">
         <input type="hidden" name="csrf" value="<?= goldhall_e(goldhall_csrf_token()) ?>">
         <input type="hidden" name="logout" value="1">
