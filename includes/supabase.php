@@ -159,6 +159,49 @@ function goldhall_http(string $method, string $url, array $headers = [], ?array 
 }
 
 /**
+ * The last Supabase error, so the admin portal can say what actually failed.
+ *
+ * The message never contains the key: goldhall_http() only reports the HTTP
+ * status or the server's own message field.
+ */
+function goldhall_supabase_last_error(?string $message = null): string
+{
+    static $last = '';
+
+    if ($message !== null) {
+        $last = $message;
+    }
+
+    return $last;
+}
+
+/**
+ * Auth headers for Supabase.
+ *
+ * Two key formats are in circulation:
+ *
+ *   eyJ...            the legacy anon / service_role JWT
+ *   sb_secret_...     the newer secret key
+ *
+ * Both go in `apikey`, but only a JWT is a bearer token. Sending a
+ * `sb_secret_` key as `Authorization: Bearer` makes Supabase reject the
+ * request ("Forbidden use of secret API key in browser"), so the header is
+ * only added when the key really is a JWT. Both keys stay server-side.
+ *
+ * @return list<string>
+ */
+function goldhall_supabase_headers(string $key, string $accept = 'application/json'): array
+{
+    $headers = ['apikey: ' . $key, 'Accept: ' . $accept];
+
+    if (str_starts_with($key, 'eyJ')) {
+        $headers[] = 'Authorization: Bearer ' . $key;
+    }
+
+    return $headers;
+}
+
+/**
  * Call the Supabase REST API.
  *
  * @param  array<string,string>      $query
@@ -183,13 +226,15 @@ function goldhall_supabase(
         $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
     }
 
-    $headers = array_merge([
-        'apikey: ' . $config['key'],
-        'Authorization: Bearer ' . $config['key'],
-        'Accept: application/json',
-    ], $extraHeaders);
+    $headers = array_merge(goldhall_supabase_headers($config['key'], 'application/json'), $extraHeaders);
 
-    return goldhall_http($method, $url, $headers, $json);
+    $response = goldhall_http($method, $url, $headers, $json);
+
+    if (!$response['ok']) {
+        goldhall_supabase_last_error($response['error']);
+    }
+
+    return $response;
 }
 
 /**
@@ -250,12 +295,13 @@ function goldhall_supabase_upload(string $filePath, string $extension): array
     $result = goldhall_http(
         'POST',
         $config['url'] . '/storage/v1/object/' . rawurlencode($config['bucket']) . '/' . $name,
-        [
-            'apikey: ' . $config['key'],
-            'Authorization: Bearer ' . $config['key'],
-            'Content-Type: ' . (function_exists('mime_content_type') ? (mime_content_type($filePath) ?: 'application/octet-stream') : 'application/octet-stream'),
-            'x-upsert: true',
-        ],
+        array_merge(
+            goldhall_supabase_headers($config['key'], 'application/json'),
+            [
+                'Content-Type: ' . (function_exists('mime_content_type') ? (mime_content_type($filePath) ?: 'application/octet-stream') : 'application/octet-stream'),
+                'x-upsert: true',
+            ]
+        ),
         null,
         $contents
     );
@@ -267,5 +313,71 @@ function goldhall_supabase_upload(string $filePath, string $extension): array
     return [
         'url'   => $config['url'] . '/storage/v1/object/public/' . rawurlencode($config['bucket']) . '/' . $name,
         'error' => '',
+    ];
+}
+
+/**
+ * A health check for the admin portal's status line.
+ *
+ * Reads a page of rows so the number shown is real, and reports which kind of
+ * key is configured — a publishable key can read but not write, which is the
+ * one misconfiguration worth naming out loud.
+ *
+ * @return array{configured:bool,ok:bool,rows:int|null,key_kind:string,message:string}
+ */
+function goldhall_supabase_status(): array
+{
+    $config = goldhall_supabase_config();
+    if ($config === null) {
+        return [
+            'configured' => false,
+            'ok'         => false,
+            'rows'       => null,
+            'key_kind'   => '',
+            'message'    => 'Supabase is not configured, so content is served from the seed file and '
+                . 'changes cannot be saved on this host.',
+        ];
+    }
+
+    $key      = $config['key'];
+    $keyKind  = str_starts_with($key, 'sb_publishable_')
+        ? 'publishable'
+        : (str_starts_with($key, 'sb_secret_') ? 'secret' : (str_starts_with($key, 'eyJ') ? 'service_role' : 'unknown'));
+
+    $response = goldhall_supabase('GET', '/rest/v1/content_items', ['select' => 'id', 'limit' => '1000']);
+
+    if (!$response['ok'] || !is_array($response['json'])) {
+        return [
+            'configured' => true,
+            'ok'         => false,
+            'rows'       => null,
+            'key_kind'   => $keyKind,
+            'message'    => 'Supabase is configured but the content table could not be read: '
+                . ($response['error'] !== '' ? $response['error'] : 'unknown error')
+                . ' Run supabase-schema.sql if the table does not exist yet.',
+        ];
+    }
+
+    $rows = count($response['json']);
+
+    if ($keyKind === 'publishable') {
+        return [
+            'configured' => true,
+            'ok'         => false,
+            'rows'       => $rows,
+            'key_kind'   => $keyKind,
+            'message'    => 'Read-only key: GOLDHALL_SUPABASE_KEY holds the publishable key, so pages read from '
+                . 'Supabase but the portal cannot save. Replace it with the secret key or the legacy service_role key.',
+        ];
+    }
+
+    return [
+        'configured' => true,
+        'ok'         => true,
+        'rows'       => $rows,
+        'key_kind'   => $keyKind,
+        'message'    => $rows === 0
+            ? 'Connected to Supabase. The table is empty, so the seed content will be imported on the next page load.'
+            : 'Connected to Supabase — ' . $rows . ' content item' . ($rows === 1 ? '' : 's') . ' stored.',
     ];
 }

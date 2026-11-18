@@ -96,7 +96,7 @@ switch ($action) {
         /* Supabase: one row upsert is enough, no need to rewrite the set. */
         if (goldhall_uses_supabase()) {
             if (!goldhall_supabase_save($type, $item)) {
-                admin_json(500, ['error' => 'Could not save to Supabase: ' . goldhall_write_error()]);
+                admin_json(500, ['error' => 'Could not save to Supabase. ' . goldhall_write_error()]);
             }
             admin_json(200, ['ok' => true, 'item' => $item, 'replaced' => false]);
         }

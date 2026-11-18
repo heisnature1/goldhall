@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/supabase.php';
 
 goldhall_session();
 
@@ -78,6 +79,30 @@ require __DIR__ . '/includes/head.php';
     <noscript>
         <p style="padding:2rem;text-align:center">The admin portal needs JavaScript to manage content.</p>
     </noscript>
+<?php
+/* Where content is stored, so a save that cannot work is obvious before the
+   administrator types anything. */
+$store = goldhall_supabase_status();
+?>
+    <div class="admin-store-slot" id="adminStoreBar" hidden>
+        <div class="admin-store-bar admin-store-<?= $store['ok'] ? 'ok' : ($store['configured'] ? 'warn' : 'local') ?>" role="status">
+            <i class="fas <?= $store['ok'] ? 'fa-circle-check' : ($store['configured'] ? 'fa-triangle-exclamation' : 'fa-hard-drive') ?>"></i>
+            <span><?= goldhall_e($store['message']) ?></span>
+        </div>
+    </div>
+    <script>
+      /* admin.js replaces this <main>, so the status bar moves out of it once
+         the portal has rendered. Without JS it simply stays where it is. */
+      document.addEventListener('DOMContentLoaded', () => {
+        const slot = document.getElementById('adminStoreBar');
+        const shell = document.querySelector('.admin-shell');
+        if (!slot) return;
+        if (shell && shell.parentNode) {
+          shell.parentNode.insertBefore(slot, shell.nextSibling);
+          slot.hidden = false;
+        }
+      });
+    </script>
     <form method="post" action="admin.php" class="admin-signout" hidden id="adminSignOut">
         <input type="hidden" name="csrf" value="<?= goldhall_e(goldhall_csrf_token()) ?>">
         <input type="hidden" name="logout" value="1">

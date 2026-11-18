@@ -253,3 +253,20 @@ body { background:#f2f5f2; }
 .admin-session-bar { position: fixed; right: 18px; bottom: 18px; z-index: 500; display: flex; align-items: center; gap: 14px; background: #14301f; color: #fff; padding: 10px 14px 10px 18px; border-radius: 999px; font-size: .84rem; box-shadow: 0 12px 30px rgba(0,0,0,.3); }
 .admin-session-bar span { display: inline-flex; align-items: center; gap: 8px; }
 .admin-session-bar .admin-btn { padding: 7px 14px; font-size: .8rem; }
+
+/* ===========================================================================
+   CONTENT STORE STATUS
+   Shown above the portal so a backend that cannot write is obvious before the
+   administrator spends time editing. Colours follow the portal's palette.
+   ========================================================================= */
+.admin-store-bar { display: flex; align-items: flex-start; gap: 10px; width: min(1240px, calc(100% - 40px)); margin: 16px auto 0; padding: 12px 16px; border-radius: 12px; font-size: .86rem; line-height: 1.5; border: 1px solid #d9e2dc; background: #f4f7f5; color: #2c4a3a; animation: adminStoreIn .35s ease both; }
+.admin-store-bar i { margin-top: 3px; flex: none; }
+.admin-store-ok { background: #f1f8f3; border-color: #c9e3d2; color: #1f5b38; }
+.admin-store-ok i { color: #2f8f57; }
+.admin-store-warn { background: #fdf6e7; border-color: #f0dfb2; color: #7a5b16; }
+.admin-store-warn i { color: #c08a1c; }
+.admin-store-local { background: #f4f7f5; border-color: #d9e2dc; color: #45564c; }
+.admin-store-local i { color: #6b7a72; }
+@keyframes adminStoreIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (max-width: 640px) { .admin-store-bar { width: calc(100% - 24px); font-size: .82rem; padding: 11px 13px; } }
+@media (prefers-reduced-motion: reduce) { .admin-store-bar { animation: none; } }

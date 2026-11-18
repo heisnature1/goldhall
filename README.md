@@ -90,22 +90,33 @@ Supabase is optional. Set these two environment variables and the whole content 
 
 ```
 GOLDHALL_SUPABASE_URL=https://your-project-ref.supabase.co
-GOLDHALL_SUPABASE_KEY=<service_role key>
+GOLDHALL_SUPABASE_KEY=<secret key>
 GOLDHALL_SUPABASE_BUCKET=uploads        # optional, this is the default
 ```
 
-`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` are accepted as fallbacks. On Vercel they go in **Settings → Environment Variables**, then redeploy. Locally, put them in a `.env` file in the project root (gitignored).
+`SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` are accepted as fallbacks.
+
+**Which key.** Supabase now issues two kinds of key, and both work here:
+
+| Key | Looks like | Can the portal save? |
+| --- | --- | --- |
+| secret | `sb_secret_…` | yes |
+| legacy `service_role` | `eyJ…` (a JWT) | yes |
+| publishable | `sb_publishable_…` | **no — read-only** |
+
+The publishable key belongs in browsers; the site never uses it, because every page is rendered on the server. Only a secret key can write, and it must never reach the browser, a screenshot or a chat message. The admin portal shows which of these is in play at the top of the page, so a read-only key is obvious before anyone tries to save. On Vercel they go in **Settings → Environment Variables**, then redeploy. Locally, put them in a `.env` file in the project root (gitignored).
 
 Setup, once per project:
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. **SQL Editor → New query**, paste `supabase-schema.sql`, run it. That creates the `content_items` table, enables row-level security (public read, no public write) and creates a public `uploads` storage bucket.
-3. Copy the **Project URL** and the **service_role** key from *Project Settings → API* into the environment variables.
+3. Copy the **Project URL** and a **secret** key (*Project Settings → API Keys*, or *Legacy API keys → `service_role`*) into the environment variables.
 4. Deploy, then open the admin portal. The table is empty at that point, so the site imports the 30 seed items into Supabase on the first page load — no manual data entry.
 
 How it behaves:
 
-- Public pages read from Supabase on every request; the service_role key never leaves the server.
+- Public pages read from Supabase on every request; the secret key never leaves the server. Only a JWT key is also sent as an `Authorization: Bearer` header — the `sb_secret_…` format is rejected there, so it travels in `apikey` alone.
+- `admin.php` shows a status line: connected (with the item count), read-only key, or not configured.
 - The admin portal's save, delete and upload go straight to Supabase (`content_items` rows and the `uploads` bucket).
 - If Supabase is unreachable, the site falls back to the local seed instead of showing an empty page.
 - To reset content, run `truncate public.content_items;` in the SQL Editor and reload — the seed is re-imported.
