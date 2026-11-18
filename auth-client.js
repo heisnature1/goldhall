@@ -182,7 +182,7 @@ window.GoldHallAuth = (() => {
       return 'That email and password do not match an account. Check them and try again.';
     }
     if (lower.includes('email not confirmed')) {
-      return 'Please confirm your email first — open the link we emailed you, then sign in.';
+      return 'Please confirm your email first. Open the link we emailed you, then sign in.';
     }
     if (lower.includes('user already registered') || code === 'user_already_exists') {
       return 'An account with that email already exists. Sign in instead, or reset your password.';
@@ -364,10 +364,32 @@ window.GoldHallAuth = (() => {
     return { ok: false, reason: 'no-session' };
   }
 
+  /**
+   * Send the confirmation email again.
+   *
+   * Supabase allows this while the account is still unconfirmed, and it is the
+   * only way out of a dead end: a student whose link expired, or whose mail
+   * never arrived, otherwise has no way to finish signing up and cannot use
+   * the forgot-password route either, because that needs a confirmed account.
+   */
+  async function resendConfirmation(email) {
+    const supabase = await client();
+    if (!supabase) throw new Error('Sign-up is not configured yet. Please contact the Hall Administrator.');
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: await redirectTo('signup') }
+    });
+    if (error) throw new Error(explain(error));
+    return true;
+  }
+
   return {
     available,
     status,
     signUp,
+    resendConfirmation,
     signIn,
     sendReset,
     updatePassword,

@@ -97,10 +97,12 @@ const GoldHallPortal = (() => {
   }
 
   async function updateStudent(studentId, updates) {
+    /* The id goes in the body only. Sending it as a query parameter as well
+       made a mistyped profile field look like a permissions problem, because
+       the server reads studentId first and compares it with `id`. */
     await request('update', {
       method: 'POST',
-      data: { id: String(studentId), ...updates },
-      params: { id: String(studentId) }
+      data: { id: String(studentId), ...updates }
     });
     return true;
   }
