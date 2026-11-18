@@ -67,6 +67,25 @@ php -S localhost:8000 router.php     # or: composer serve
 
 `router.php` mirrors the `.htaccess` rules so pretty URLs (`/about`, `/executives`) work locally. On Apache, point a virtual host at the directory, set `AllowOverride All`, and `.htaccess` handles the rest. `DirectoryIndex` is `index.php`.
 
+### Hosting
+
+The site runs on any PHP host — Apache/cPanel, DigitalOcean, Hostinger, a VPS, or Laravel Forge. Upload the files, point the domain at the folder, enable `AllowOverride All`, and it works. **No build step, no dependencies.**
+
+Two things need writing on that kind of host:
+
+- `data/` — the content file the admin portal saves to
+- `assets/uploads/` — pictures uploaded through the portal
+
+Both return a clear error if they are not writable, rather than losing the edit silently.
+
+#### Vercel
+
+Vercel is supported through `vercel.json`: it runs PHP with `vercel-php@0.9.0` under `api/`, and `api/index.php` dispatches every page request since Vercel only executes PHP inside `api/`.
+
+**One important limitation:** Vercel's filesystem is **read-only**, so the admin portal cannot save content there — content falls back to `includes/seed-content.php`. Everything else (all pages, the design, the animations, the Student Hub) works normally. To edit content in production on Vercel, the content layer in `includes/content.php` needs to be pointed at a database (Supabase fits the existing `id/title/text/meta/link/image/position/published` shape well).
+
+For a hall site where the executives change a couple of times a year, normal PHP hosting is the simpler choice; Vercel is fine if you only need the site to render.
+
 ### What each page is
 
 | File | Page |
@@ -91,6 +110,7 @@ includes/
   page-template.php  the inner-page template
   auth.php           server-side admin sign-in
 api/
+  index.php          Vercel entry point — dispatches every page request
   content.php        read-only JSON for the client-side Student Hub
   admin-content.php  save / delete / upload for the admin portal
 data/
@@ -103,6 +123,8 @@ assets/uploads/      pictures uploaded through the admin portal
 Content lives in `data/content.json` and is created from `includes/seed-content.php` the first time a page is requested. From then on the **Admin Portal** (`admin.php`) is the way to edit it — add, edit, delete and publish executives, events, gallery photos, scholarships and internships, with pictures and links. Changes appear immediately on the public pages, which are rendered from that file.
 
 To reset everything to the shipped content, delete `data/content.json`; it is regenerated from the seed on the next request.
+
+> On Vercel this file cannot be written (read-only filesystem), so the site always shows the seed content there. See **Hosting** above.
 
 ### Administrator sign-in
 

@@ -7,7 +7,7 @@ const hubHost = document.getElementById('studentDashboard');
 const membersNote = document.getElementById('membersNote');
 const studentChip = document.getElementById('studentChip');
 const headerSignOut = document.getElementById('headerSignOut');
-const SIGN_IN_URL = 'student.php';
+const SIGN_IN_URL = 'student';
 
 function leaveToSignIn() {
   GoldHallSession.end();

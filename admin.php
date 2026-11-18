@@ -71,7 +71,7 @@ require __DIR__ . '/includes/head.php';
                 </label>
                 <button class="admin-btn" type="submit"><i class="fas fa-right-to-bracket"></i> Sign in</button>
             </form>
-            <p class="login-help"><a href="index.php">&larr; Back to the site</a></p>
+            <p class="login-help"><a href="">&larr; Back to the site</a></p>
         </div>
     </div>
 <?php else : ?>

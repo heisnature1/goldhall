@@ -109,7 +109,7 @@ switch ($action) {
 
         $data[$type] = array_values($list);
         if (!goldhall_save_content($data)) {
-            admin_json(500, ['error' => 'Could not write data/content.json. Check that the data directory is writable.']);
+            admin_json(500, ['error' => goldhall_write_error()]);
         }
         admin_json(200, ['ok' => true, 'item' => $item, 'replaced' => $replaced]);
 
@@ -131,7 +131,7 @@ switch ($action) {
             admin_json(404, ['error' => 'That item no longer exists.']);
         }
         if (!goldhall_save_content($data)) {
-            admin_json(500, ['error' => 'Could not write data/content.json.']);
+            admin_json(500, ['error' => goldhall_write_error()]);
         }
         admin_json(200, ['ok' => true]);
 
@@ -154,8 +154,11 @@ switch ($action) {
         }
 
         $dir = goldhall_upload_dir();
-        if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
-            admin_json(500, ['error' => 'Could not create the upload directory.']);
+        if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+            admin_json(500, ['error' => goldhall_write_error()]);
+        }
+        if (!is_writable($dir)) {
+            admin_json(500, ['error' => goldhall_write_error()]);
         }
 
         // A random name, never the client-supplied one.

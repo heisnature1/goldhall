@@ -21,6 +21,12 @@ function goldhall_session(): void
         return;
     }
 
+    /* Serverless hosts give no writable session directory by default; /tmp is
+       the one place that works there. */
+    if ((getenv('VERCEL') !== false || getenv('AWS_LAMBDA_FUNCTION_NAME') !== false) && is_dir('/tmp')) {
+        @ini_set('session.save_path', '/tmp');
+    }
+
     // Only configure cookies when PHP is actually going to send one, and only
     // before any output. On the CLI, or after HTML has started, these calls
     // raise warnings and the headers are already gone.

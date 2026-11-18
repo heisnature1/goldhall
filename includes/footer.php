@@ -27,21 +27,21 @@ $extra_scripts = $extra_scripts ?? [];
             <div class="footer-column">
                 <h4>Quick Links</h4>
                 <ul>
-                    <li><a href="about.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                    <li><a href="executives.php"><i class="fas fa-chevron-right"></i> Executives</a></li>
-                    <li><a href="events.php"><i class="fas fa-chevron-right"></i> Events</a></li>
-                    <li><a href="gallery.php"><i class="fas fa-chevron-right"></i> Gallery</a></li>
-                    <li><a href="student.php"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
+                    <li><a href="about"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="executives"><i class="fas fa-chevron-right"></i> Executives</a></li>
+                    <li><a href="events"><i class="fas fa-chevron-right"></i> Events</a></li>
+                    <li><a href="gallery"><i class="fas fa-chevron-right"></i> Gallery</a></li>
+                    <li><a href="student"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h4>Resources</h4>
                 <ul>
-                    <li><a href="student.php"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
-                    <li><a href="student.php"><i class="fas fa-chevron-right"></i> Scholarships &amp; internships</a></li>
-                    <li><a href="executives.php"><i class="fas fa-chevron-right"></i> Meet the Executives</a></li>
-                    <li><a href="gallery.php"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
-                    <li><a href="events.php"><i class="fas fa-chevron-right"></i> Hall Events</a></li>
+                    <li><a href="student"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
+                    <li><a href="student"><i class="fas fa-chevron-right"></i> Scholarships &amp; internships</a></li>
+                    <li><a href="executives"><i class="fas fa-chevron-right"></i> Meet the Executives</a></li>
+                    <li><a href="gallery"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
+                    <li><a href="events"><i class="fas fa-chevron-right"></i> Hall Events</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -69,9 +69,9 @@ $extra_scripts = $extra_scripts ?? [];
         <div class="footer-bottom">
             <p>&copy; <?= date('Y') ?> Gold Refinery Hall, UMaT. All Rights Reserved.</p>
             <div class="footer-bottom-links">
-                <a href="about.php">About</a>
-                <a href="contact.php">Contact</a>
-                <a href="admin.php">Admin</a>
+                <a href="about">About</a>
+                <a href="contact">Contact</a>
+                <a href="admin">Admin</a>
             </div>
         </div>
     </div>

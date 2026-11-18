@@ -570,7 +570,7 @@
 
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
-      else { session.end(); window.location.href = 'student.php'; }
+      else { session.end(); window.location.href = 'student'; }
     });
 
     host.querySelector('#completeAccess').addEventListener('click', () => {

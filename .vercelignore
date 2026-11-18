@@ -1,0 +1,13 @@
+# Vercel does not run PHP built-in servers or Apache configs.
+router.php
+.htaccess
+
+# Not needed to serve the site.
+README.md
+.git
+node_modules
+
+# Never upload local runtime data: the deployed site recreates data/content.json
+# from includes/seed-content.php on first request.
+data/content.json
+data/*.tmp

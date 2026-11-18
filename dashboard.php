@@ -25,7 +25,7 @@ goldhall_loader();
 
   <header class="student-header">
     <div class="student-header-inner">
-      <a class="student-brand" href="index.php" aria-label="Gold Refinery Hall home">
+      <a class="student-brand" href="" aria-label="Gold Refinery Hall home">
         <span class="brand-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
         <span class="brand-text">
           <strong>GOLD REFINERY HALL</strong>
@@ -33,12 +33,12 @@ goldhall_loader();
         </span>
       </a>
       <nav class="student-top-nav" aria-label="Main navigation">
-        <a href="index.php">Home</a>
-        <a href="dashboard.php" class="active" aria-current="page">Student Hub</a>
-        <a href="executives.php">Executives</a>
-        <a href="events.php">Events</a>
-        <a href="gallery.php">Gallery</a>
-        <a href="about.php">About Us</a>
+        <a href="">Home</a>
+        <a href="dashboard" class="active" aria-current="page">Student Hub</a>
+        <a href="executives">Executives</a>
+        <a href="events">Events</a>
+        <a href="gallery">Gallery</a>
+        <a href="about">About Us</a>
       </nav>
       <div class="student-header-actions">
         <span class="student-chip" id="studentChip" hidden></span>
@@ -56,7 +56,7 @@ goldhall_loader();
 
   <footer class="student-footer">
     <span>&copy; 2026 Gold Refinery Hall &middot; UMaT</span>
-    <a href="index.php">Back to the public website <i class="fas fa-arrow-right"></i></a>
+    <a href="">Back to the public website <i class="fas fa-arrow-right"></i></a>
   </footer>
 
 <script src="fx.js"></script>

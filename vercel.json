@@ -1,0 +1,32 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.9.0",
+      "memory": 1024
+    },
+    "api/content.php": {
+      "runtime": "vercel-php@0.9.0",
+      "memory": 1024
+    },
+    "api/admin-content.php": {
+      "runtime": "vercel-php@0.9.0",
+      "memory": 1024
+    }
+  },
+  "redirects": [
+    { "source": "/index.php", "destination": "/", "permanent": false },
+    { "source": "/about.php", "destination": "/about", "permanent": false },
+    { "source": "/executives.php", "destination": "/executives", "permanent": false },
+    { "source": "/events.php", "destination": "/events", "permanent": false },
+    { "source": "/gallery.php", "destination": "/gallery", "permanent": false },
+    { "source": "/contact.php", "destination": "/contact", "permanent": false },
+    { "source": "/students.php", "destination": "/students", "permanent": false },
+    { "source": "/student.php", "destination": "/student", "permanent": false },
+    { "source": "/dashboard.php", "destination": "/dashboard", "permanent": false },
+    { "source": "/admin.php", "destination": "/admin", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/api/index.php" }
+  ]
+}

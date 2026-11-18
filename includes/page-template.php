@@ -15,7 +15,8 @@ require_once __DIR__ . '/content.php';
 require_once __DIR__ . '/pages.php';
 
 $page_key = $page_key ?? 'about';
-$nav_key  = $nav_key ?? ($page_key . '.php');
+/* The nav entries hold pretty URL slugs, so the key matches those. */
+$nav_key  = $nav_key ?? $page_key;
 $page     = goldhall_page($page_key);
 
 $page_title       = $page['title'] . ' | Gold Refinery Hall';
@@ -141,7 +142,7 @@ require __DIR__ . '/header.php';
     <section class="page-cta">
         <h2>Be part of our community</h2>
         <p>Gold Refinery Hall is more than a residence—it is a place to learn, lead and belong.</p>
-        <a class="page-button" href="student.php">Open the Student Hub</a>
+        <a class="page-button" href="student">Open the Student Hub</a>
     </section>
 </main>
 <?php

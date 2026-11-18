@@ -10,7 +10,7 @@ const completedHost = document.getElementById('studentDashboard');
 const tabs = [...document.querySelectorAll('.auth-tab')];
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
-const DASHBOARD_URL = 'dashboard.php';
+const DASHBOARD_URL = 'dashboard';
 
 function findAccount(studentId) {
   return GoldHallPortal.findStudent(String(studentId || '').trim().toUpperCase());
@@ -187,7 +187,7 @@ function blocked(student) {
       icon: 'fa-lock', tone: 'warn', eyebrow: 'Access closed',
       title: 'This account has completed school',
       body: `Student Hub access for <strong>${esc(student.fullName)}</strong> (${esc(student.studentId)}) has ended, so sign-in and voting are unavailable. If this is a mistake, please contact the Gold Hall Admin.`,
-      actions: [{ label: 'Back to the website', icon: 'fa-house', primary: true, onClick: () => { window.location.href = 'index.php'; } }]
+      actions: [{ label: 'Back to the website', icon: 'fa-house', primary: true, onClick: () => { window.location.href = './'; } }]
     });
   }, 260);
 }

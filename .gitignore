@@ -1,0 +1,19 @@
+# Local environment (admin credentials) — never commit.
+.env
+.env.local
+
+# Vercel project link
+.vercel
+
+# Live content, generated from includes/seed-content.php on first request.
+data/content.json
+data/*.tmp
+
+# Uploads made through the admin portal while running locally.
+assets/uploads/*
+!assets/uploads/.gitignore
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+node_modules
