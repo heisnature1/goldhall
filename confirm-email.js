@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CONFIRM EMAIL PAGE — the landing spot for signUp()'s confirmation link
+   CONFIRM EMAIL PAGE: the landing spot for signUp()'s confirmation link
    --------------------------------------------------------------------------
    Supabase has already delivered the message through the project's SMTP
    provider. This page only reports whether the token was accepted, then sends

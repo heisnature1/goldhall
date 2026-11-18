@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DASHBOARD PAGE — members-only Student Hub (dashboard.html)
+   DASHBOARD PAGE: members-only Student Hub (dashboard.html)
    Guards the page: no session means no content, an active session renders the
    hub, and a completed account gets the "access ended" view.
    ========================================================================== */

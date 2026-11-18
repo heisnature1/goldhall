@@ -1,5 +1,5 @@
 /* ==========================================================================
-   STUDENT HUB — account page (student.php)
+   STUDENT HUB: account page (student.php)
    --------------------------------------------------------------------------
    Accounts are handled by Supabase Auth when it is configured
    (api/auth-config.php decides): signUp() sends the confirmation email through
@@ -148,7 +148,7 @@ function renderRegister() {
       </label>
       <label>Personal email
         <input name="personalEmail" type="email" autocomplete="email" placeholder="e.g. ama.mensah@gmail.com" maxlength="160">
-        <span class="field-hint"><i class="fas fa-envelope-open-text"></i> Optional — for hall updates and account recovery</span>
+        <span class="field-hint"><i class="fas fa-envelope-open-text"></i> Optional, for hall updates and account recovery</span>
       </label>
       <div class="form-grid">
         <label>Level<select name="year" required><option value="" disabled selected>Select level</option>${[100,200,300,400].map(level => `<option value="${level}">Level ${level}</option>`).join('')}</select></label>
@@ -271,7 +271,7 @@ async function registerWithSupabase(profile) {
   }
 
   /* Keep the hall profile locally so the hub can show a name straight after
-     the student confirms their email. The password is never stored here —
+     the student confirms their email. The password is never stored here;
      Supabase Auth holds it. */
   GoldHallPortal.saveStudent({
     fullName: profile.fullName,
@@ -342,7 +342,7 @@ function accountCreatedDialog(student) {
   GoldHallDialog({
     icon: 'fa-circle-check', tone: 'success', eyebrow: 'Account created',
     title: `Welcome to Gold Hall, ${esc(student.fullName.split(/\s+/)[0])}!`,
-    body: 'Your student account is ready and you are already signed in. Your Student Hub is a private page — it is not shown in the website menu, so only signed-in students can open it.',
+    body: 'Your student account is ready and you are already signed in. Your Student Hub is a private page. It is not shown in the website menu, so only signed-in students can open it.',
     details: [
       ['Student ID', student.studentId],
       ['Programme', student.programme],
@@ -352,7 +352,7 @@ function accountCreatedDialog(student) {
     ],
     actions: [
       { label: 'Open my Student Hub', icon: 'fa-arrow-right', primary: true, onClick: () => { window.location.href = DASHBOARD_URL; } },
-      { label: 'Not now — sign in instead', onClick: () => { GoldHallSession.end(); setMode('login'); } }
+      { label: 'Not now, sign in instead', onClick: () => { GoldHallSession.end(); setMode('login'); } }
     ]
   });
 }
@@ -489,7 +489,7 @@ function blocked(student) {
  *
  * `setMode('login')` used to run only after `await AUTH.status()`, and that
  * awaits the config fetch, the CDN script and the client. Any stall in that
- * chain left the card completely empty — no form, no message, no clue — which
+ * chain left the card completely empty: no form, no message, no clue, which
  * is indistinguishable from a broken page. The form now renders at once using
  * the safe fallback (Student ID), and is re-rendered once the real status is
  * known. A student can see and touch the page within a frame.
@@ -540,16 +540,25 @@ async function boot() {
   }
   supabaseAuth = authStatus === 'ready';
 
-  /* Explanatory line under the card: how accounts are actually stored now. */
+  /*
+   * Explanatory line under the card.
+   *
+   * Nothing is shown when Auth is working: a student who has just been given a
+   * clear form does not need a paragraph about how accounts are stored. The
+   * line is kept only for the two cases where it is genuinely useful news,
+   * namely the library failing to load and the offline prototype fallback.
+   */
   const note = document.querySelector('.demo-disclaimer');
   if (note) {
     if (supabaseAuth) {
-      note.innerHTML = '<i class="fas fa-shield-halved"></i> Accounts are protected by Supabase Auth. Confirm your email after signing up, and never reuse a password from another site.';
+      note.remove();
     } else if (authStatus === 'blocked') {
       note.className = 'demo-disclaimer demo-disclaimer-warn';
       note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Secure sign-in could not load on this device, so the hub is using its offline prototype accounts. If you expected to sign in with your email, check your connection and reload.';
+      note.removeAttribute('hidden');
     } else {
       note.innerHTML = '<i class="fas fa-circle-info"></i> Student accounts and ballots are stored only in this browser. For your security, do not reuse a password.';
+      note.removeAttribute('hidden');
     }
   }
 
