@@ -33,5 +33,33 @@ $body_data        = $body_data ?? '';
 <?php endforeach; ?>
 <?php endif; ?>
     <link rel="stylesheet" href="enhancements.css">
+<?php
+/* Declare the canonical URL of this page.
+ *
+ * The home page is reachable as /, /index and /index.php, and vercel.json
+ * redirects the last two to /index. Without a canonical tag a search engine
+ * sees three addresses for one page and has to guess which to rank, which
+ * splits whatever authority the page has. Private pages are excluded so they
+ * never advertise themselves. */
+$canonical_map = [
+    'index.php'          => '/index',
+    'about.php'          => '/about',
+    'executives.php'     => '/executives',
+    'events.php'         => '/events',
+    'gallery.php'        => '/gallery',
+    'contact.php'        => '/contact',
+    'students.php'       => '/students',
+    'student.php'        => '/student',
+];
+$canonical_page = goldhall_current_page();
+if (isset($canonical_map[$canonical_page])) :
+?>
+    <link rel="canonical" href="<?= goldhall_e(goldhall_site_url() . $canonical_map[$canonical_page]) ?>">
+<?php endif; ?>
+    <meta property="og:site_name" content="Gold Refinery Hall, UMaT">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?= goldhall_e($page_title) ?>">
+    <meta property="og:description" content="<?= goldhall_e($page_description) ?>">
+    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body class="<?= goldhall_e($body_class) ?>"<?= $body_data !== '' ? ' ' . $body_data : '' ?>>
