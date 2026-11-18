@@ -48,6 +48,30 @@ $body_class = 'admin-page';
 
 require __DIR__ . '/includes/head.php';
 ?>
+<?php
+/* The signed-in portal is built inside #adminApp by admin.js, which replaces
+   that element's contents outright. Anything the page needs to survive that
+   render therefore has to live outside it: the sign-out form, and the bar that
+   warns when content cannot be saved. Burying them inside #adminApp is what
+   used to make the bar vanish and the sign-out button do nothing. */
+?>
+<?php if ($signedIn) : ?>
+<?php
+/* Where content is stored, so a save that cannot work is obvious before the
+   administrator types anything. */
+$store = goldhall_supabase_status();
+?>
+    <div class="admin-store-slot" id="adminStoreBar">
+        <div class="admin-store-bar admin-store-<?= $store['ok'] ? 'ok' : ($store['configured'] ? 'warn' : 'local') ?>" role="status">
+            <i class="fas <?= $store['ok'] ? 'fa-circle-check' : ($store['configured'] ? 'fa-triangle-exclamation' : 'fa-hard-drive') ?>"></i>
+            <span><?= goldhall_e($store['message']) ?></span>
+        </div>
+    </div>
+    <form method="post" action="admin.php" class="admin-signout" hidden id="adminSignOut">
+        <input type="hidden" name="csrf" value="<?= goldhall_e(goldhall_csrf_token()) ?>">
+        <input type="hidden" name="logout" value="1">
+    </form>
+<?php endif; ?>
 <main id="adminApp">
 <?php if (!$signedIn) : ?>
     <div class="admin-login">
@@ -79,34 +103,6 @@ require __DIR__ . '/includes/head.php';
     <noscript>
         <p style="padding:2rem;text-align:center">The admin portal needs JavaScript to manage content.</p>
     </noscript>
-<?php
-/* Where content is stored, so a save that cannot work is obvious before the
-   administrator types anything. */
-$store = goldhall_supabase_status();
-?>
-    <div class="admin-store-slot" id="adminStoreBar" hidden>
-        <div class="admin-store-bar admin-store-<?= $store['ok'] ? 'ok' : ($store['configured'] ? 'warn' : 'local') ?>" role="status">
-            <i class="fas <?= $store['ok'] ? 'fa-circle-check' : ($store['configured'] ? 'fa-triangle-exclamation' : 'fa-hard-drive') ?>"></i>
-            <span><?= goldhall_e($store['message']) ?></span>
-        </div>
-    </div>
-    <script>
-      /* admin.js replaces this <main>, so the status bar moves out of it once
-         the portal has rendered. Without JS it simply stays where it is. */
-      document.addEventListener('DOMContentLoaded', () => {
-        const slot = document.getElementById('adminStoreBar');
-        const shell = document.querySelector('.admin-shell');
-        if (!slot) return;
-        if (shell && shell.parentNode) {
-          shell.parentNode.insertBefore(slot, shell.nextSibling);
-          slot.hidden = false;
-        }
-      });
-    </script>
-    <form method="post" action="admin.php" class="admin-signout" hidden id="adminSignOut">
-        <input type="hidden" name="csrf" value="<?= goldhall_e(goldhall_csrf_token()) ?>">
-        <input type="hidden" name="logout" value="1">
-    </form>
 <?php endif; ?>
 </main>
 <?php if ($signedIn) : ?>

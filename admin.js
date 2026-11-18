@@ -25,18 +25,6 @@ let grievanceSearchQuery = '';
 
 const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
-function login() {
-  app.innerHTML = `<section class="admin-login"><a class="admin-back" href="index.php"><i class="fas fa-house"></i> Back to the website</a><div class="login-card"><div class="login-mark"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></div><h1>Admin Portal</h1><p>Manage Gold Refinery Hall content, student access and grievance desk.</p><form class="login-form" id="loginForm"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="admin-btn"><i class="fas fa-right-to-bracket"></i> Sign in</button></form><p class="login-error" id="loginError" role="status"></p><p class="login-note">Preview admin: <strong>admin</strong> / <strong>goldhall</strong></p><p class="login-note">This static preview is not a production-secure admin system.</p></div></section>`;
-  document.getElementById('loginForm').onsubmit = event => {
-    event.preventDefault();
-    const values = new FormData(event.currentTarget);
-    if (values.get('username') === 'admin' && values.get('password') === 'goldhall') {
-      sessionStorage.setItem('goldHallAdmin', 'true');
-      dashboard();
-    } else document.getElementById('loginError').textContent = 'Incorrect username or password.';
-  };
-}
-
 function dashboard() {
   const contentButtons = Object.keys(labels).map(type => `<button type="button" data-type="${type}" class="admin-tab ${activeView === 'content' && type === activeType ? 'active' : ''}"><i class="fas ${icons[type]}"></i>${labels[type]}</button>`).join('');
   const pendingGrievances = typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.pendingGrievancesCount() : 0;
@@ -77,7 +65,11 @@ function dashboard() {
   });
   document.getElementById('portalTools').onclick = () => { activeView = 'portal'; dashboard(); };
   document.getElementById('grievanceTools').onclick = () => { activeView = 'grievances'; dashboard(); };
-  document.getElementById('logout').onclick = () => { sessionStorage.removeItem('goldHallAdmin'); login(); };
+  document.getElementById('logout').onclick = () => {
+    /* The session lives in PHP, so signing out is a POST, not a local flag. */
+    const form = document.getElementById('adminSignOut');
+    if (form) form.submit();
+  };
 
   if (activeView === 'portal') portalDashboard();
   else if (activeView === 'grievances') grievancesDashboard();
@@ -838,4 +830,8 @@ function renderGrievanceCard(g) {
   </article>`;
 }
 
-if (sessionStorage.getItem('goldHallAdmin') === 'true') dashboard(); else login();
+/* This file is only emitted when the server has already authenticated the
+   administrator, and the page then contains an empty #adminApp waiting to be
+   filled. Booting straight into the dashboard is therefore the only correct
+   starting point; a client-side flag would disagree with the PHP session. */
+dashboard();
