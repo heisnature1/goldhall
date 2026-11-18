@@ -26,11 +26,47 @@ function findAccount(studentId) {
   return GoldHallPortal.findStudent(String(studentId || '').trim().toUpperCase());
 }
 
+/**
+ * Show a line of feedback under the form.
+ *
+ * An error is announced, not just tinted: the element carries role="alert" and
+ * an icon, and scrolls itself into view. A small red sentence can be missed,
+ * particularly on a phone where the keyboard has already moved the card.
+ */
 function message(text, tone = 'error') {
   const el = document.getElementById('authMessage');
   if (!el) return;
-  el.className = tone === 'success' ? 'form-success' : 'form-error';
-  el.textContent = text || '';
+
+  const kind = tone === 'success' ? 'success' : 'error';
+  el.className = `form-${kind} auth-alert auth-alert-${kind}`;
+  el.innerHTML = text
+    ? `<i class="fas ${kind === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i><span>${esc(text)}</span>`
+    : '';
+  el.removeAttribute('role');
+  el.setAttribute('role', kind === 'success' ? 'status' : 'alert');
+
+  if (text) {
+    /* Never leave the reason off-screen. `nearest` keeps a page that already
+       shows it from jumping. */
+    try { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) { /* older browsers */ }
+  }
+}
+
+/**
+ * Clear the notice as soon as the student starts fixing it.
+ *
+ * A stale "that email and password do not match" helpfully stays put while
+ * someone retypes, which reads as though the retry also failed.
+ */
+function clearMessageOnEdit(container) {
+  if (!container) return;
+  container.querySelectorAll('input, select, textarea').forEach(field => {
+    field.addEventListener('input', () => {
+      /* Registration keeps its own live password hint; only the alert clears. */
+      const el = document.getElementById('authMessage');
+      if (el && el.textContent) message('');
+    });
+  });
 }
 
 /**
@@ -88,13 +124,14 @@ function renderLogin() {
       <label class="reset-show">
         <input type="checkbox" data-show-password="loginPassword"> Show password
       </label>
+      <p class="form-error auth-alert" id="authMessage" role="alert" aria-live="assertive"></p>
       <button class="form-submit" type="submit" id="loginSubmit">Sign in to Student Hub <i class="fas fa-arrow-right"></i></button>
-      <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>
       <p class="auth-links"><button type="button" class="auth-link" id="forgotLink">Forgot your password?</button></p>
     </form>`;
   document.getElementById('loginForm').addEventListener('submit', signIn);
   document.getElementById('forgotLink').addEventListener('click', () => setMode('forgot'));
   bindShowPassword(authHost);
+  clearMessageOnEdit(document.getElementById('loginForm'));
 }
 
 /* ---------- forgot password ---------- */
@@ -117,6 +154,7 @@ function renderForgot() {
       <p class="auth-links"><button type="button" class="auth-link" id="backToLogin"><i class="fas fa-arrow-left"></i> Back to sign in</button></p>
     </form>`;
   document.getElementById('forgotForm').addEventListener('submit', requestReset);
+  clearMessageOnEdit(document.getElementById('forgotForm'));
   document.getElementById('backToLogin').addEventListener('click', () => setMode('login'));
 }
 
@@ -221,6 +259,7 @@ function renderRegister() {
   pw.addEventListener('input', checkMatch);
   pwConfirm.addEventListener('input', checkMatch);
   bindShowPassword(authHost);
+  clearMessageOnEdit(document.getElementById('registerForm'));
 
   const status = document.getElementById('hallStatus');
   const room = document.getElementById('roomInput');
@@ -435,7 +474,7 @@ async function signIn(event) {
   }
   const student = findAccount(studentId);
   if (!student) {
-    message('We could not find an account for that Student ID.');
+    message('That student ID and password do not match an account. Check them and try again.');
     return;
   }
   if (student.accessStatus !== 'active') {
@@ -447,7 +486,7 @@ async function signIn(event) {
   submit.innerHTML = 'Signing you in… <i class="fas fa-spinner fa-spin"></i>';
   try {
     if (await passwordDigest(password) !== student.passwordHash) {
-      message('The Student ID or password is incorrect.');
+      message('That student ID and password do not match an account. Check them and try again.');
       submit.disabled = false;
       submit.innerHTML = 'Sign in to Student Hub <i class="fas fa-arrow-right"></i>';
       return;

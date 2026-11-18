@@ -387,6 +387,26 @@ html.fx-ready .hero.fx-hero-go .hero-btn { animation: fxRise .7s var(--fx-ease) 
 .field-hint.ok { color: #2f8f57; }
 .field-hint.warn { color: #b4453c; }
 
+/* Form alerts: a boxed line with an icon, so a rejected sign-in is noticed
+   rather than skimmed past. Skipped entirely when the slot is empty. */
+.auth-alert { display: none; }
+.auth-alert:not(:empty) {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 11px 13px; border-radius: 9px; border: 1px solid transparent;
+  font-size: .82rem; line-height: 1.45; margin: 2px 0 4px;
+}
+.auth-alert i { margin-top: 2px; flex: none; font-size: .82rem; }
+.auth-alert-error { background: #fdf1f0; border-color: #f0c9c5; color: #a8372c; }
+.auth-alert-error i { color: #c0453a; }
+.auth-alert-success { background: #f0f8f3; border-color: #c6e3d2; color: #216a46; }
+.auth-alert-success i { color: #2f8f57; }
+.auth-alert:not(:empty) { animation: authAlertIn .28s var(--fx-ease); }
+@keyframes authAlertIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .auth-alert:not(:empty) { animation: none; } }
+
 .form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 .form-error { animation: fxRiseSmall .3s var(--fx-ease); }
 
