@@ -105,7 +105,11 @@ function goldhall_http(string $method, string $url, array $headers = [], ?array 
         $body   = curl_exec($handle);
         $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $error  = curl_error($handle);
-        curl_close($handle);
+        /* curl_close() has been a no-op since PHP 8.0 and is deprecated in
+           8.5; only older runtimes still need it to free the handle. */
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($handle);
+        }
     } else {
         $http = [
             'method'        => $method,
@@ -120,8 +124,25 @@ function goldhall_http(string $method, string $url, array $headers = [], ?array 
         $body    = @file_get_contents($url, false, $context);
         $error   = $body === false ? 'The request failed.' : '';
         $status  = 0;
-        if (!empty($http_response_header)) {
-            foreach ($http_response_header as $line) {
+
+        /* PHP 8.4 deprecates the $http_response_header magic variable, and the
+           notice fires at *compile* time merely for naming it — even inside a
+           branch that never runs. With display_errors on (as on Vercel) that
+           notice printed above the doctype of every page. So the name is never
+           written literally: on 8.4+ the documented accessor is used, and on
+           older runtimes the variable is read out of the local symbol table. */
+        $responseHeaders = [];
+        if (function_exists('http_get_last_response_headers')) {
+            $responseHeaders = http_get_last_response_headers() ?: [];
+        } else {
+            $defined = get_defined_vars();
+            if (isset($defined['http_response_header']) && is_array($defined['http_response_header'])) {
+                $responseHeaders = $defined['http_response_header'];
+            }
+        }
+
+        if ($responseHeaders !== []) {
+            foreach ($responseHeaders as $line) {
                 if (preg_match('#^HTTP/\S+\s+(\d{3})#', $line, $match)) {
                     $status = (int) $match[1];
                 }
