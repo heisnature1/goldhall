@@ -530,7 +530,13 @@ async function signInWithSupabase(form, submit) {
       (meta.student_id && entry.studentId === String(meta.student_id).toUpperCase()));
 
     if (student) {
-      await GoldHallPortal.updateStudent(student.studentId, { emailConfirmed: true, authProvider: 'supabase' });
+      /* Bookkeeping only. It must not be able to fail the sign-in: Supabase has
+         already authenticated this person, and the hall profile is a note about
+         them rather than the proof of who they are. Before this was tolerant, a
+         rejected write aborted the whole sequence and the student was left on
+         the sign-in page with a permissions error, despite valid credentials. */
+      GoldHallPortal.updateStudent(student.studentId, { emailConfirmed: true, authProvider: 'supabase' })
+        .catch(() => {});
     } else {
       student = {
         fullName: meta.full_name || email,
@@ -548,7 +554,7 @@ async function signInWithSupabase(form, submit) {
         createdAt: new Date().toISOString(),
         completedAt: null
       };
-      await GoldHallPortal.saveStudent(student);
+      await GoldHallPortal.saveStudent(student).catch(() => {});
     }
 
     if (student.accessStatus !== 'active') {
@@ -564,7 +570,45 @@ async function signInWithSupabase(form, submit) {
     message(error.message || 'Could not sign in. Please try again.');
     submit.disabled = false;
     submit.innerHTML = 'Sign in to Student Hub <i class="fas fa-arrow-right"></i>';
+
+    /* An unconfirmed account is a dead end without this: the student cannot
+       sign in, and cannot use the reset route either, because that needs a
+       confirmed address. Offer to send the link again. */
+    if (/confirm your email/i.test(String(error.message || ''))) {
+      showResendConfirmation(email);
+    }
   }
+}
+
+/** Offer to resend the confirmation email, in place under the sign-in form. */
+function showResendConfirmation(email) {
+  if (document.getElementById('resendConfirmation')) return;
+
+  const form = document.getElementById('loginForm');
+  if (!form) return;
+
+  const row = document.createElement('p');
+  row.className = 'auth-links';
+  row.id = 'resendConfirmation';
+  row.innerHTML = `<button type="button" class="auth-link" id="resendLink">
+    <i class="fas fa-paper-plane"></i> Send the confirmation email again
+  </button>`;
+  form.appendChild(row);
+
+  const button = document.getElementById('resendLink');
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    button.innerHTML = 'Sending… <i class="fas fa-spinner fa-spin"></i>';
+    try {
+      await AUTH.resendConfirmation(email);
+      message('A new confirmation link is on its way to ' + email + '. Open it, then sign in.', 'success');
+      button.innerHTML = '<i class="fas fa-circle-check"></i> Link sent';
+    } catch (failure) {
+      message(failure.message || 'Could not send the link. Please try again.');
+      button.disabled = false;
+      button.innerHTML = '<i class="fas fa-paper-plane"></i> Send the confirmation email again';
+    }
+  });
 }
 
 /* ---------- blocked account ---------- */
