@@ -62,6 +62,15 @@ function dashboard() {
   </div>`;
 
   document.querySelectorAll('[data-type]').forEach(button => button.onclick = () => {
+    if (button.dataset.type !== activeType) {
+      /* Leaving the section abandons an unsaved picture. Without this, choosing
+         a photo for one section then switching to another carried the data URL
+         across, and the next save attached the wrong picture. */
+      editingId = null;
+      pictureData = '';
+      uploadedPicture = '';
+      pictureLabel = '';
+    }
     activeType = button.dataset.type;
     activeView = 'content';
     editingId = null;
@@ -319,7 +328,7 @@ function renderContentList() {
     body.set('id', button.dataset.delete);
     try {
       await adminRequest('delete', body);
-      await GoldHallStore.ready();
+      await GoldHallStore.reset();
       renderContentList();
     } catch (error) {
       alert(`Could not delete: ${error.message}`);
@@ -463,7 +472,9 @@ async function saveContent(event) {
   editingId = null;
   pictureData = '';
   uploadedPicture = '';
-  await GoldHallStore.ready();
+  /* reset(), not ready(): ready() hands back the copy already in memory, so
+     the list would re-render without the row that was just saved. */
+  await GoldHallStore.reset();
   contentDashboard();
 }
 
@@ -914,5 +925,19 @@ function renderGrievanceCard(g) {
 /* This file is only emitted when the server has already authenticated the
    administrator, and the page then contains an empty #adminApp waiting to be
    filled. Booting straight into the dashboard is therefore the only correct
-   starting point; a client-side flag would disagree with the PHP session. */
-dashboard();
+   starting point; a client-side flag would disagree with the PHP session.
+
+   Wait for the content first. GoldHallStore.read() is synchronous and returns
+   the bundled seed until the server answers, so painting immediately listed
+   only the seeded items: anything added through this portal was missing from
+   the very screen used to manage it, which looked like the save had failed
+   when the row was in the database all along. student-dashboard.js already
+   waits this way; the admin did not. */
+(async () => {
+  /* ready() never rejects: content-store.js catches its own failures and
+     resolves with what it has, so this always reaches dashboard() and an
+     unreachable server falls back to the bundled seed rather than a blank
+     screen. */
+  await GoldHallStore.ready();
+  dashboard();
+})();
