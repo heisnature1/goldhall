@@ -330,3 +330,30 @@
 }
 
 .hub-empty-note { grid-column: 1 / -1; margin: 0; padding: 18px 20px; border: 1px dashed rgba(184, 134, 11, .45); border-radius: 12px; background: #fffaf0; color: #5b4a1c; font-size: .9rem; display: flex; gap: 10px; align-items: center; }
+
+/* ===========================================================================
+   SUPABASE AUTH — links, status lines, single-column reset pages
+   ========================================================================= */
+.auth-shell-single { grid-template-columns: minmax(0,560px); justify-content: center; min-height:0; }
+.auth-shell-single .auth-card { padding: 34px 32px 30px; }
+
+.auth-links { margin: 2px 0 0; text-align: center; font-size: .82rem; }
+.auth-link { border: 0; padding: 0; background: none; font: 600 .82rem 'Inter', sans-serif; color: var(--hub-green2, #3d7a5a); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.auth-link:hover { color: var(--hub-ink, #14301f); text-decoration: underline; }
+.auth-link:focus-visible { outline: 2px solid var(--hub-gold, #d8b45c); outline-offset: 3px; border-radius: 4px; }
+
+/* status line used by the reset and confirmation pages */
+.reset-status { display: flex; align-items: flex-start; gap: 9px; margin: 0 0 16px; padding: 12px 14px; border-radius: 10px; background: #f4f7f5; border: 1px solid #dfe5df; color: #35483d; font-size: .85rem; line-height: 1.55; }
+.reset-status i { margin-top: 3px; flex: none; color: #6b7a72; }
+.reset-status.success { background: #f1f8f3; border-color: #c9e3d2; color: #1f5b38; }
+.reset-status.success i { color: #2f8f57; }
+.reset-status.warn { background: #fdf6e7; border-color: #f0dfb2; color: #7a5b16; }
+.reset-status.warn i { color: #c08a1c; }
+.reset-status.error { background: #fdecec; border-color: #f5c2c2; color: #a12626; }
+.reset-status.error i { color: #c0392b; }
+
+.reset-show { display: flex !important; align-items: center; gap: 9px; font-weight: 500 !important; color: #5c6d62 !important; font-size: .8rem !important; }
+.reset-show input { width: auto; min-height: 0; margin: 0; }
+.auth-card .form-submit + .form-submit { margin-top: 10px; }
+.demo-disclaimer-warn { color:#8a5a12; border-top-color:#f0dfb2; }
+.demo-disclaimer-warn i { color:#c08a1c; }

@@ -104,6 +104,48 @@ How it behaves:
 - If Supabase is unreachable, the site falls back to the local seed instead of showing an empty page.
 - To reset content, run `truncate public.content_items;` in the SQL Editor and reload — the seed is re-imported.
 
+### Student accounts (Supabase Auth)
+
+The Student Hub signs students up and in with Supabase Auth, so passwords never
+touch this codebase. Three flows are wired:
+
+| Action | Call | Email (sent by your SMTP) | Lands on |
+| --- | --- | --- | --- |
+| Create account | `auth.signUp()` | Confirm signup | `/confirm-email` |
+| Forgot password | `auth.resetPasswordForEmail()` | Reset password | `/reset-password` |
+| Choose new password | `auth.updateUser({ password })` | — | `/student` |
+
+Set one extra variable — the **publishable** key, never the secret one:
+
+```
+GOLDHALL_SUPABASE_PUBLISHABLE_KEY=sb_publishable_…
+GOLDHALL_SITE_URL=https://goldhall.vercel.app     # optional
+```
+
+`api/auth-config.php` hands that key and the project URL to the browser, and
+deliberately refuses to serve a key starting `sb_secret_` — if the secret lands
+in that variable, Auth switches itself off rather than leaking it. The admin
+portal keeps using `GOLDHALL_SUPABASE_KEY` server-side.
+
+**Emails go through your SMTP provider.** The site never sends mail; Supabase
+delivers the confirmation and reset messages using the SMTP settings in
+*Authentication → Emails → SMTP Settings*. Subject lines, bodies and the sender
+are edited there.
+
+**The redirect allow-list is what makes the links work.** In
+*Authentication → URL Configuration*, the Site URL must be your domain and the
+Redirect URLs must include `<site>/reset-password` and `<site>/confirm-email`.
+If a path is missing, Supabase silently falls back to the Site URL and the
+student lands on the home page with an unusable token.
+
+See **`supabase-auth-setup.md`** for the full checklist, including SMTP, email
+templates and rate limits.
+
+Without the publishable key the hub keeps its original browser-only prototype
+accounts, so the site still works with no Auth configured. The card under the
+form says which mode is active, including when the library itself failed to
+load.
+
 ### Hosting
 
 The site runs on any PHP host — Apache/cPanel, DigitalOcean, Hostinger, a VPS — with no build step and no dependencies. Two things need writing on that kind of host: `data/` (the content file) and `assets/uploads/` (portal pictures). Both return a clear error if they are not writable.
@@ -137,6 +179,8 @@ On Apache, point a virtual host at the directory, set `AllowOverride All`, and `
 | `dashboard.php` | Signed-in hub — not linked from any menu |
 | `executives.php` · `events.php` · `gallery.php` · `about.php` · `contact.php` · `students.php` | Inner pages, all rendered by `includes/page-template.php` |
 | `admin.php` | Administrator portal |
+| `reset-password.php` | Landing page for the emailed password-reset link |
+| `confirm-email.php` | Landing page for the emailed signup confirmation |
 
 ### Layout of the code
 
@@ -156,6 +200,7 @@ api/
   index.php          Vercel entry point — dispatches every page request
   content.php        read-only JSON for the client-side Student Hub
   admin-content.php  save / delete / upload for the admin portal
+  auth-config.php    project URL + publishable key for Supabase Auth (never a secret)
 data/
   content.json       created on first request from seed-content.php (gitignored)
 assets/uploads/      pictures uploaded through the admin portal
@@ -194,9 +239,14 @@ Unchanged by the migration, and still in two files included by every page:
 
 The **public site is now server-rendered**, and the content file is protected from direct download by `.htaccess` / `router.php`. The administrator password is no longer in the page source, and writes are checked server-side.
 
-The **Student Hub remains a browser-only prototype**. Student accounts, password hashes, sessions, grievances and ballots still live in `localStorage` / `sessionStorage`:
+**Student credentials are verified by Supabase Auth** when it is configured: passwords are stored and hashed by Supabase, emails are confirmed before first sign-in, and a recovery link is the only way to reset one. This site never sees a password beyond the request that creates or checks it.
 
-- Browser storage is not shared between devices and can be cleared or edited by the user.
-- A browser-only poll cannot verify student identity or guarantee one person / one vote.
+**Everything else in the Student Hub is still a browser-only prototype.** Hall profiles, sessions, grievances and ballots live in `localStorage` / `sessionStorage`:
 
-Do not use the Student Hub for sensitive student information or an official / binding election. Before production it needs a real database, university identity verification, server-side access-expiry checks, proper password hashing, and server-side ballot validation with duplicate-vote prevention and an audit trail.
+- Browser storage is not shared between devices and can be edited by the user.
+- Access expiry is enforced in the browser, so it can be bypassed.
+- A browser-only poll cannot verify that one student cast one vote.
+
+Before using the hub for sensitive student information or a binding election it needs: the grievance and ballot data moved server-side under row-level security, university identity verification on top of Supabase Auth, and server-side access-expiry and duplicate-vote checks with an audit trail.
+
+One Auth-specific caveat worth knowing: sign-up reveals whether an address is already registered (the form says "an account with that email already exists"). That is friendlier than Supabase's default silence, but it does allow account enumeration. Password reset does *not* — it answers identically whether or not the address exists.

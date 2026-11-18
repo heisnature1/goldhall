@@ -25,6 +25,9 @@ const GOLDHALL_VERCEL_PAGES = [
     'student'    => 'student.php',
     'dashboard'  => 'dashboard.php',
     'admin'      => 'admin.php',
+    /* Supabase Auth landing pages */
+    'reset-password' => 'reset-password.php',
+    'confirm-email'  => 'confirm-email.php',
 ];
 
 /**

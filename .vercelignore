@@ -12,6 +12,7 @@ node_modules
 # /supabase-schema.sql and /.env.example return their contents to anyone who
 # guesses the path. Neither holds a secret, but neither is public either.
 supabase-schema.sql
+supabase-auth-setup.md
 .env.example
 composer.json
 .env

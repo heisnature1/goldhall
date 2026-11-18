@@ -12,6 +12,10 @@
     "api/admin-content.php": {
       "runtime": "vercel-php@0.9.0",
       "memory": 1024
+    },
+    "api/auth-config.php": {
+      "runtime": "vercel-php@0.9.0",
+      "memory": 1024
     }
   },
   "redirects": [
@@ -68,6 +72,16 @@
     {
       "source": "/admin.php",
       "destination": "/admin",
+      "permanent": false
+    },
+    {
+      "source": "/reset-password.php",
+      "destination": "/reset-password",
+      "permanent": false
+    },
+    {
+      "source": "/confirm-email.php",
+      "destination": "/confirm-email",
       "permanent": false
     }
   ],
