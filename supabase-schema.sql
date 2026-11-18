@@ -114,3 +114,109 @@ create policy "uploads are public readable"
 --      set sort = o.n
 --     from ordered o
 --    where o.id = c.id;
+
+-- ---------------------------------------------------------------------------
+-- 6. Student records, grievances and ballots
+-- ---------------------------------------------------------------------------
+-- These used to live in each browser's localStorage, which meant a student who
+-- registered on their phone was invisible to the administrator, and a ballot
+-- could be recast by clearing the browser. They now live here.
+--
+-- Writes go through the PHP server, which holds the secret key. Row level
+-- security is on and grants no access to the anon key at all: unlike
+-- content_items, none of this is public. The server bypasses these policies.
+
+create table if not exists public.students (
+  student_id     text primary key,
+  full_name      text not null default '',
+  programme      text not null default '',
+  level          text not null default '',
+  room           text not null default '',
+  hall_status    text not null default 'Resident',
+  student_email  text not null default '',
+  personal_email text not null default '',
+  access_status  text not null default 'active',
+  email_confirmed boolean not null default false,
+  auth_provider  text not null default 'supabase',
+  created_at     timestamptz not null default now(),
+  completed_at   timestamptz,
+  updated_at     timestamptz not null default now()
+);
+
+create index if not exists students_email_idx on public.students (lower(student_email));
+
+create table if not exists public.grievances (
+  id            text primary key,
+  student_id    text not null default '',
+  student_name  text not null default '',
+  student_email text not null default '',
+  programme     text not null default '',
+  level         text not null default '',
+  hall_status   text not null default 'Resident',
+  room          text not null default '',
+  category      text not null default 'General Hall Matter',
+  priority      text not null default 'normal',
+  subject       text not null default '',
+  description   text not null default '',
+  location      text not null default '',
+  is_anonymous  boolean not null default false,
+  status        text not null default 'pending',
+  admin_action  text not null default '',
+  admin_action_at timestamptz,
+  action_handler  text not null default '',
+  action_history  jsonb not null default '[]'::jsonb,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
+create index if not exists grievances_student_idx on public.grievances (student_id);
+create index if not exists grievances_status_idx  on public.grievances (status);
+
+-- One row: the poll setup. A table rather than a JSON blob so the ballot
+-- constraints below can reference it.
+create table if not exists public.elections (
+  id         text primary key default 'current',
+  title      text not null default 'Gold Hall Student Polls',
+  is_open    boolean not null default true,
+  positions  jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+-- One row per ballot. The primary key is what makes double voting impossible:
+-- a student's second vote for the same position is rejected by the database,
+-- not by a check in the browser that can be bypassed.
+create table if not exists public.ballots (
+  student_id  text not null,
+  position_id text not null,
+  candidate   text not null,
+  cast_at     timestamptz not null default now(),
+  primary key (student_id, position_id)
+);
+
+create index if not exists ballots_position_idx on public.ballots (position_id);
+
+-- updated_at triggers, matching the content table.
+create or replace function public.row_touch()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at := now();
+  return new;
+end;
+$$;
+
+drop trigger if exists students_touch on public.students;
+create trigger students_touch before update on public.students
+  for each row execute function public.row_touch();
+
+drop trigger if exists grievances_touch on public.grievances;
+create trigger grievances_touch before update on public.grievances
+  for each row execute function public.row_touch();
+
+alter table public.students   enable row level security;
+alter table public.grievances enable row level security;
+alter table public.elections  enable row level security;
+alter table public.ballots    enable row level security;
+
+-- No policies: nobody using the publishable key can read or write these. The
+-- server reaches them with the secret key, which bypasses RLS. If per-student
+-- access is ever wanted, add policies here rather than in the application.

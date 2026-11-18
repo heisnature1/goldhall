@@ -22,7 +22,7 @@ const AUTH = window.GoldHallAuth;
 let supabaseAuth = false;
 let authMode = 'login';
 
-function findAccount(studentId) {
+async function findAccount(studentId) {
   return GoldHallPortal.findStudent(String(studentId || '').trim().toUpperCase());
 }
 
@@ -339,8 +339,11 @@ async function registerStudent(event) {
 
 /** Supabase Auth: create the account and send the confirmation email. */
 async function registerWithSupabase(profile) {
-  const existing = GoldHallPortal.students().find(student =>
-    student.studentEmail === profile.studentEmail || student.studentId === profile.studentId);
+  const roster = await GoldHallPortal.students();
+  const existing = roster.find(student =>
+    student.studentEmail === profile.studentEmail
+    || String(student.personalEmail || '') === profile.studentEmail
+    || student.studentId === profile.studentId);
   if (existing) throw new Error('That student ID or email is already registered. Sign in instead.');
 
   const result = await AUTH.signUp({
@@ -361,10 +364,10 @@ async function registerWithSupabase(profile) {
     throw new Error('An account with that email already exists. Sign in instead, or reset your password.');
   }
 
-  /* Keep the hall profile locally so the hub can show a name straight after
-     the student confirms their email. The password is never stored here;
-     Supabase Auth holds it. */
-  GoldHallPortal.saveStudent({
+  /* Store the hall profile on the server, so the administrator's roster and
+     the hub both see it. The password is never stored: Supabase Auth holds
+     it, and this side never receives it. */
+  await GoldHallPortal.saveStudent({
     fullName: profile.fullName,
     studentId: profile.studentId,
     programme: profile.programme,
@@ -404,10 +407,11 @@ function confirmedDialog(profile) {
 
 /** Prototype fallback: the original browser-only account. */
 async function registerLocally(profile) {
-  const emailTaken = GoldHallPortal.students().find(existing =>
+  const roster = await GoldHallPortal.students();
+  const emailTaken = roster.find(existing =>
     existing.studentEmail === profile.studentEmail || existing.personalEmail === profile.studentEmail);
   if (emailTaken) throw new Error('That student email is already registered to another account.');
-  if (findAccount(profile.studentId)) throw new Error('That Student ID already has an account. Please sign in instead.');
+  if (await findAccount(profile.studentId)) throw new Error('That Student ID already has an account. Please sign in instead.');
 
   const student = {
     fullName: profile.fullName,
@@ -423,7 +427,7 @@ async function registerLocally(profile) {
     createdAt: new Date().toISOString(),
     completedAt: null
   };
-  GoldHallPortal.saveStudent(student);
+  await GoldHallPortal.saveStudent(student);
   GoldHallSession.start(profile.studentId);
   message('Your account was created. Opening your Student Hub…', 'success');
   accountCreatedDialog(student);
@@ -472,7 +476,7 @@ async function signIn(event) {
     message('Enter your Student ID and password.');
     return;
   }
-  const student = findAccount(studentId);
+  const student = await findAccount(studentId);
   if (!student) {
     message('That student ID and password do not match an account. Check them and try again.');
     return;
@@ -517,13 +521,16 @@ async function signInWithSupabase(form, submit) {
     const user = await AUTH.signIn(email, password);
     const meta = user?.user_metadata || {};
 
-    /* Link the Supabase identity to the local hall profile the hub renders. */
-    let student = GoldHallPortal.students().find(entry =>
+    /* Link the Supabase identity to the hall profile the hub renders. This is
+       the record in the database, so a student signing in on a new device gets
+       the same hall details the hall already holds. */
+    const roster = await GoldHallPortal.students();
+    let student = roster.find(entry =>
       (entry.studentEmail || '').toLowerCase() === email ||
       (meta.student_id && entry.studentId === String(meta.student_id).toUpperCase()));
 
     if (student) {
-      GoldHallPortal.updateStudent(student.studentId, { emailConfirmed: true, authProvider: 'supabase' });
+      await GoldHallPortal.updateStudent(student.studentId, { emailConfirmed: true, authProvider: 'supabase' });
     } else {
       student = {
         fullName: meta.full_name || email,
@@ -541,7 +548,7 @@ async function signInWithSupabase(form, submit) {
         createdAt: new Date().toISOString(),
         completedAt: null
       };
-      GoldHallPortal.saveStudent(student);
+      await GoldHallPortal.saveStudent(student);
     }
 
     if (student.accessStatus !== 'active') {
@@ -648,7 +655,7 @@ async function boot() {
       note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Secure sign-in could not load on this device, so the hub is using its offline prototype accounts. If you expected to sign in with your email, check your connection and reload.';
       note.removeAttribute('hidden');
     } else {
-      note.innerHTML = '<i class="fas fa-circle-info"></i> Student accounts and ballots are stored only in this browser. For your security, do not reuse a password.';
+      note.innerHTML = '<i class="fas fa-circle-info"></i> Secure sign-in is unavailable right now, so this page cannot reach your account. Check your connection and reload. Your records are stored on the hall server, not in this browser.';
       note.removeAttribute('hidden');
     }
   }
@@ -656,8 +663,9 @@ async function boot() {
   /* Redraw with the resolved mode (email vs Student ID). */
   if (authMode === 'login') setMode('login');
 
-  const sessionStudent = GoldHallSession.student();
+  /* Already signed in? The record is on the server now, so this is awaited. */
   if (!GoldHallSession.id()) return;
+  const sessionStudent = await GoldHallSession.student();
   if (sessionStudent?.accessStatus === 'active') window.location.replace(DASHBOARD_URL);
   else if (sessionStudent) blocked(sessionStudent);
   else GoldHallSession.end();
@@ -665,8 +673,10 @@ async function boot() {
 
 boot();
 
-window.addEventListener('storage', event => {
-  if (event.key !== 'goldHallStudents' || !GoldHallSession.id()) return;
-  const current = GoldHallSession.student();
+/* The roster is not mirrored in storage any more, so this only reacts to
+   another tab ending this student's session. */
+window.addEventListener('storage', async event => {
+  if (event.key !== 'goldHallStudentSession' || !GoldHallSession.id()) return;
+  const current = await GoldHallSession.student();
   if (!current || current.accessStatus !== 'active') GoldHallSession.end();
 });

@@ -270,3 +270,14 @@ body { background:#f2f5f2; }
 @keyframes adminStoreIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @media (max-width: 640px) { .admin-store-bar { width: calc(100% - 24px); font-size: .82rem; padding: 11px 13px; } }
 @media (prefers-reduced-motion: reduce) { .admin-store-bar { animation: none; } }
+
+/* Shown while a dashboard fetches from the database, so an empty panel is
+   never mistaken for empty data. */
+.admin-loading { padding: 28px 8px; color: #6b7a72; font-size: .9rem; }
+.admin-loading::before {
+  content: ''; display: inline-block; width: 13px; height: 13px; margin-right: 9px;
+  border: 2px solid #d9e2dc; border-top-color: #2f8f57; border-radius: 50%;
+  vertical-align: -2px; animation: adminSpin .7s linear infinite;
+}
+@keyframes adminSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .admin-loading::before { animation: none; } }

@@ -6,11 +6,10 @@
  * api/content.php. The seed below is only a fallback for when that request
  * fails (file opened directly, offline, endpoint unavailable).
  *
- * The admin portal writes through admin.php; nothing here persists to
- * localStorage any more.
+ * The admin portal writes through admin.php. Nothing is stored in the browser:
+ * the seed below is only used until the server answers, or if it never does.
  */
 const GoldHallStore = (() => {
-  const key = 'goldHallManagedContent';
   const endpoint = 'api/content.php';
   /* Last successful server response, so repeated reads are cheap. */
   let remote = null;
@@ -136,7 +135,7 @@ const GoldHallStore = (() => {
 
   /* Corrections that must reach browsers which already saved an earlier list.
      read() only tops up missing ids, so a renamed or retitled entry would
-     otherwise keep its old value in localStorage forever. Keyed by id so an
+     otherwise keep an old value forever. Keyed by id so an
      entry someone has genuinely edited themselves is left alone. */
   const corrections = {
     x11: { title: 'Meshack Todeme' }
@@ -168,17 +167,18 @@ const GoldHallStore = (() => {
     return pending;
   };
 
-  /** Synchronous read for templates; returns the seed until load() resolves. */
+  /**
+   * Synchronous read for templates; returns the seed until load() resolves.
+   *
+   * This used to read localStorage, which meant an old copy saved by a previous
+   * visit could shadow what the server had. Content is server-owned now, so the
+   * only two states are "server answered" and "fall back to the bundled seed".
+   */
   const read = () => {
     if (remote) return remote;
-    let data;
-    try {
-      data = JSON.parse(localStorage.getItem(key) || JSON.stringify(seed));
-    } catch (_) {
-      data = clone(seed);
-    }
+    let data = clone(seed);
     retired.forEach(type => delete data[type]);
-    // ensure all seed types exist even if localStorage was created before executives was added
+    // ensure every seed type exists, so a template never reads an undefined list
     Object.keys(seed).forEach(type => {
       if (!Array.isArray(data[type])) {
         data[type] = clone(seed[type]);
@@ -208,6 +208,8 @@ const GoldHallStore = (() => {
     /* Writes are handled server-side by admin.php, which owns the JSON file. */
     save: () => false,
     remove: () => false,
-    reset: () => localStorage.removeItem(key)
+    /* Nothing is cached locally any more, so "reset" only drops the in-memory
+       copy and re-reads from the server. */
+    reset: () => { remote = null; return load(); }
   };
 })();

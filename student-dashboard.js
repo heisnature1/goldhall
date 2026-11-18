@@ -52,27 +52,43 @@ function accessLost() {
 }
 
 /* ---------- gate ---------- */
-const account = GoldHallSession.student();
-if (!GoldHallSession.id() || !account) {
-  window.location.replace(SIGN_IN_URL);
-} else if (account.accessStatus !== 'active') {
-  accessLost();
-} else {
+/*
+ * The student record lives in the database now, so this is a request rather
+ * than a lookup: it has to be awaited. A Promise is always truthy, so skipping
+ * the await would have let an unknown session through to the hub and passed a
+ * Promise in place of the student.
+ */
+(async () => {
+  const sessionId = GoldHallSession.id();
+  const account = sessionId ? await GoldHallSession.student() : null;
+
+  if (!sessionId || !account) {
+    window.location.replace(SIGN_IN_URL);
+    return;
+  }
+  if (account.accessStatus !== 'active') {
+    accessLost();
+    return;
+  }
+
   hubHost.hidden = false;
   showName(account);
-  /* Content (scholarships, internships, events) now comes from the server, so
-     paint once it has arrived. The seed paints immediately as a fallback. */
+  /* Content (scholarships, internships, events) comes from the server too, so
+     paint once it has arrived. The seed paints if that request fails. */
   const paint = () => GoldHallHub.mount(hubHost, account, { onSignOut: signOutNow, onAccessLost: accessLost });
   if (typeof GoldHallStore !== 'undefined' && GoldHallStore.ready) {
     GoldHallStore.ready().then(paint, paint);
   } else {
     paint();
   }
-}
+})();
 
-/* the admin (or another tab) can end access while this page is open */
-window.addEventListener('storage', event => {
-  if (event.key !== 'goldHallStudents') return;
-  const current = GoldHallSession.student();
+/*
+ * Another tab can end this student's access. Grievances and ballots are no
+ * longer mirrored in storage, so this only reacts to a sign-out.
+ */
+window.addEventListener('storage', async event => {
+  if (event.key !== 'goldHallStudentSession') return;
+  const current = await GoldHallSession.student();
   if (!current || current.accessStatus !== 'active') accessLost();
 });
