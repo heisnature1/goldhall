@@ -1,21 +1,24 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="assets/logo/gold-hall-favicon.png">
-  <link rel="apple-touch-icon" href="assets/logo/gold-hall-favicon.png">
-  <meta name="theme-color" content="#1a3a2a">
-  <title>Student Hub | Gold Refinery Hall</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400;1,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="student.css">
-  <link rel="stylesheet" href="enhancements.css">
-</head>
-<body class="student-page">
+<?php
+/**
+ * Student Hub: registration and sign-in.
+ *
+ * The hub itself is a client-side app; this page only supplies its shell and
+ * the styles/scripts. Content it displays comes from api/content.php.
+ */
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/functions.php';
+
+$page_title = 'Student Hub | Gold Refinery Hall';
+$extra_styles = ['student.css'];
+$extra_scripts = ['content-store.js', 'student-portal-store.js', 'student-hub.js', 'student.js'];
+$body_class = 'student-page';
+
+require __DIR__ . '/includes/head.php';
+goldhall_loader();
+?>
+
   <div class="student-topbar">
     <div class="student-topbar-inner">
       <span class="topbar-loc"><i class="fas fa-map-marker-alt"></i> University of Mines and Technology, Tarkwa</span>
@@ -25,7 +28,7 @@
 
   <header class="student-header">
     <div class="student-header-inner">
-      <a class="student-brand" href="index.html" aria-label="Gold Refinery Hall home">
+      <a class="student-brand" href="index.php" aria-label="Gold Refinery Hall home">
         <span class="brand-crest"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></span>
         <span class="brand-text">
           <strong>GOLD REFINERY HALL</strong>
@@ -33,12 +36,12 @@
         </span>
       </a>
       <nav class="student-top-nav" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="student.html" class="active" aria-current="page">Student Hub</a>
-        <a href="executives.html">Executives</a>
-        <a href="events.html">Events</a>
-        <a href="gallery.html">Gallery</a>
-        <a href="about.html">About Us</a>
+        <a href="index.php">Home</a>
+        <a href="student.php" class="active" aria-current="page">Student Hub</a>
+        <a href="executives.php">Executives</a>
+        <a href="events.php">Events</a>
+        <a href="gallery.php">Gallery</a>
+        <a href="about.php">About Us</a>
       </nav>
     </div>
   </header>
@@ -82,12 +85,9 @@
 
   <footer class="student-footer">
     <span>&copy; 2026 Gold Refinery Hall &middot; UMaT</span>
-    <a href="index.html">Back to the public website <i class="fas fa-arrow-right"></i></a>
+    <a href="index.php">Back to the public website <i class="fas fa-arrow-right"></i></a>
   </footer>
-  <script src="content-store.js"></script>
-  <script src="student-portal-store.js"></script>
-  <script src="student-hub.js"></script>
-  <script src="student.js"></script>
-  <script src="fx.js"></script>
+
+<script src="fx.js"></script>
 </body>
 </html>

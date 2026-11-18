@@ -1,0 +1,69 @@
+<?php
+/**
+ * Small shared helpers.
+ */
+
+declare(strict_types=1);
+
+/** Escape for HTML output. Every dynamic value goes through this. */
+function goldhall_e(?string $value): string
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+/** True when a link points off-site, so it should open in a new tab. */
+function goldhall_is_external(string $href): bool
+{
+    return (bool) preg_match('#^https?://#i', $href);
+}
+
+/** Attributes for a link that may be external. */
+function goldhall_link_target(string $href): string
+{
+    return goldhall_is_external($href) ? ' target="_blank" rel="noopener noreferrer"' : '';
+}
+
+/** The picture for an item, checking the meta field too. */
+function goldhall_picture(array $item): string
+{
+    $image = (string) ($item['image'] ?? '');
+    if ($image !== '') {
+        return $image;
+    }
+    $meta = (string) ($item['meta'] ?? '');
+    return goldhall_is_picture($meta) ? $meta : '';
+}
+
+/** CSS object-position, defaulting to centred. */
+function goldhall_position(array $item): string
+{
+    $position = trim((string) ($item['position'] ?? ''));
+    return $position !== '' ? $position : '50% 50%';
+}
+
+/** Current script name, e.g. index.php. */
+function goldhall_current_page(): string
+{
+    return basename((string) ($_SERVER['SCRIPT_NAME'] ?? 'index.php'));
+}
+
+/**
+ * Small inline SVG used by the loader: the three gold rings around the crest.
+ * Kept in PHP so every page renders the same markup.
+ */
+function goldhall_loader(): void
+{
+    ?>
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-emblem" aria-hidden="true">
+      <span class="loader-ring loader-ring-outer"></span>
+      <span class="loader-ring loader-ring-mid"></span>
+      <span class="loader-ring loader-ring-inner"></span>
+      <span class="loader-glow"></span>
+      <img class="loader-logo" src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo">
+    </div>
+    <div class="loader-text">GOLD REFINERY HALL</div>
+    <div class="loader-bar" aria-hidden="true"><span></span></div>
+  </div>
+    <?php
+}

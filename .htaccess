@@ -1,0 +1,54 @@
+# Gold Refinery Hall — Apache configuration
+#
+# The site is plain PHP: no build step, no dependencies. Point a virtual host
+# at this directory and set "AllowOverride All" so this file is read.
+
+DirectoryIndex index.php index.html
+
+# Pretty URLs: /about -> about.php. The [END] flag stops .php being appended
+# again by an earlier rewrite on some hosts.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Serve existing files and directories (css, js, images, uploads) directly.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # /about -> /about.php
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.*)$ $1.php [END]
+</IfModule>
+
+# Never serve the data file, the includes, or dotfiles.
+<FilesMatch "^(content\.json|.*\.sqlite|.*\.tmp)$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/(includes|data)/.*$
+
+# Basic hardening
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Long cache for static assets; HTML is never cached by the browser.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+# Uploads are only images; never execute anything there.
+<Directory "assets/uploads">
+    php_flag engine off
+    Options -ExecCGI -Indexes
+    <FilesMatch "\.(php|phtml|phar|cgi|pl|py|sh)$">
+        Require all denied
+    </FilesMatch>
+</Directory>

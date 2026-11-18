@@ -26,7 +26,7 @@ let grievanceSearchQuery = '';
 const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
 function login() {
-  app.innerHTML = `<section class="admin-login"><a class="admin-back" href="index.html"><i class="fas fa-house"></i> Back to the website</a><div class="login-card"><div class="login-mark"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></div><h1>Admin Portal</h1><p>Manage Gold Refinery Hall content, student access and grievance desk.</p><form class="login-form" id="loginForm"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="admin-btn"><i class="fas fa-right-to-bracket"></i> Sign in</button></form><p class="login-error" id="loginError" role="status"></p><p class="login-note">Preview admin: <strong>admin</strong> / <strong>goldhall</strong></p><p class="login-note">This static preview is not a production-secure admin system.</p></div></section>`;
+  app.innerHTML = `<section class="admin-login"><a class="admin-back" href="index.php"><i class="fas fa-house"></i> Back to the website</a><div class="login-card"><div class="login-mark"><img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo"></div><h1>Admin Portal</h1><p>Manage Gold Refinery Hall content, student access and grievance desk.</p><form class="login-form" id="loginForm"><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="admin-btn"><i class="fas fa-right-to-bracket"></i> Sign in</button></form><p class="login-error" id="loginError" role="status"></p><p class="login-note">Preview admin: <strong>admin</strong> / <strong>goldhall</strong></p><p class="login-note">This static preview is not a production-secure admin system.</p></div></section>`;
   document.getElementById('loginForm').onsubmit = event => {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
@@ -52,8 +52,8 @@ function dashboard() {
           </div>
         </div>
         <div class="admin-top-actions">
-          <a class="admin-site-link" href="index.html"><i class="fas fa-house"></i> View website</a>
-          <a class="admin-site-link" href="dashboard.html" target="_blank"><i class="fas fa-user-graduate"></i> Student Hub preview</a>
+          <a class="admin-site-link" href="index.php"><i class="fas fa-house"></i> View website</a>
+          <a class="admin-site-link" href="dashboard.php" target="_blank"><i class="fas fa-user-graduate"></i> Student Hub preview</a>
           <button id="logout" type="button"><i class="fas fa-right-from-bracket"></i>Sign out</button>
         </div>
       </div>
@@ -273,13 +273,7 @@ function contentDashboard() {
   </div>`;
 
   document.getElementById('resetContent').onclick = () => {
-    if (confirm('Restore the original sample content for all categories?')) {
-      GoldHallStore.reset();
-      editingId = null;
-      pictureData = '';
-      uploadedPicture = '';
-      contentDashboard();
-    }
+    alert('Content now lives on the server in data/content.json. To restore the sample content, delete that file on the server and reload — it will be recreated from includes/seed-content.php.');
   };
   document.getElementById('editorForm').onsubmit = saveContent;
   document.getElementById('cancelEdit').onclick = () => {
@@ -313,10 +307,17 @@ function renderContentList() {
     </article>`).join('') : '<p class="empty-list-note">No items saved yet. Use the form on the left to add your first entry.</p>';
 
   list.querySelectorAll('[data-edit]').forEach(button => button.onclick = () => editContent(button.dataset.edit));
-  list.querySelectorAll('[data-delete]').forEach(button => button.onclick = () => {
-    if (confirm('Delete this item? It will be removed from the student hub.')) {
-      GoldHallStore.remove(activeType, button.dataset.delete);
+  list.querySelectorAll('[data-delete]').forEach(button => button.onclick = async () => {
+    if (!confirm('Delete this item? It will be removed from the site and the Student Hub.')) return;
+    const body = new FormData();
+    body.set('type', activeType);
+    body.set('id', button.dataset.delete);
+    try {
+      await adminRequest('delete', body);
+      await GoldHallStore.ready();
       renderContentList();
+    } catch (error) {
+      alert(`Could not delete: ${error.message}`);
     }
   });
 }
@@ -353,11 +354,31 @@ function normalizeLink(value) {
   return `https://${link}`;
 }
 
-function saveContent(event) {
+/* The server owns the content; these helpers talk to api/admin-content.php. */
+async function adminRequest(action, body) {
+  const form = body instanceof FormData ? body : new FormData();
+  form.set('action', action);
+  const response = await fetch('api/admin-content.php', {
+    method: 'POST',
+    body: form,
+    headers: { Accept: 'application/json' },
+    credentials: 'same-origin'
+  });
+  let payload = null;
+  try { payload = await response.json(); } catch (_) { payload = null; }
+  if (!response.ok || !payload || payload.error) {
+    throw new Error((payload && payload.error) || `Request failed (${response.status}).`);
+  }
+  return payload;
+}
+
+async function saveContent(event) {
   event.preventDefault();
   const values = new FormData(event.currentTarget);
   const feedback = document.getElementById('saveFeedback');
-  const saved = GoldHallStore.save(activeType, {
+  const submit = event.currentTarget.querySelector('button[type="submit"]');
+  const item = {
+    type: activeType,
     id: editingId || `${activeType}-${Date.now()}`,
     title: String(values.get('title')).trim(),
     text: String(values.get('text')).trim(),
@@ -367,14 +388,29 @@ function saveContent(event) {
     image: pictureData,
     position: String(values.get('picturePosition') || '50% 50%'),
     published: values.get('published') === 'on'
-  });
-  if (!saved) {
-    feedback.textContent = 'Could not save: this browser’s storage is full. Remove an item or upload a smaller picture.';
+  };
+
+  if (submit) submit.disabled = true;
+  if (feedback) feedback.textContent = 'Saving…';
+
+  const body = new FormData();
+  body.set('type', activeType);
+  body.set('item', JSON.stringify(item));
+
+  try {
+    await adminRequest('save', body);
+  } catch (error) {
+    if (feedback) feedback.textContent = `Could not save: ${error.message}`;
+    if (submit) submit.disabled = false;
     return;
   }
+
+  if (submit) submit.disabled = false;
+  if (feedback) feedback.textContent = '';
   editingId = null;
   pictureData = '';
   uploadedPicture = '';
+  await GoldHallStore.ready();
   contentDashboard();
 }
 
