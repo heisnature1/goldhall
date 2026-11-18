@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sign-in surfaces: nothing to index, and two are private.
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /reset-password
+Disallow: /confirm-email
+Disallow: /api/
+
+Sitemap: https://goldhall.vercel.app/sitemap.xml
