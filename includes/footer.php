@@ -71,7 +71,6 @@ $extra_scripts = $extra_scripts ?? [];
             <div class="footer-bottom-links">
                 <a href="about">About</a>
                 <a href="contact">Contact</a>
-                <a href="admin">Admin</a>
             </div>
         </div>
     </div>
