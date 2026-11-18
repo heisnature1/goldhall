@@ -72,8 +72,10 @@ goldhall_loader();
             <label class="reset-show">
               <input type="checkbox" data-show-password="loginPassword"> Show password
             </label>
+            <!-- Above the button on purpose: an error below it can sit out of
+                 view once the on-screen keyboard has scrolled the card. -->
+            <p class="form-error auth-alert" id="authMessage" role="alert" aria-live="assertive"></p>
             <button class="form-submit" type="submit" id="loginSubmit">Sign in to Student Hub <i class="fas fa-arrow-right"></i></button>
-            <p class="form-error" id="authMessage" role="status" aria-live="polite"></p>
             <p class="auth-links"><button type="button" class="auth-link" id="forgotLink">Forgot your password?</button></p>
           </form>
         </div>
