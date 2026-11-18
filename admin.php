@@ -120,6 +120,17 @@ $store = goldhall_supabase_status();
   });
 </script>
 <?php endif; ?>
+
+<?php
+/* Emit this page's scripts ($extra_scripts) and fx.js.
+   admin.php closes its own body instead of including includes/footer.php, so
+   the loop that footer runs has to run here. Without it admin.js is never
+   requested and the portal renders as an empty page behind the status bar. */
+?>
+
+<?php foreach ((array) $extra_scripts as $src) : ?>
+<script src="<?= function_exists('goldhall_e') ? goldhall_e($src) : htmlspecialchars($src) ?>"></script>
+<?php endforeach; ?>
 <script src="fx.js"></script>
 </body>
 </html>
