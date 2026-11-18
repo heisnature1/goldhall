@@ -61,6 +61,41 @@
   }, { passive: true });
   paintProgress();
 
+  /* ----- Page loader: fallback dismissal ----- */
+
+  /*
+   * Every page prints the full-screen loader (z-index 99999). script.js
+   * dismisses it on the home page and pages.js on the inner pages; the Student
+   * Hub, dashboard, reset and confirm pages load neither, so their forms were
+   * rendered behind an opaque overlay that nothing ever removed.
+   *
+   * This is a *fallback*, not a second dismissal: when the page already ships
+   * a handler, that handler keeps its own timing and this stays out of the way.
+   * Only pages with no handler — plus the hard safety net below — are affected.
+   */
+  const loader = document.getElementById('pageLoader');
+  const loaderOwner = document.querySelector(
+    'script[src*="script.js"], script[src*="pages.js"], script[src*="admin.js"]'
+  );
+
+  if (loader && !loaderOwner) {
+    const dismissLoader = () => {
+      if (loader.classList.contains('hidden')) return;
+      window.setTimeout(() => loader.classList.add('hidden'), 700);
+    };
+    if (document.readyState === 'complete') {
+      dismissLoader();
+    } else {
+      window.addEventListener('load', dismissLoader, { once: true });
+    }
+  }
+
+  /* Safety net for every page, including the ones above: a stalled font, image
+     or script must never leave the overlay covering the content. */
+  if (loader) {
+    window.setTimeout(() => loader.classList.add('hidden'), 3500);
+  }
+
   /* ----- Hero entrance, synced with the page loader ----- */
   const hero = document.querySelector('.hero');
   if (hero) {
