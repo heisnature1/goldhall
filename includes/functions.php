@@ -83,6 +83,31 @@ function goldhall_position(array $item): string
     return $position !== '' ? $position : '50% 50%';
 }
 
+/**
+ * Absolute URL of this site, without a trailing slash.
+ *
+ * GOLDHALL_SITE_URL wins when it is set, so links stay correct behind a proxy
+ * or on a custom domain. Otherwise it is taken from the request, which is what
+ * the host always knows.
+ */
+function goldhall_site_url(): string
+{
+    $configured = getenv('GOLDHALL_SITE_URL');
+    if (is_string($configured) && trim($configured) !== '') {
+        return rtrim(trim($configured), '/');
+    }
+
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+    if ($host === '') {
+        return 'https://goldhall.vercel.app';
+    }
+
+    $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+
+    return ($https ? 'https' : 'http') . '://' . $host;
+}
+
 /** Current script name, e.g. index.php. */
 function goldhall_current_page(): string
 {
