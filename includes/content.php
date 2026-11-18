@@ -417,11 +417,26 @@ function goldhall_save_content(array $data): bool
  * so content editing needs an external store. Rather than a generic
  * "permission denied", say what is actually wrong.
  */
-function goldhall_write_error(): string
+function goldhall_write_error(?string $detail = ''): string
 {
     if (goldhall_uses_supabase()) {
-        return 'Supabase could not store the change. Check GOLDHALL_SUPABASE_KEY, and that the '
-            . 'content_items table exists — see supabase-schema.sql.';
+        $config = goldhall_supabase_config();
+        $key    = $config['key'] ?? '';
+
+        $message = 'Supabase could not store the change.';
+        if ($key !== '' && str_starts_with($key, 'sb_publishable_')) {
+            $message .= ' GOLDHALL_SUPABASE_KEY holds the publishable key, which can only read;'
+                . ' replace it with the secret key (sb_secret_…) or the legacy service_role key.';
+        } else {
+            $message .= ' Check GOLDHALL_SUPABASE_KEY and that the content_items table exists'
+                . ' — see supabase-schema.sql.';
+        }
+
+        $detail = $detail !== '' ? $detail : goldhall_supabase_last_error();
+
+        return $detail !== ''
+            ? $message . ' Supabase said: ' . $detail
+            : $message;
     }
     if (getenv('VERCEL') !== false || getenv('AWS_LAMBDA_FUNCTION_NAME') !== false) {
         return 'This deployment runs on a read-only filesystem, so the content file cannot be saved here. '
