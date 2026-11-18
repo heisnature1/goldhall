@@ -8,8 +8,15 @@
 
 declare(strict_types=1);
 
-$active_nav = $active_nav ?? goldhall_current_page();
-$is_home    = $active_nav === 'index.php';
+/* $active_nav is the current page's script name (about.php). The nav entries
+   now hold pretty URL slugs (about), so reduce it to a comparable slug. */
+$active_page = $active_nav ?? goldhall_current_page();
+$active_slug = preg_replace('/\.php$/i', '', (string) $active_page);
+
+if ($active_slug === 'index') {
+    $active_slug = '';
+}
+$is_home = $active_slug === '';
 
 $admin_logo = 'assets/logo/pius-tweneboah-administration-logo.png';
 ?>
@@ -35,7 +42,7 @@ $admin_logo = 'assets/logo/pius-tweneboah-administration-logo.png';
 <!-- HEADER -->
 <header class="header" id="header">
     <div class="container">
-        <a class="logo-section" href="index.php">
+        <a class="logo-section" href="./">
             <div class="logo-img">
                 <img src="assets/logo/gold-refinery-hall-logo.png" alt="Gold Refinery Hall logo">
             </div>
@@ -88,16 +95,16 @@ $admin_logo = 'assets/logo/pius-tweneboah-administration-logo.png';
 <?php foreach (goldhall_nav() as [$label, $href, $icon]) : ?>
 <?php
     $classes = [];
-    if ($href === 'student.php') {
+    if ($href === 'student') {
         $classes[] = 'nav-highlight';
     }
-    if ($href === $active_nav) {
+    $is_current = $href === $active_slug;
+    if ($is_current) {
         $classes[] = 'active';
     }
-    $is_current = $href === $active_nav;
 ?>
             <li>
-                <a href="<?= goldhall_e($href) ?>"<?= $classes ? ' class="' . goldhall_e(implode(' ', $classes)) . '"' : '' ?><?= $is_current ? ' aria-current="page"' : '' ?>>
+                <a href="<?= goldhall_e($href === '' ? './' : $href) ?>"<?= $classes ? ' class="' . goldhall_e(implode(' ', $classes)) . '"' : '' ?><?= $is_current ? ' aria-current="page"' : '' ?>>
                     <i class="fas <?= goldhall_e($icon) ?>" aria-hidden="true"></i><?= goldhall_e($label) ?>
                 </a>
             </li>
@@ -108,8 +115,8 @@ $admin_logo = 'assets/logo/pius-tweneboah-administration-logo.png';
                 <i class="fas fa-right-to-bracket btn-icon-lead" aria-hidden="true"></i><span>Login</span><i class="fas fa-chevron-down btn-icon-caret" aria-hidden="true"></i>
             </button>
             <div class="login-dropdown" role="menu" aria-label="Login options">
-                <a href="student.php" role="menuitem"><i class="fas fa-user-graduate" aria-hidden="true"></i><span>Sign in to Student Hub</span></a>
-                <a href="admin.php" role="menuitem"><i class="fas fa-user-tie" aria-hidden="true"></i><span>Admin Portal</span></a>
+                <a href="student" role="menuitem"><i class="fas fa-user-graduate" aria-hidden="true"></i><span>Sign in to Student Hub</span></a>
+                <a href="admin" role="menuitem"><i class="fas fa-user-tie" aria-hidden="true"></i><span>Admin Portal</span></a>
             </div>
         </div>
     </div>

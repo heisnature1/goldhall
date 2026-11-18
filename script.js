@@ -254,10 +254,10 @@
         // owning the section currently under the header while scrolling.
         const sections = document.querySelectorAll('section[id]');
         const sectionTab = {
-            'student-hub': 'student.php',
-            about: 'about.php',
-            events: 'events.php',
-            gallery: 'gallery.php'
+            'student-hub': 'student',
+            about: 'about',
+            events: 'events',
+            gallery: 'gallery'
         };
 
         const syncActiveTab = () => {
@@ -269,7 +269,8 @@
                 }
             });
 
-            const activeHref = sectionTab[current] || 'index.php';
+            // The Home tab's href is "./" and the others are bare slugs.
+            const activeHref = sectionTab[current] || './';
             document.querySelectorAll('.main-nav a').forEach(link => {
                 link.classList.toggle('active', link.getAttribute('href') === activeHref);
             });

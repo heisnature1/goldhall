@@ -141,7 +141,13 @@ function goldhall_save_content(array $data): bool
 {
     $file = goldhall_data_file();
     $dir  = dirname($file);
-    if (!is_dir($dir) && !mkdir($dir, 0775, true) && !is_dir($dir)) {
+    if (!is_dir($dir) && !@mkdir($dir, 0775, true) && !is_dir($dir)) {
+        return false;
+    }
+    /* A serverless host (Vercel, Lambda) ships a read-only filesystem, so the
+       write can never succeed there. Say so plainly rather than failing
+       silently — see README "Hosting". */
+    if (!is_writable(is_file($file) ? $file : $dir)) {
         return false;
     }
 
@@ -157,4 +163,21 @@ function goldhall_save_content(array $data): bool
         return false;
     }
     return rename($tmp, $file);
+}
+
+/**
+ * A message that tells the truth about why a save failed.
+ *
+ * On Vercel (and other serverless hosts) the project filesystem is read-only,
+ * so content editing needs an external store. Rather than a generic
+ * "permission denied", say what is actually wrong.
+ */
+function goldhall_write_error(): string
+{
+    if (getenv('VERCEL') !== false || getenv('AWS_LAMBDA_FUNCTION_NAME') !== false) {
+        return 'This deployment runs on a read-only filesystem, so the content file cannot be saved here. '
+            . 'Editing works on normal PHP hosting (Apache/cPanel/DigitalOcean); on Vercel the site should be '
+            . 'connected to a database instead. See the README section "Hosting".';
+    }
+    return 'Could not write data/content.json. Check that the data directory is writable by PHP.';
 }

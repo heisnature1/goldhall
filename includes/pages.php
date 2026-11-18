@@ -122,12 +122,12 @@ function goldhall_page(string $key): array
 function goldhall_nav(): array
 {
     return [
-        ['Home', 'index.php', 'fa-house'],
-        ['Student Hub', 'student.php', 'fa-graduation-cap'],
-        ['Executives', 'executives.php', 'fa-users'],
-        ['Events', 'events.php', 'fa-calendar-days'],
-        ['Gallery', 'gallery.php', 'fa-images'],
-        ['About Us', 'about.php', 'fa-landmark'],
+        ['Home', '', 'fa-house'],
+        ['Student Hub', 'student', 'fa-graduation-cap'],
+        ['Executives', 'executives', 'fa-users'],
+        ['Events', 'events', 'fa-calendar-days'],
+        ['Gallery', 'gallery', 'fa-images'],
+        ['About Us', 'about', 'fa-landmark'],
     ];
 }
 

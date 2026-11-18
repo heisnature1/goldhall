@@ -69,19 +69,19 @@ require __DIR__ . '/includes/header.php';
     <section class="quick-links">
         <div class="container">
             <div class="quick-links-grid" data-reveal="zoom">
-                <a href="student.php" class="quick-link-card animate-on-scroll">
+                <a href="student" class="quick-link-card animate-on-scroll">
                     <div class="quick-link-icon"><i class="fas fa-graduation-cap"></i></div>
                     <div class="quick-link-text"><h4>Scholarship links</h4><p>Explore funding opportunities</p></div>
                 </a>
-                <a href="contact.php" class="quick-link-card animate-on-scroll">
+                <a href="contact" class="quick-link-card animate-on-scroll">
                     <div class="quick-link-icon"><i class="fas fa-envelope-open-text"></i></div>
                     <div class="quick-link-text"><h4>Contact the Hall</h4><p>Get support from the office</p></div>
                 </a>
-                <a href="events.php" class="quick-link-card animate-on-scroll">
+                <a href="events" class="quick-link-card animate-on-scroll">
                     <div class="quick-link-icon"><i class="fas fa-calendar-check"></i></div>
                     <div class="quick-link-text"><h4>Upcoming Events</h4><p>View hall programmes</p></div>
                 </a>
-                <a href="gallery.php" class="quick-link-card animate-on-scroll">
+                <a href="gallery" class="quick-link-card animate-on-scroll">
                     <div class="quick-link-icon"><i class="fas fa-images"></i></div>
                     <div class="quick-link-text"><h4>Hall Gallery</h4><p>Photos from the hall</p></div>
                 </a>
@@ -97,14 +97,14 @@ require __DIR__ . '/includes/header.php';
                 <h2>Everything student life,<br><em>all in one place.</em></h2>
                 <p>Scholarships, internships, tutorials, campus shuttle information, hall announcements and free student polls—built for every year group.</p>
                 <div class="hub-spotlight-actions">
-                    <a href="student.php" class="hub-spotlight-button">Sign in or register <i class="fas fa-arrow-right"></i></a>
+                    <a href="student" class="hub-spotlight-button">Sign in or register <i class="fas fa-arrow-right"></i></a>
                     <span><i class="fas fa-graduation-cap"></i> Access ends when you complete school</span>
                 </div>
             </div>
             <div class="hub-spotlight-cards" data-reveal="right" style="--fx-delay:.12s">
-                <a href="student.php"><i class="fas fa-award"></i><span><strong>Opportunities</strong><small>Scholarships & internships</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
-                <a href="student.php"><i class="fas fa-bus-simple"></i><span><strong>Campus essentials</strong><small>Schedules & tutorials</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
-                <a href="student.php"><i class="fas fa-check-to-slot"></i><span><strong>Student voice</strong><small>Free hall polls & elections</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
+                <a href="student"><i class="fas fa-award"></i><span><strong>Opportunities</strong><small>Scholarships & internships</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
+                <a href="student"><i class="fas fa-bus-simple"></i><span><strong>Campus essentials</strong><small>Schedules & tutorials</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
+                <a href="student"><i class="fas fa-check-to-slot"></i><span><strong>Student voice</strong><small>Free hall polls & elections</small></span><i class="fas fa-arrow-up-right-from-square"></i></a>
             </div>
         </div>
     </section>
@@ -147,7 +147,7 @@ require __DIR__ . '/includes/header.php';
                             <span>Cultural Activities</span>
                         </div>
                     </div>
-                    <a href="about.php" class="about-btn">
+                    <a href="about" class="about-btn">
                         Learn More <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -232,7 +232,7 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
             </div>
 <?php if (count($executives) > count($home_executives)) : ?>
-            <p class="leaders-more"><a href="executives.php">Meet all <?= count($executives) ?> executives <i class="fas fa-arrow-right"></i></a></p>
+            <p class="leaders-more"><a href="executives">Meet all <?= count($executives) ?> executives <i class="fas fa-arrow-right"></i></a></p>
 <?php endif; ?>
         </div>
     </section>
@@ -305,10 +305,10 @@ require __DIR__ . '/includes/header.php';
                 <h2>Join the Gold Refinery Family</h2>
                 <p>Experience the best of university life at Gold Refinery Hall. From academic support to vibrant social activities, we have everything you need to thrive.</p>
                 <div class="cta-buttons">
-                    <a href="student.php" class="cta-btn-primary">
+                    <a href="student" class="cta-btn-primary">
                         <i class="fas fa-user-plus"></i> Open Student Hub
                     </a>
-                    <a href="about.php" class="cta-btn-secondary">
+                    <a href="about" class="cta-btn-secondary">
                         <i class="fas fa-info-circle"></i> Learn More
                     </a>
                 </div>
