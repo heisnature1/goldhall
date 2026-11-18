@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GOLD HALL STUDENT HUB — shared layer
+   GOLD HALL STUDENT HUB: shared layer
    Session helpers, the pop-up dialog (account created, confirmations),
    dynamic scholarships & internships, grievance desk, and members-only
    dashboard view. Loaded by both student.html and dashboard.html.
@@ -142,7 +142,7 @@
       <div>
         <span class="student-eyebrow">STUDENT HUB · MEMBERS ONLY</span>
         <h1>Welcome, ${esc(student.fullName.split(/\s+/)[0])}.</h1>
-        <p>Your Gold Hall resources, opportunities, student voice and grievance desk—all in one place.</p>
+        <p>Your Gold Hall resources, opportunities, student voice and grievance desk, all in one place.</p>
       </div>
       <div class="welcome-side">
         <button class="hub-button" id="signOutButton" type="button"><i class="fas fa-arrow-right-from-bracket"></i> Sign out</button>
@@ -327,7 +327,7 @@
     </div>
 
     <section class="hub-section" style="display:flex;justify-content:flex-end">
-      <button type="button" class="complete-access" id="completeAccess"><i class="fas fa-graduation-cap"></i> I have completed school — end my access</button>
+      <button type="button" class="complete-access" id="completeAccess"><i class="fas fa-graduation-cap"></i> I have completed school, end my access</button>
     </section>
   </div>`;
   }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RESET PASSWORD PAGE — the other half of resetPasswordForEmail()
+   RESET PASSWORD PAGE: the other half of resetPasswordForEmail()
    --------------------------------------------------------------------------
    Supabase emails a link. Clicking it returns here with a recovery token in
    the URL fragment, which auth-client.js turns into a short-lived session.
