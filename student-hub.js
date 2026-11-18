@@ -322,7 +322,6 @@
           <span id="electionStatus" class="election-status"></span>
         </div>
         <div class="poll-grid" id="pollGrid"></div>
-        <p class="hub-privacy-note"><i class="fas fa-shield-halved"></i> Voting is free. Votes are saved in this browser and cannot verify student identity or prevent tampering. Use a secured server-side election system for an official or binding result.</p>
       </section>
     </div>
 
@@ -526,7 +525,7 @@
         const label = currentVote ? `${count} vote${count === 1 ? '' : 's'}` : '';
         return `<div class="candidate-option${isSelected ? ' is-voted' : ''}"><label><input type="radio" name="${esc(position.id)}" value="${esc(candidate)}" ${isSelected ? 'checked' : ''} ${currentVote || !election.isOpen ? 'disabled' : ''}><span>${esc(candidate)}${isSelected ? ' · Your vote' : ''}</span></label><span class="candidate-result">${label}</span></div>`;
       }).join('');
-      const buttonText = currentVote ? 'Vote recorded' : election.isOpen ? 'Cast free vote' : 'Voting closed';
+      const buttonText = currentVote ? 'Vote recorded' : election.isOpen ? 'Cast vote' : 'Voting closed';
       return `<article class="poll-card"><h3>${esc(position.title)}</h3><div class="poll-vote-count">${total} vote${total === 1 ? '' : 's'} recorded</div><p class="poll-your-vote">${currentVote ? `<i class="fas fa-circle-check"></i> You voted for <strong>${esc(currentVote)}</strong>` : ''}</p><form data-poll="${esc(position.id)}"><div class="candidate-list">${candidates}</div><button class="form-submit poll-submit" type="submit" ${currentVote || !election.isOpen ? 'disabled' : ''}>${buttonText}</button><p class="form-error" role="status" aria-live="polite"></p></form></article>`;
     }).join('');
     grid.querySelectorAll('form[data-poll]').forEach(form => form.addEventListener('submit', async event => {

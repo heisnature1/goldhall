@@ -17,9 +17,6 @@ goldhall_loader();
 ?>
 
   <main id="studentApp" class="student-app">
-    <div class="members-only-note" id="membersNote" hidden>
-      <i class="fas fa-lock"></i> Private student area. This page is not listed in the website menu.
-    </div>
     <div id="studentDashboard" hidden></div>
   </main>
 

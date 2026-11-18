@@ -140,7 +140,6 @@
 .candidate-option.is-voted { border-color:#8bb49a; background:#f1f7f1; }
 .candidate-result { color:#758279; font-size:.72rem; }
 .poll-submit { margin-top:11px; width:100%; }
-.hub-privacy-note { margin:15px 0 0; padding:12px 14px; border-left:3px solid #d1b45e; background:#f7f4e9; color:#716b52; font-size:.74rem; line-height:1.55; }
 .graduated-card { width:min(600px,calc(100% - 36px)); margin:60px auto; padding:40px 36px; text-align:center; background:white; border-radius:18px; border:1px solid rgba(200,168,78,.3); box-shadow:0 15px 45px rgba(20,45,33,.1); }
 .grad-crest { display:inline-grid; place-items:center; width:64px; height:64px; border-radius:15px; overflow:hidden; background:#fff; box-shadow:0 0 0 2px rgba(200,168,78,.7), 0 10px 22px rgba(20,45,33,.14); margin-bottom:16px; }
 .grad-crest img { width:100%; height:100%; object-fit:cover; }
@@ -267,8 +266,6 @@
 .student-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 20px; background: #f2f5f1; border: 1px solid var(--hub-line); color: #3c5346; font-size: .78rem; font-weight: 600; }
 .student-chip i { color: #a4862f; }
 .hub-button-small { padding: 9px 15px; border-radius: 20px; font-size: .8rem; }
-.members-only-note { width: min(1200px, calc(100% - 40px)); margin: 22px auto -4px; display: flex; align-items: center; gap: 10px; padding: 11px 15px; border-radius: 10px; border: 1px dashed rgba(200, 168, 78, .6); background: #fbf8ef; color: #6f6236; font-size: .78rem; }
-.members-only-note i { color: #a4862f; }
 .dashboard-page .hub-dashboard { padding-bottom: 60px; }
 
 /* pop-up dialog (account created, confirmations) */
@@ -306,7 +303,6 @@
 @media (max-width: 700px) {
   .student-header-actions { gap: 8px; }
   .student-chip { display: none; }
-  .members-only-note { width: calc(100% - 28px); font-size: .73rem; }
   .gh-dialog { padding: 26px 20px 22px; border-radius: 14px; }
   .gh-dialog h2 { font-size: 1.35rem; }
   .gh-dialog-details div { flex-direction: column; gap: 3px; }
