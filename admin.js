@@ -372,9 +372,43 @@ async function adminRequest(action, body) {
   let payload = null;
   try { payload = await response.json(); } catch (_) { payload = null; }
   if (!response.ok || !payload || payload.error) {
-    throw new Error((payload && payload.error) || `Request failed (${response.status}).`);
+    /* Prefer the server's own message: it is specific. A non-JSON body means
+       the request was rejected before it reached PHP (a platform limit, or an
+       expired sign-in), and a bare "Request failed (403)" tells nobody
+       anything, so name the likely cause instead. */
+    if (payload && payload.error) throw new Error(payload.error);
+    if (response.status === 401) throw new Error('Your admin sign-in has expired. Reload the page and sign in again.');
+    if (response.status === 413) throw new Error('That was too large for the server to accept. Try a smaller picture.');
+    if (response.status === 403) throw new Error('The server refused that request. Reload the page and sign in again.');
+    throw new Error(`Request failed (${response.status}).`);
   }
   return payload;
+}
+
+/* Store a data URL and return the link to keep.
+ *
+ * The picture is sent on its own, so the save that follows carries a URL
+ * instead of several megabytes of base64.
+ */
+async function uploadPicture(dataUrl) {
+  const match = /^data:image\/([a-z0-9.+-]+);base64,(.+)$/i.exec(dataUrl);
+  if (!match) return dataUrl;
+
+  const extension = match[1].toLowerCase() === 'jpeg' ? 'jpg' : match[1].toLowerCase().replace(/[^a-z0-9]/g, '');
+  const binary = atob(match[2]);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+
+  const form = new FormData();
+  form.set('file', new Blob([bytes], { type: match[0].split(';')[0].slice(5) }), `picture.${extension}`);
+
+  const result = await adminRequest('upload', form);
+  if (result && typeof result.url === 'string' && result.url) return result.url;
+
+  /* Do not fall back to sending the picture inline: that rebuilds the very
+     oversized save that failed in the first place. Say what went wrong
+     instead. */
+  throw new Error('The picture could not be stored. Try a smaller picture, or paste a link to it instead.');
 }
 
 async function saveContent(event) {
@@ -400,9 +434,23 @@ async function saveContent(event) {
 
   const body = new FormData();
   body.set('type', activeType);
-  body.set('item', JSON.stringify(item));
 
   try {
+    /* A picture that is still a data URL has not been stored yet. Send it on
+       its own first and keep only the URL: the save request stays small no
+       matter how big the picture is. Embedding the base64 in `item` made every
+       save carry the whole image, which is what a large body gets rejected
+       for.
+     */
+    if (pictureData.startsWith('data:')) {
+      if (feedback) feedback.textContent = 'Uploading the picture…';
+      item.image = await uploadPicture(pictureData);
+      pictureData = item.image;
+      renderPicturePreview();
+    }
+
+    body.set('item', JSON.stringify(item));
+    if (feedback) feedback.textContent = 'Saving…';
     await adminRequest('save', body);
   } catch (error) {
     if (feedback) feedback.textContent = `Could not save: ${error.message}`;
