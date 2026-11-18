@@ -72,6 +72,14 @@ goldhall_loader();
     <a href="">Back to the public website <i class="fas fa-arrow-right"></i></a>
   </footer>
 
+<?php
+/* Emit this page's scripts ($extra_scripts) and fx.js.
+   These pages close their own body, so the loop has to run here. */
+?>
+
+<?php foreach ((array) $extra_scripts as $src) : ?>
+<script src="<?= function_exists('goldhall_e') ? goldhall_e($src) : htmlspecialchars($src) ?>"></script>
+<?php endforeach; ?>
 <script src="fx.js"></script>
 </body>
 </html>
