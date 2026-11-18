@@ -27,7 +27,11 @@ const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&a
 
 function dashboard() {
   const contentButtons = Object.keys(labels).map(type => `<button type="button" data-type="${type}" class="admin-tab ${activeView === 'content' && type === activeType ? 'active' : ''}"><i class="fas ${icons[type]}"></i>${labels[type]}</button>`).join('');
-  const pendingGrievances = typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.pendingGrievancesCount() : 0;
+
+  /* The pending-grievance count now comes from the database. The shell renders
+     first and the badge fills in when it arrives: waiting for it would stall
+     the whole portal behind one request. */
+  const pendingSlot = `<span class="admin-badge-count" id="pendingGrievanceBadge" hidden></span>`;
 
   app.innerHTML = `<div class="admin-shell">
     <header class="admin-topbar">
@@ -51,7 +55,7 @@ function dashboard() {
         ${contentButtons}
         <span class="admin-tab-sep" aria-hidden="true"></span>
         <button id="portalTools" type="button" class="admin-tab ${activeView === 'portal' ? 'active' : ''}"><i class="fas fa-user-graduate"></i>Students &amp; polls</button>
-        <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i>Grievance desk ${pendingGrievances > 0 ? `<span class="admin-badge-count">${pendingGrievances}</span>` : ''}</button>
+        <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i>Grievance desk ${pendingSlot}</button>
       </div>
     </nav>
     <main class="admin-main" id="adminMain"></main>
@@ -70,6 +74,15 @@ function dashboard() {
     const form = document.getElementById('adminSignOut');
     if (form) form.submit();
   };
+
+  if (typeof GoldHallPortal !== 'undefined') {
+    GoldHallPortal.pendingGrievancesCount().then(count => {
+      const badge = document.getElementById('pendingGrievanceBadge');
+      if (!badge) return;
+      badge.textContent = count > 0 ? String(count) : '';
+      badge.hidden = !(count > 0);
+    }).catch(() => {});
+  }
 
   if (activeView === 'portal') portalDashboard();
   else if (activeView === 'grievances') grievancesDashboard();
@@ -409,14 +422,18 @@ async function saveContent(event) {
 /* ==========================================================================
    PORTAL DASHBOARD — Students, Access & Elections
    ========================================================================== */
-function portalDashboard() {
+async function portalDashboard() {
   const main = document.getElementById('adminMain');
-  const members = GoldHallPortal.students();
-  const election = GoldHallPortal.election();
+  main.innerHTML = '<p class="admin-loading">Loading students and polls…</p>';
+
+  const members = await GoldHallPortal.students();
+  const election = await GoldHallPortal.election();
   const active = members.filter(member => member.accessStatus === 'active').length;
   const completed = members.length - active;
-  const results = election.positions.map(position => {
-    const tally = GoldHallPortal.results(position.id);
+
+  const tallies = await Promise.all(election.positions.map(position => GoldHallPortal.results(position.id)));
+  const results = election.positions.map((position, index) => {
+    const tally = tallies[index] || {};
     const total = Object.values(tally).reduce((sum, count) => sum + count, 0);
     return `<div class="election-result-row">
       <div><strong>${safe(position.title)}</strong><small>${total} ballot${total === 1 ? '' : 's'}</small></div>
@@ -429,7 +446,7 @@ function portalDashboard() {
       <h2>Student Hub &amp; Polls Administration</h2>
       <p>Manage enrolled student access records and free student poll positions.</p>
     </div>
-    <span class="admin-preview-tag"><i class="fas fa-triangle-exclamation"></i> Browser-only preview</span>
+    <span class="admin-preview-tag"><i class="fas fa-database"></i> Stored in your database</span>
   </div>
   <div class="portal-stats">
     <div class="portal-stat"><span>Registered students</span><strong>${members.length}</strong></div>
@@ -503,23 +520,24 @@ function portalDashboard() {
     <div class="panel-heading-row">
       <div>
         <h3>Live poll results</h3>
-        <p>Live tally from ballots saved in this browser only, not from students voting on their own devices.</p>
+        <p>Live tally from every ballot stored in the database.</p>
       </div>
     </div>
     <div class="election-results">${results}</div>
   </section>
-  <p class="admin-security-note"><i class="fas fa-circle-info"></i> Sign-in is real: accounts are held by Supabase Auth, passwords never reach this site, and students confirm their email before they can enter. What is still local to one browser is everything in this panel: the student roster, the grievance desk and the ballots. A student who registers on their phone will not appear here, and their grievance will not reach you. Treat this list as a register you keep yourself, not a live view of the hub, and do not run an official election on it until these records live on a server.</p>`;
+  <p class="admin-security-note"><i class="fas fa-circle-info"></i> Sign-in is real: accounts are held by Supabase Auth, and passwords never reach this site. Student records, grievances and ballots are stored in your Supabase database, so a student who registers on their phone appears here, and their grievance reaches this desk. Ballots are unique per student and position, enforced by the database, so a vote cannot be cast twice by clearing a browser.</p>`;
 
-  main.querySelectorAll('[data-status]').forEach(button => button.onclick = () => {
+  main.querySelectorAll('[data-status]').forEach(button => button.onclick = async () => {
     const accessStatus = button.dataset.next;
     if (accessStatus === 'completed' && !confirm(`Mark ${button.dataset.status} as completed and revoke Student Hub access?`)) return;
-    GoldHallPortal.updateStudent(button.dataset.status, { accessStatus, completedAt: accessStatus === 'completed' ? new Date().toISOString() : null });
+    button.disabled = true;
+    await GoldHallPortal.updateStudent(button.dataset.status, { accessStatus, completedAt: accessStatus === 'completed' ? new Date().toISOString() : null });
     portalDashboard();
   });
   document.getElementById('electionForm').onsubmit = saveElection;
 }
 
-function saveElection(event) {
+async function saveElection(event) {
   event.preventDefault();
   const values = new FormData(event.currentTarget);
   const lines = String(values.get('positions')).split(/\r?\n/).map(line => line.trim()).filter(Boolean);
@@ -534,16 +552,22 @@ function saveElection(event) {
     positions.push({ title, candidates });
   }
   if (!positions.length) { document.getElementById('electionFeedback').textContent = 'Add at least one poll position.'; return; }
-  GoldHallPortal.saveElection({ title: values.get('title').trim(), isOpen: values.get('isOpen') === 'on', positions });
+  try {
+    await GoldHallPortal.saveElection({ title: values.get('title').trim(), isOpen: values.get('isOpen') === 'on', positions });
+  } catch (error) {
+    document.getElementById('electionFeedback').textContent = error?.message || 'Could not save the poll.';
+    return;
+  }
   portalDashboard();
 }
 
 /* ==========================================================================
    GRIEVANCES & COMPLAINTS DESK — Admin Management & Actions
    ========================================================================== */
-function grievancesDashboard() {
+async function grievancesDashboard() {
   const main = document.getElementById('adminMain');
-  const allGrievances = typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.grievances() : [];
+  main.innerHTML = '<p class="admin-loading">Loading grievances…</p>';
+  const allGrievances = await GoldHallPortal.grievances();
 
   const counts = {
     all: allGrievances.length,
@@ -660,9 +684,9 @@ function grievancesDashboard() {
   }
 
   const resetBtn = document.getElementById('resetGrievances');
-  if (resetBtn) resetBtn.onclick = () => {
-    if (confirm('Reset grievances to initial sample complaints?')) {
-      GoldHallPortal.resetGrievances();
+  if (resetBtn) resetBtn.onclick = async () => {
+    if (confirm('Delete every complaint in the database? This cannot be undone.')) {
+      await GoldHallPortal.resetGrievances();
       grievanceStatusFilter = 'all';
       grievanceCategoryFilter = 'all';
       grievancePriorityFilter = 'all';
@@ -673,7 +697,7 @@ function grievancesDashboard() {
 
   // Bind grievance action forms
   main.querySelectorAll('.grievance-action-form').forEach(form => {
-    form.onsubmit = event => {
+    form.onsubmit = async event => {
       event.preventDefault();
       const gid = form.dataset.gid;
       const data = new FormData(form);
@@ -682,12 +706,20 @@ function grievancesDashboard() {
       const adminAction = String(data.get('adminAction') || '').trim();
       const feedback = document.getElementById(`feedback-${gid}`);
 
-      GoldHallPortal.updateGrievance(gid, {
-        status,
-        actionHandler,
-        adminAction,
-        adminActionDate: adminAction ? new Date().toISOString() : null
-      });
+      try {
+        await GoldHallPortal.updateGrievance(gid, {
+          status,
+          actionHandler,
+          adminAction,
+          adminActionDate: adminAction ? new Date().toISOString() : null
+        });
+      } catch (error) {
+        if (feedback) {
+          feedback.className = 'upload-feedback error';
+          feedback.textContent = error?.message || 'Could not save the action.';
+        }
+        return;
+      }
 
       if (feedback) {
         feedback.className = 'upload-feedback ok';
@@ -716,10 +748,11 @@ function grievancesDashboard() {
 
   // Bind delete grievance buttons
   main.querySelectorAll('[data-delete-gid]').forEach(btn => {
-    btn.onclick = () => {
+    btn.onclick = async () => {
       const gid = btn.dataset.deleteGid;
       if (confirm(`Delete complaint ${gid}? This action cannot be undone.`)) {
-        GoldHallPortal.deleteGrievance(gid);
+        btn.disabled = true;
+        await GoldHallPortal.deleteGrievance(gid);
         dashboard();
       }
     };

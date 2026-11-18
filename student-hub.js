@@ -11,7 +11,7 @@
   /* ---------- session ---------- */
   const session = {
     id() { try { return sessionStorage.getItem(SESSION_KEY); } catch (_) { return null; } },
-    student() {
+    async student() {
       const id = this.id();
       return id && typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.findStudent(id) : null;
     },
@@ -335,16 +335,17 @@
   /* ---------- Grievances rendering & submission ---------- */
   let currentGrievanceFilter = 'all';
 
-  function renderStudentGrievances(student, host, filter = 'all') {
+  async function renderStudentGrievances(student, host, filter = 'all') {
     const listEl = host.querySelector('#studentGrievancesList');
     if (!listEl) return;
 
-    let grievances = typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.studentGrievances(student.studentId) : [];
-
-    // If this student has no specific grievances yet in demo, check if they want to see all submitted
-    if (!grievances.length && typeof GoldHallPortal !== 'undefined') {
-      grievances = GoldHallPortal.grievances();
-    }
+    /* The server returns this student's own grievances, and only theirs. The
+       old fallback that showed every grievance when the list was empty is gone
+       with it: there is no longer a roster of other people's complaints to
+       leak. */
+    let grievances = typeof GoldHallPortal !== 'undefined'
+      ? await GoldHallPortal.studentGrievances(student.studentId)
+      : [];
 
     if (filter !== 'all') {
       grievances = grievances.filter(g => g.status === filter);
@@ -429,7 +430,7 @@
     });
 
     if (form) {
-      form.addEventListener('submit', event => {
+      form.addEventListener('submit', async event => {
         event.preventDefault();
         const data = new FormData(form);
         const category = String(data.get('category') || '').trim();
@@ -450,7 +451,7 @@
         submitBtn.innerHTML = 'Submitting complaint… <i class="fas fa-spinner fa-spin"></i>';
 
         try {
-          const newGrievance = GoldHallPortal.saveGrievance({
+          const newGrievance = await GoldHallPortal.saveGrievance({
             studentId: student.studentId,
             studentName: student.fullName,
             studentEmail: student.studentEmail,
@@ -492,7 +493,7 @@
 
           renderStudentGrievances(student, host, currentGrievanceFilter);
         } catch (err) {
-          feedback.textContent = 'Could not submit complaint. Please try again.';
+          feedback.textContent = err?.message || 'Could not submit complaint. Please try again.';
           submitBtn.disabled = false;
           submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Complaint to Admin';
         }
@@ -500,8 +501,8 @@
     }
   }
 
-  function renderPolls(student, host, onAccessLost) {
-    const election = GoldHallPortal.election();
+  async function renderPolls(student, host, onAccessLost) {
+    const election = await GoldHallPortal.election();
     const title = host.querySelector('#electionTitle');
     const status = host.querySelector('#electionStatus');
     const grid = host.querySelector('#pollGrid');
@@ -509,9 +510,15 @@
     status.className = `election-status${election.isOpen ? '' : ' closed'}`;
     status.innerHTML = `<i class="fas ${election.isOpen ? 'fa-circle-check' : 'fa-lock'}"></i> ${election.isOpen ? 'Polls open' : 'Polls closed'}`;
     if (!election.positions.length) { grid.innerHTML = '<p>No polls have been configured yet. Please check back later.</p>'; return; }
-    grid.innerHTML = election.positions.map(position => {
-      const currentVote = GoldHallPortal.voteFor(student.studentId, position.id);
-      const tally = GoldHallPortal.results(position.id);
+
+    /* One request for this student's ballot and one per position for the
+       tally, issued together rather than in sequence. */
+    const myVotes = await GoldHallPortal.votes();
+    const tallies = await Promise.all(election.positions.map(position => GoldHallPortal.results(position.id)));
+
+    grid.innerHTML = election.positions.map((position, index) => {
+      const currentVote = myVotes[position.id] || null;
+      const tally = tallies[index] || {};
       const total = Object.values(tally).reduce((sum, value) => sum + value, 0);
       const candidates = position.candidates.map(candidate => {
         const isSelected = currentVote === candidate;
@@ -520,17 +527,37 @@
         return `<div class="candidate-option${isSelected ? ' is-voted' : ''}"><label><input type="radio" name="${esc(position.id)}" value="${esc(candidate)}" ${isSelected ? 'checked' : ''} ${currentVote || !election.isOpen ? 'disabled' : ''}><span>${esc(candidate)}${isSelected ? ' · Your vote' : ''}</span></label><span class="candidate-result">${label}</span></div>`;
       }).join('');
       const buttonText = currentVote ? 'Vote recorded' : election.isOpen ? 'Cast free vote' : 'Voting closed';
-      return `<article class="poll-card"><h3>${esc(position.title)}</h3><div class="poll-vote-count">${total} vote${total === 1 ? '' : 's'} recorded</div><form data-poll="${esc(position.id)}"><div class="candidate-list">${candidates}</div><button class="form-submit poll-submit" type="submit" ${currentVote || !election.isOpen ? 'disabled' : ''}>${buttonText}</button><p class="form-error" role="status" aria-live="polite"></p></form></article>`;
+      return `<article class="poll-card"><h3>${esc(position.title)}</h3><div class="poll-vote-count">${total} vote${total === 1 ? '' : 's'} recorded</div><p class="poll-your-vote">${currentVote ? `<i class="fas fa-circle-check"></i> You voted for <strong>${esc(currentVote)}</strong>` : ''}</p><form data-poll="${esc(position.id)}"><div class="candidate-list">${candidates}</div><button class="form-submit poll-submit" type="submit" ${currentVote || !election.isOpen ? 'disabled' : ''}>${buttonText}</button><p class="form-error" role="status" aria-live="polite"></p></form></article>`;
     }).join('');
-    grid.querySelectorAll('form[data-poll]').forEach(form => form.addEventListener('submit', event => {
+    grid.querySelectorAll('form[data-poll]').forEach(form => form.addEventListener('submit', async event => {
       event.preventDefault();
-      const latestStudent = GoldHallPortal.findStudent(student.studentId);
+      const error = form.querySelector('.form-error');
+      const button = form.querySelector('.poll-submit');
+
+      const latestStudent = await GoldHallPortal.findStudent(student.studentId);
       if (!latestStudent || latestStudent.accessStatus !== 'active') { onAccessLost?.(); return; }
       const selected = form.querySelector('input[type="radio"]:checked');
-      const error = form.querySelector('.form-error');
       if (!selected) { error.textContent = 'Choose one candidate before submitting your vote.'; return; }
-      if (!GoldHallPortal.election().isOpen) { error.textContent = 'Voting has closed.'; return; }
-      if (!GoldHallPortal.vote(student.studentId, form.dataset.poll, selected.value)) { error.textContent = 'A vote for this position has already been recorded.'; return; }
+
+      const current = await GoldHallPortal.election();
+      if (!current.isOpen) { error.textContent = 'Voting has closed.'; return; }
+
+      if (button) button.disabled = true;
+      try {
+        const recorded = await GoldHallPortal.vote(student.studentId, form.dataset.poll, selected.value);
+        if (!recorded) {
+          error.textContent = 'A vote for this position has already been recorded.';
+          if (button) button.disabled = false;
+          return;
+        }
+      } catch (failure) {
+        /* A refusal from the database is not the same as a dead network, and
+           the student needs to know which happened. */
+        error.textContent = failure?.message || 'Could not record your vote. Please try again.';
+        if (button) button.disabled = false;
+        return;
+      }
+
       renderPolls(student, host, onAccessLost);
     }));
   }
@@ -579,8 +606,8 @@
         title: 'Mark your studies as completed?',
         body: 'Your Student Hub access and voting will be switched off and you will be signed out. This is how your hall access ends when you finish school.',
         actions: [
-          { label: 'Yes, end my access', primary: true, onClick: () => {
-            GoldHallPortal.updateStudent(student.studentId, { accessStatus: 'completed', completedAt: new Date().toISOString() });
+          { label: 'Yes, end my access', primary: true, onClick: async () => {
+            await GoldHallPortal.updateStudent(student.studentId, { accessStatus: 'completed', completedAt: new Date().toISOString() });
             lost();
           } },
           { label: 'No, keep my access' }
@@ -588,23 +615,14 @@
       });
     });
 
-    renderPolls(student, host, lost);
-    renderStudentGrievances(student, host, 'all');
+    /* Both render from the server, so they are started together and each
+       reports its own failure rather than leaving a blank panel. */
+    renderPolls(student, host, lost).catch(() => {});
+    renderStudentGrievances(student, host, 'all').catch(() => {});
     setupGrievanceEvents(student, host);
 
-    // Live update when grievances or scholarships are updated in another tab/admin
-    window.addEventListener('storage', event => {
-      if (event.key === 'goldHallGrievances') {
-        renderStudentGrievances(student, host, currentGrievanceFilter);
-      }
-      if (event.key === 'goldHallManagedContent') {
-        // Refresh scholarships & internships cards
-        const sGrid = host.querySelector('#scholarshipsGrid');
-        const iGrid = host.querySelector('#internshipsGrid');
-        if (sGrid) sGrid.innerHTML = scholarshipCards();
-        if (iGrid) iGrid.innerHTML = internshipCards();
-      }
-    });
+    /* Content is not mirrored in storage any more either, so there is no
+       cross-tab signal left to listen for. The hub re-reads on reload. */
 
     window.GoldHallFX?.observe(host);
   }
