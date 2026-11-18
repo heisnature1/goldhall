@@ -80,13 +80,37 @@ create policy "uploads are public readable"
   using (bucket_id = 'uploads');
 
 -- ---------------------------------------------------------------------------
--- 4. Seed the content
+-- 4. Seeding happens by itself
 -- ---------------------------------------------------------------------------
--- You do not have to insert the rows by hand. After setting the environment
--- variables, open the admin portal once and use "Import seed content", or run
--- from a shell:
+-- You do not insert the rows by hand, and there is no button or endpoint to
+-- call. Once GOLDHALL_SUPABASE_URL and GOLDHALL_SUPABASE_KEY are set and the
+-- site redeployed, the first read that finds this table empty fills it from
+-- includes/seed-content.php. Up to that point the site renders the same file
+-- directly, so nothing looks broken in the meantime.
 --
---   curl -X POST "$SITE/api/content.php?action=seed"
+-- `sort` is not yours to maintain: it keeps the order within a section, and
+-- the code assigns it on import and on every save.
+
+-- ---------------------------------------------------------------------------
+-- 5. Repair: rows that lost their position
+-- ---------------------------------------------------------------------------
+-- A save used to upsert without `sort`, so every edited row was reset to the
+-- column default of 0 and jumped to the top of its section. The code no longer
+-- does that, but existing rows may still be collapsed. Check with:
 --
--- The site also reads straight from includes/seed-content.php until the table
--- has rows, so nothing looks broken in the meantime.
+--   select type, count(*), count(distinct sort)
+--     from public.content_items
+--    group by type;
+--
+-- Any type where the third number is smaller than the second has duplicates.
+-- Renumber each section in its current display order with:
+--
+--   with ordered as (
+--     select id, type,
+--            row_number() over (partition by type order by sort, title) - 1 as n
+--       from public.content_items
+--   )
+--   update public.content_items c
+--      set sort = o.n
+--     from ordered o
+--    where o.id = c.id;
