@@ -95,14 +95,6 @@
   ],
   "rewrites": [
     {
-      "source": "/sitemap.xml",
-      "destination": "/api/sitemap.php"
-    },
-    {
-      "source": "/robots.txt",
-      "destination": "/api/sitemap.php?type=robots"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/api/index.php"
     }
