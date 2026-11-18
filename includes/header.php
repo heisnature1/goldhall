@@ -116,7 +116,6 @@ $admin_logo = 'assets/logo/pius-tweneboah-administration-logo.png';
             </button>
             <div class="login-dropdown" role="menu" aria-label="Login options">
                 <a href="student" role="menuitem"><i class="fas fa-user-graduate" aria-hidden="true"></i><span>Sign in to Student Hub</span></a>
-                <a href="admin" role="menuitem"><i class="fas fa-user-tie" aria-hidden="true"></i><span>Admin Portal</span></a>
             </div>
         </div>
     </div>
