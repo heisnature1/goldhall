@@ -351,8 +351,9 @@
 .hub-tab.active .hub-tab-mark { color: var(--hub-gold); }
 
 .hub-content { min-width: 0; position: relative; }
-.hub-side-open { display: none; }
-.hub-side-open[hidden] { display: none; }
+/* Visible at any width: the hidden attribute is what decides, never a media
+   query. Gating this on width is what once left a closed menu unreachable. */
+.hub-side-open[hidden] { display: none !important; }
 
 /* Closed: the column goes and the content takes the width. */
 .hub-tabs-wrap.side-closed { grid-template-columns: minmax(0, 1fr); }
@@ -361,7 +362,7 @@
 
 /* The control that brings it back, sitting above the panel. */
 .hub-side-open {
-  align-items: center; gap: 9px; margin: 0 0 16px; padding: 11px 17px;
+  display: inline-flex; align-items: center; gap: 9px; margin: 0 0 16px; padding: 11px 17px;
   border: 1px solid #dbe5db; border-radius: 11px; background: #fff; color: #2f5b3f;
   font: 600 .86rem 'Inter', sans-serif; cursor: pointer; box-shadow: 0 6px 16px rgba(28, 54, 38, .07);
   transition: background .2s, border-color .2s, transform .2s;
@@ -382,7 +383,6 @@
     display: flex;
   }
   .hub-side.is-closed { display: flex; transform: translateX(-102%); box-shadow: none; }
-  .hub-side-open { display: inline-flex; }
   .hub-tab { min-height: 48px; font-size: .9rem; padding: 12px 14px; }
   .hub-content.is-behind-menu { overflow: hidden; }
 
