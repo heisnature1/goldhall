@@ -58,25 +58,11 @@ function goldhall_public_key(): string
     return $key;
 }
 
-/** Absolute URL of this site, for the confirmation and reset links. */
-function goldhall_site_url(): string
-{
-    $configured = getenv('GOLDHALL_SITE_URL');
-    if (is_string($configured) && trim($configured) !== '') {
-        return rtrim(trim($configured), '/');
-    }
-
-    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
-    if ($host === '') {
-        return '';
-    }
-
-    $https  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
-    $scheme = $https ? 'https' : 'http';
-
-    return $scheme . '://' . $host;
-}
+/* The site URL lives in includes/functions.php as goldhall_site_url(). It used
+   to be defined here as well, and this file requires functions.php, so the
+   second declaration was a fatal "cannot redeclare function" that took the whole
+   endpoint down: the browser got no configuration at all, so sign-up, sign-in
+   redirects and password reset stopped working everywhere. Keep one copy. */
 
 $url = getenv('GOLDHALL_SUPABASE_URL') ?: getenv('SUPABASE_URL');
 $url = is_string($url) ? rtrim(trim($url), '/') : '';
