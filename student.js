@@ -16,6 +16,15 @@ const tabs = [...document.querySelectorAll('.auth-tab')];
 
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 const DASHBOARD_URL = 'dashboard';
+
+/* A members-only page turns a stranger away with ?next= the page they asked
+   for. Only the three gated pages are honoured, so the parameter can never be
+   used to bounce someone on to an arbitrary address. */
+const MEMBERS_ONLY_PAGES = ['events', 'executives', 'gallery'];
+const returnTarget = () => {
+  const wanted = String(new URLSearchParams(window.location.search).get('next') || '').trim().toLowerCase();
+  return MEMBERS_ONLY_PAGES.includes(wanted) ? wanted : '';
+};
 const AUTH = window.GoldHallAuth;
 
 /* Resolved once: true when Supabase Auth is configured for this deployment. */
@@ -446,7 +455,7 @@ function accountCreatedDialog(student) {
       ['Student email', student.studentEmail]
     ],
     actions: [
-      { label: 'Open my Student Hub', icon: 'fa-arrow-right', primary: true, onClick: () => { window.location.href = DASHBOARD_URL; } },
+      { label: 'Open my Student Hub', icon: 'fa-arrow-right', primary: true, onClick: () => { window.location.href = returnTarget() || DASHBOARD_URL; } },
       { label: 'Not now, sign in instead', onClick: () => { GoldHallSession.end(); setMode('login'); } }
     ]
   });
@@ -497,7 +506,7 @@ async function signIn(event) {
     }
     GoldHallSession.start(student.studentId);
     message('Signed in. Opening your Student Hub…', 'success');
-    window.location.href = DASHBOARD_URL;
+    window.location.href = returnTarget() || DASHBOARD_URL;
     return;
   } catch (error) {
     message(error.message || 'Could not sign in. Please try again.');
@@ -565,7 +574,7 @@ async function signInWithSupabase(form, submit) {
 
     GoldHallSession.start(student.studentId);
     message('Signed in. Opening your Student Hub…', 'success');
-    window.location.href = DASHBOARD_URL;
+    window.location.href = returnTarget() || DASHBOARD_URL;
   } catch (error) {
     message(error.message || 'Could not sign in. Please try again.');
     submit.disabled = false;

@@ -28,10 +28,9 @@ $extra_scripts = $extra_scripts ?? [];
                 <h4>Quick Links</h4>
                 <ul>
                     <li><a href="about"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                    <li><a href="executives"><i class="fas fa-chevron-right"></i> Executives</a></li>
-                    <li><a href="events"><i class="fas fa-chevron-right"></i> Events</a></li>
-                    <li><a href="gallery"><i class="fas fa-chevron-right"></i> Gallery</a></li>
                     <li><a href="student"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
+                    <li><a href="students"><i class="fas fa-chevron-right"></i> Student Life</a></li>
+                    <li><a href="contact"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
                 </ul>
             </div>
             <div class="footer-column">
@@ -39,9 +38,9 @@ $extra_scripts = $extra_scripts ?? [];
                 <ul>
                     <li><a href="student"><i class="fas fa-chevron-right"></i> Student Hub</a></li>
                     <li><a href="student"><i class="fas fa-chevron-right"></i> Scholarships &amp; internships</a></li>
-                    <li><a href="executives"><i class="fas fa-chevron-right"></i> Meet the Executives</a></li>
-                    <li><a href="gallery"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
-                    <li><a href="events"><i class="fas fa-chevron-right"></i> Hall Events</a></li>
+                    <li><a href="student#executives"><i class="fas fa-chevron-right"></i> Meet the Executives</a></li>
+                    <li><a href="student#events"><i class="fas fa-chevron-right"></i> Hall Events</a></li>
+                    <li><a href="student#events"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
                 </ul>
             </div>
             <div class="footer-column">

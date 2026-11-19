@@ -264,7 +264,7 @@ function contentDashboard() {
   <div class="admin-grid">
     <section class="panel">
       <h3 id="formTitle">Add ${singular}</h3>
-      ${activeType === 'gallery' ? `<p class="field-help gallery-hint"><i class="fas fa-circle-info"></i> Add photos of what is going on at the hall — freshers’ welcome, hall week, sports, projects and everyday life. Published photos appear on the home page and the Gallery page.</p>` : ''}
+      ${activeType === 'gallery' ? `<p class="field-help gallery-hint"><i class="fas fa-circle-info"></i> Add photos of what is going on at the hall — freshers’ welcome, hall week, sports, projects and everyday life. Published photos appear in the Student Hub gallery, which students see after signing in.</p>` : ''}
       <form class="editor-form" id="editorForm">
         <label>Title<input name="title" required placeholder="e.g. Official Programme or Organisation Name"></label>
         <label>Description / Details<textarea name="text" required placeholder="Describe what the opportunity offers, eligibility criteria, coverage or important instructions..."></textarea></label>

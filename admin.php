@@ -107,7 +107,7 @@ $store = goldhall_supabase_status();
                 </label>
                 <button class="admin-btn" type="submit"><i class="fas fa-right-to-bracket"></i> Sign in</button>
             </form>
-            <p class="login-help"><a href="">&larr; Back to the site</a></p>
+            <p class="login-help"><a href="./">&larr; Back to the site</a></p>
         </div>
     </div>
 <?php else : ?>

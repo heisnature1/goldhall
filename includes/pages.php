@@ -121,13 +121,13 @@ function goldhall_page(string $key): array
 /** The main navigation, identical on every page. */
 function goldhall_nav(): array
 {
+    /* Executives, Events and Gallery are deliberately absent: they are
+       members-only and reachable through the Student Hub after signing in. */
     return [
         ['Home', '', 'fa-house'],
         ['Student Hub', 'student', 'fa-graduation-cap'],
-        ['Executives', 'executives', 'fa-users'],
-        ['Events', 'events', 'fa-calendar-days'],
-        ['Gallery', 'gallery', 'fa-images'],
         ['About Us', 'about', 'fa-landmark'],
+        ['Contact', 'contact', 'fa-envelope-open-text'],
     ];
 }
 
