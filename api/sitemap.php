@@ -30,17 +30,18 @@ $site = goldhall_site_url();
 
 /* Public pages only, in the order they matter.
  *
- * Absent: /admin and /dashboard are private; /reset-password and /confirm-email
- * are transient sign-in steps with nothing to index. */
+ * /events, /executives and /gallery are deliberately absent: that content now
+ * lives behind the Student Hub sign-in, and a members-only page has no business
+ * in a search index.
+ *
+ * Also absent: /admin and /dashboard are private; /reset-password and
+ * /confirm-email are transient sign-in steps with nothing to index. */
 $pages = [
-    ['/index',      '1.0', 'weekly'],
-    ['/events',     '0.9', 'weekly'],
-    ['/about',      '0.8', 'monthly'],
-    ['/executives', '0.8', 'monthly'],
-    ['/gallery',    '0.7', 'monthly'],
-    ['/student',    '0.6', 'monthly'],
-    ['/students',   '0.6', 'monthly'],
-    ['/contact',    '0.6', 'yearly'],
+    ['/index',    '1.0', 'weekly'],
+    ['/about',    '0.8', 'monthly'],
+    ['/student',  '0.6', 'monthly'],
+    ['/students', '0.6', 'monthly'],
+    ['/contact',  '0.6', 'yearly'],
 ];
 
 if (!headers_sent()) {
