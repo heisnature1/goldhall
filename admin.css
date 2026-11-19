@@ -108,7 +108,6 @@ body { background:#f2f5f2; }
 .election-result-row small { color:#8b958d; font-size:.7rem; margin-top:3px; }
 .election-result-row>div:last-child { display:flex; flex-wrap:wrap; gap:8px 14px; color:#68766d; font-size:.75rem; }
 .election-result-row b { color:#214630; margin-left:4px; }
-.admin-security-note { margin:18px 0 0; padding:13px 15px; border-left:3px solid #d0b25b; background:#f8f4e8; color:#746b4c; font-size:.76rem; line-height:1.5; }
 
 /* ==========================================================================
    GRIEVANCE DESK — Admin styling

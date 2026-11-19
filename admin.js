@@ -584,7 +584,7 @@ async function portalDashboard() {
     </div>
     <div class="election-results">${results}</div>
   </section>
-  <p class="admin-security-note"><i class="fas fa-circle-info"></i> Sign-in is real: accounts are held by Supabase Auth, and passwords never reach this site. Student records, grievances and ballots are stored in your Supabase database, so a student who registers on their phone appears here, and their grievance reaches this desk. Ballots are unique per student and position, enforced by the database, so a vote cannot be cast twice by clearing a browser.</p>`;
+  </div>`;
 
   main.querySelectorAll('[data-status]').forEach(button => button.onclick = async () => {
     const accessStatus = button.dataset.next;
