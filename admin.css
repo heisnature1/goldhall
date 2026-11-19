@@ -42,56 +42,86 @@ body { background:#f2f5f2; }
 
 /* ===== sections down the side ===== */
 
-.admin-body { flex:1; width:100%; max-width:1240px; margin:0 auto; display:grid; grid-template-columns:236px minmax(0,1fr); gap:26px; align-items:start; padding:26px 20px 0; }
+.admin-body { flex:1; width:100%; max-width:1240px; margin:0 auto; display:grid; grid-template-columns:250px minmax(0,1fr); gap:0; align-items:start; padding:0; }
 .admin-body.rail-closed { grid-template-columns:minmax(0,1fr); }
 
-.admin-rail { position:sticky; top:18px; background:#fff; border:1px solid #e3eae3; border-radius:14px; padding:11px 10px 10px; box-shadow:0 10px 24px rgba(20,45,33,.06); }
-.admin-rail-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:1px 6px 9px; }
-.admin-rail-title { display:inline-flex; align-items:center; gap:8px; font:700 .68rem 'Inter',sans-serif; letter-spacing:.13em; text-transform:uppercase; color:#8b9a8f; }
+.admin-rail {
+  position:sticky; top:0; align-self:start;
+  min-height:calc(100vh - 68px);
+  background:#fff; border-right:1px solid #e3eae3;
+  padding:18px 14px 22px;
+  display:flex; flex-direction:column;
+}
+.admin-rail-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0 6px 14px; }
+.admin-rail-title { display:inline-flex; align-items:center; gap:8px; font:700 .68rem 'Inter',sans-serif; letter-spacing:.14em; text-transform:uppercase; color:#8b9a8f; }
 .admin-rail-title i { color:#b08f2f; }
-.admin-rail-close { flex:none; width:29px; height:29px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #e3eae3; border-radius:50%; background:#f7faf7; color:#6d7d72; font-size:.8rem; cursor:pointer; transition:background .2s,color .2s,border-color .2s; }
+.admin-rail-close { flex:none; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center; border:1px solid #e3eae3; border-radius:50%; background:#f7faf7; color:#6d7d72; font-size:.8rem; cursor:pointer; transition:background .2s,color .2s,border-color .2s; }
 .admin-rail-close:hover { background:#eef4ee; color:#2f5b3f; border-color:#cfdccf; }
 .admin-rail-close:focus-visible { outline:3px solid rgba(45,90,61,.28); outline-offset:2px; }
 
 .admin-tabbar { background:transparent; box-shadow:none; border:0; }
-.admin-tabbar-inner { display:flex; flex-direction:column; align-items:stretch; gap:3px; }
-.admin-tab { position:relative; width:100%; border:0; background:transparent; padding:11px 12px; border-radius:10px; font:600 .85rem 'Inter',sans-serif; color:#5c6d62; cursor:pointer; display:flex; align-items:center; gap:10px; text-align:left; transition:background .2s,color .2s,box-shadow .2s; }
-.admin-tab i { flex:none; width:20px; text-align:center; color:#9aa89e; font-size:.85rem; transition:color .25s; }
+.admin-tabbar-inner { display:flex; flex-direction:column; align-items:stretch; gap:2px; }
+.admin-tab {
+  position:relative; width:100%; border:0; background:transparent;
+  padding:11px 12px; border-radius:9px;
+  font:600 .85rem 'Inter',sans-serif; color:#5c6d62; cursor:pointer;
+  display:flex; align-items:center; gap:10px; text-align:left;
+  transition:background .2s,color .2s;
+}
+.admin-tab i { flex:none; width:19px; text-align:center; color:#9aa89e; font-size:.85rem; transition:color .25s; }
+.admin-tab > span:not(.admin-tab-mark) { flex:1; }
+.admin-tab-mark { flex:none; color:#c0cbc2; font-size:.72rem; transition:color .25s, transform .25s; }
 .admin-tab::after { content:none; }
 .admin-tab:hover { color:var(--primary-dark); background:#f4f8f4; }
-.admin-tab.active { color:#22402c; font-weight:700; background:#f2f7f2; box-shadow:inset 3px 0 0 var(--gold); }
+.admin-tab:hover .admin-tab-mark { color:#93a196; transform:translateX(2px); }
+.admin-tab.active { color:#22402c; font-weight:700; background:#f1f7f1; box-shadow:inset 3px 0 0 var(--gold); }
 .admin-tab.active i { color:var(--gold); }
-.admin-tab-sep { width:100%; height:1px; background:#e6ece6; margin:7px 0; flex:none; }
+.admin-tab.active .admin-tab-mark { color:var(--gold); }
+.admin-tab-sep { width:100%; height:1px; background:#e9eee9; margin:9px 0; flex:none; }
 
 .admin-rail-open { display:none; align-items:center; gap:9px; margin:0 0 16px; padding:10px 16px; border:1px solid #dbe5db; border-radius:10px; background:#fff; color:#2f5b3f; font:600 .84rem 'Inter',sans-serif; cursor:pointer; box-shadow:0 6px 15px rgba(20,45,33,.07); transition:background .2s,border-color .2s,transform .2s; }
 .admin-rail-open[hidden] { display:none; }
 .admin-rail-open:hover { background:#f3f8f3; border-color:#c6d6c6; transform:translateY(-1px); }
 .admin-rail-open:focus-visible { outline:3px solid rgba(45,90,61,.28); outline-offset:2px; }
-.admin-rail.is-closed { display:none; }
 
-/* Narrow: the menu becomes a sheet over the content, closed until asked for. */
+.admin-rail.is-closed { display:none; }
+.admin-rail-backdrop { display:none; }
+
 @media (max-width:900px) {
-  .admin-body { grid-template-columns:minmax(0,1fr); gap:0; }
-  .admin-rail { position:fixed; inset:0 auto 0 0; z-index:90; width:min(290px,86vw); border-radius:0 16px 16px 0; padding:13px 10px 12px; overflow-y:auto; transition:transform .26s ease; box-shadow:0 0 0 100vmax rgba(12,26,17,.45), 0 24px 60px rgba(8,20,14,.32); }
-  .admin-rail.is-closed { display:block; transform:translateX(-102%); box-shadow:none; }
+  .admin-body { grid-template-columns:minmax(0,1fr); gap:0; padding:18px 14px 0; }
+  .admin-rail {
+    position:fixed; inset:0 auto 0 0; z-index:120;
+    width:min(292px,86vw); min-height:0; height:100%;
+    border-right:0; border-radius:0 16px 16px 0;
+    padding:16px 12px 18px; overflow-y:auto;
+    transform:translateX(0); transition:transform .26s ease;
+    box-shadow:0 24px 60px rgba(8,20,14,.32);
+    display:flex;
+  }
+  .admin-rail.is-closed { display:flex; transform:translateX(-102%); box-shadow:none; }
   .admin-rail-open { display:inline-flex; }
   .admin-tab { padding:13px 13px; font-size:.88rem; }
+
+  .admin-body.rail-covered .admin-rail-backdrop {
+    display:block; position:fixed; inset:0; z-index:110;
+    background:rgba(12,26,17,.45);
+    animation:adminFade .22s ease both;
+  }
 }
 
-.admin-badge-count { display:inline-flex; align-items:center; justify-content:center; background:#c0392b; color:#fff; border-radius:10px; padding:2px 7px; font-size:.68rem; font-weight:700; line-height:1; min-width:18px; }
+@keyframes adminFade { from { opacity:0; } to { opacity:1; } }
 
-.admin-content { min-width:0; }
-/* If the script never runs, the menu must still be usable on a wide screen: it
-   is a column that is simply there.
-   
-   This rule must NOT hide the Sections button. An earlier version did, with
-   !important, so on a wide screen the button could never come back after the
-   menu was closed - the menu vanished and nothing on the page could bring it
-   back. Only the script decides when the button is visible, through the hidden
-   attribute. */
+/* If the script never runs, a wide screen must still show the menu: it is the
+   side of the page and simply there. Note it says nothing about the Sections
+   button - hiding that here, with !important, is what once stranded the menu
+   after it was closed. The script owns that button. */
 @media (min-width: 901px) {
-  .admin-body > .admin-rail:not(.is-closed) { display: block; }
+  .admin-body > .admin-rail:not(.is-closed) { display: flex; }
 }
+
+/* The content column carries the page's side padding now, since the grid no
+   longer has a gap or an outer pad to supply it. */
+.admin-content { min-width:0; padding:26px 22px 0; }
 
 .admin-main { width:100%; min-width:0; padding:0 0 60px; }
 .admin-top { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:25px; flex-wrap:wrap; }
@@ -258,7 +288,7 @@ body { background:#f2f5f2; }
   .admin-brand h1 { font-size:.95rem; }
   .admin-brand p { display:none; }
   .admin-site-link { display:none; }
-  .admin-body { padding:18px 14px 0; }
+  .admin-content { padding:18px 14px 0; }
   .portal-stats { grid-template-columns:repeat(2,1fr); }
   .admin-top { align-items:flex-start; flex-direction:column; }
   .election-result-row { grid-template-columns:1fr; gap:8px; }
