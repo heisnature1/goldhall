@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  This file must stay at the project root, served as /sitemap.xml.
+
+  Search Console rejects a sitemap whose URLs are at a higher level than the
+  file itself ("URL not allowed"). A sitemap at /api/sitemap.php may therefore
+  only list URLs under /api/ - every page here would be rejected. Do not move
+  this, and do not submit /api/anything to Search Console.
+
+  Also: Vercel serves an existing file before it applies rewrites, so this works
+  without any entry in vercel.json. Adding a rewrite for /sitemap.xml can only
+  shadow this file.
+-->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://goldhall.vercel.app/index</loc>

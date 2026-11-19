@@ -20,10 +20,6 @@
     "api/portal.php": {
       "runtime": "vercel-php@0.9.0",
       "memory": 1024
-    },
-    "api/sitemap.php": {
-      "runtime": "vercel-php@0.9.0",
-      "memory": 1024
     }
   },
   "redirects": [
