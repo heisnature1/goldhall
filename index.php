@@ -2,9 +2,10 @@
 /**
  * Home page.
  *
- * The executives, events and gallery sections are rendered here, on the
- * server, from data/content.json — the same content the admin portal edits.
- * Everything else is static markup.
+ * Deliberately free of the executives, events and gallery content. That now
+ * lives in the Student Hub and is only shown to signed-in students, so the
+ * home page must not preview it: whoever is browsing can read everything here.
+ * The remaining sections are static markup.
  */
 
 declare(strict_types=1);
@@ -18,14 +19,6 @@ $page_title = 'Gold Refinery Hall - University of Mines and Technology';
 $extra_styles = ['page.css'];
 $extra_scripts = ['script.js'];
 $page_description = 'Gold Refinery Hall, University of Mines and Technology, Tarkwa. Converted from a gold refinery in 2001, home to 250 students, building leaders since.';
-
-$executives = goldhall_items('executives');
-$events     = goldhall_items('events');
-$gallery    = goldhall_items('gallery');
-
-$home_executives = array_slice($executives, 0, 6);
-$home_events     = array_slice($events, 0, 4);
-$home_gallery    = array_slice($gallery, 0, 5);
 
 require __DIR__ . '/includes/head.php';
 goldhall_loader();
@@ -77,13 +70,13 @@ require __DIR__ . '/includes/header.php';
                     <div class="quick-link-icon"><i class="fas fa-envelope-open-text"></i></div>
                     <div class="quick-link-text"><h4>Contact the Hall</h4><p>Get support from the office</p></div>
                 </a>
-                <a href="events" class="quick-link-card animate-on-scroll">
+                <a href="student" class="quick-link-card animate-on-scroll">
                     <div class="quick-link-icon"><i class="fas fa-calendar-check"></i></div>
-                    <div class="quick-link-text"><h4>Upcoming Events</h4><p>View hall programmes</p></div>
+                    <div class="quick-link-text"><h4>Events &amp; pictures</h4><p>Inside the Student Hub</p></div>
                 </a>
-                <a href="gallery" class="quick-link-card animate-on-scroll">
-                    <div class="quick-link-icon"><i class="fas fa-images"></i></div>
-                    <div class="quick-link-text"><h4>Hall Gallery</h4><p>Photos from the hall</p></div>
+                <a href="about" class="quick-link-card animate-on-scroll">
+                    <div class="quick-link-icon"><i class="fas fa-landmark"></i></div>
+                    <div class="quick-link-text"><h4>About the Hall</h4><p>Our story since 2001</p></div>
                 </a>
             </div>
         </div>
@@ -190,114 +183,6 @@ require __DIR__ . '/includes/header.php';
             </div>
         </div>
     </section>
-    <!-- LEADERSHIP SECTION -->
-    <section class="leadership-section" id="leadership">
-        <div class="container">
-            <div class="section-header animate-on-scroll" data-reveal="hinge">
-                <span class="section-badge">Executives</span>
-                <h2>Meet Our Executives</h2>
-                <div class="underline"></div>
-            </div>
-            <div class="leadership-grid" data-executives>
-<?php if ($home_executives) : ?>
-<?php foreach ($home_executives as $person) : ?>
-<?php $picture = goldhall_picture($person); ?>
-                <div class="leader-card animate-on-scroll">
-                    <div class="leader-image">
-<?php if ($picture !== '') : ?>
-                        <img src="<?= goldhall_e($picture) ?>" alt="<?= goldhall_e($person['title']) ?>" style="object-position: <?= goldhall_e(goldhall_position($person)) ?>;">
-<?php else : ?>
-                        <div class="leader-image-fallback"><i class="fas fa-user-tie"></i></div>
-<?php endif; ?>
-                        <div class="leader-image-overlay"></div>
-                    </div>
-                    <div class="leader-info">
-                        <h3><?= goldhall_e($person['title']) ?></h3>
-<?php if ($person['meta'] !== '') : ?>
-                        <p class="position"><?= goldhall_e($person['meta']) ?></p>
-<?php endif; ?>
-                        <p><?= goldhall_e($person['text']) ?></p>
-                        <div class="leader-social">
-<?php if ($person['link'] !== '') : ?>
-                            <a href="<?= goldhall_e($person['link']) ?>"<?= goldhall_link_target($person['link']) ?> title="Profile link"><i class="fas fa-link"></i></a>
-<?php endif; ?>
-                            <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
-                            <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                </div>
-<?php endforeach; ?>
-<?php else : ?>
-                <p>No executives have been published yet.</p>
-<?php endif; ?>
-            </div>
-<?php if (count($executives) > count($home_executives)) : ?>
-            <p class="leaders-more"><a href="executives">Meet all <?= count($executives) ?> executives <i class="fas fa-arrow-right"></i></a></p>
-<?php endif; ?>
-        </div>
-    </section>
-
-    <!-- EVENTS SECTION -->
-    <section class="events-section" id="events">
-        <div class="container">
-            <div class="section-header animate-on-scroll" data-reveal="hinge">
-                <span class="section-badge">Events</span>
-                <h2>Upcoming Events</h2>
-                <div class="underline"></div>
-            </div>
-            <div class="events-grid">
-<?php if ($home_events) : ?>
-<?php foreach ($home_events as $event) : ?>
-                <article class="event-card animate-on-scroll">
-                    <div class="event-date-block">
-                        <span class="month">EVENT</span>
-                        <span class="day"><i class="fas fa-calendar"></i></span>
-                    </div>
-                    <div class="event-details">
-                        <h3><?= goldhall_e($event['title']) ?></h3>
-                        <p><?= goldhall_e($event['text']) ?></p>
-                        <div class="event-meta">
-                            <span><i class="fas fa-map-marker-alt"></i> <?= goldhall_e($event['meta']) ?></span>
-                        </div>
-<?php if ($event['link'] !== '') : ?>
-                        <a href="<?= goldhall_e($event['link']) ?>" class="news-link"<?= goldhall_link_target($event['link']) ?>>Event details <i class="fas fa-arrow-right"></i></a>
-<?php endif; ?>
-                    </div>
-                </article>
-<?php endforeach; ?>
-<?php else : ?>
-                <p>No published events at the moment.</p>
-<?php endif; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- GALLERY SECTION -->
-    <section class="gallery-section" id="gallery">
-        <div class="container">
-            <div class="section-header animate-on-scroll" data-reveal="hinge">
-                <span class="section-badge">Gallery</span>
-                <h2>Life at Gold Hall</h2>
-                <div class="underline"></div>
-            </div>
-            <div class="gallery-grid">
-<?php if ($home_gallery) : ?>
-<?php foreach ($home_gallery as $photo) : ?>
-<?php $picture = goldhall_picture($photo); ?>
-                <div class="gallery-item animate-on-scroll" onclick="openLightbox(this)">
-                    <img src="<?= goldhall_e($picture) ?>" alt="<?= goldhall_e($photo['title']) ?>" style="object-position: <?= goldhall_e(goldhall_position($photo)) ?>;">
-                    <div class="gallery-overlay">
-                        <i class="fas fa-search-plus"></i>
-                    </div>
-                </div>
-<?php endforeach; ?>
-<?php else : ?>
-                <p>No published gallery items at the moment.</p>
-<?php endif; ?>
-            </div>
-        </div>
-    </section>
-
     <!-- CTA SECTION -->
     <section class="cta-section">
         <div class="container">

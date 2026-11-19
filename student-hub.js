@@ -9,14 +9,36 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
   /* ---------- session ---------- */
+  /*
+   * The session itself stays in sessionStorage, as it always was. A cookie is
+   * mirrored alongside it purely so the server can see who is asking: page
+   * requests carry cookies, not sessionStorage, so without it the members-only
+   * pages could not tell a signed-in student from a stranger. It holds the same
+   * student id and is cleared on sign out, so the two never disagree.
+   */
+  const SESSION_COOKIE = 'goldhall_student';
+  const mirrorSession = studentId => {
+    try {
+      document.cookie = studentId
+        ? `${SESSION_COOKIE}=${encodeURIComponent(studentId)}; path=/; SameSite=Lax`
+        : `${SESSION_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+    } catch (_) { /* cookies blocked; the pages then simply stay closed */ }
+  };
+
   const session = {
     id() { try { return sessionStorage.getItem(SESSION_KEY); } catch (_) { return null; } },
     async student() {
       const id = this.id();
       return id && typeof GoldHallPortal !== 'undefined' ? GoldHallPortal.findStudent(id) : null;
     },
-    start(studentId) { try { sessionStorage.setItem(SESSION_KEY, studentId); } catch (_) { /* storage blocked */ } },
-    end() { try { sessionStorage.removeItem(SESSION_KEY); } catch (_) { /* storage blocked */ } }
+    start(studentId) {
+      try { sessionStorage.setItem(SESSION_KEY, studentId); } catch (_) { /* storage blocked */ }
+      mirrorSession(studentId);
+    },
+    end() {
+      try { sessionStorage.removeItem(SESSION_KEY); } catch (_) { /* storage blocked */ }
+      mirrorSession('');
+    }
   };
 
   /* ---------- dialog (pop-up message box) ---------- */
@@ -379,7 +401,7 @@
             <div class="announcement-list">
               ${notices().slice(0, 4).map(item => `<article class="announcement"><span class="announcement-icon"><i class="fas ${item.icon}"></i></span><div><h4>${esc(item.title)}</h4><p>${esc(item.text)}</p></div></article>`).join('')}
             </div>
-            <p style="margin:13px 0 0"><a class="resource-link" href="events.php">All hall events <i class="fas fa-arrow-right"></i></a></p>
+            <p style="margin:13px 0 0"><a class="resource-link" href="#events">All hall events <i class="fas fa-arrow-right"></i></a></p>
           </div>
           <div class="hub-panel" id="bus-schedule">
             <h3>Campus shuttle</h3>
@@ -705,6 +727,25 @@
         activateTab(tabs[nextIndex], true);
       });
     });
+
+    /* Deep links from the rest of the site: student#events opens that tab
+       straight away, so a link in the footer still lands on the right panel. */
+    const DEEP_LINKS = {
+      events: 'tabEvents',
+      gallery: 'tabEvents',
+      executives: 'tabExecutives',
+      polls: 'tabPolls',
+      grievances: 'tabGrievances',
+      scholarships: 'tabScholarships',
+      announcements: 'tabAnnouncements'
+    };
+    const openFromHash = () => {
+      const key = String(window.location.hash || '').replace('#', '').trim().toLowerCase();
+      const tab = DEEP_LINKS[key] ? host.querySelector('#' + DEEP_LINKS[key]) : null;
+      if (tab) activateTab(tab);
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
 
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
