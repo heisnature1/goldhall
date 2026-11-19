@@ -28,6 +28,28 @@
   },
   "redirects": [
     {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "goldrefineryhall-umat.com"
+        }
+      ],
+      "destination": "https://www.goldrefineryhall-umat.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "goldhall.vercel.app"
+        }
+      ],
+      "destination": "https://www.goldrefineryhall-umat.com/$1",
+      "permanent": true
+    },
+    {
       "source": "/index.php",
       "destination": "/index",
       "permanent": false

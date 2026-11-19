@@ -52,9 +52,19 @@ $canonical_map = [
     'student.php'        => '/student',
 ];
 $canonical_page = goldhall_current_page();
+/* One canonical host, whatever address the visitor arrived on.
+ *
+ * The site answers on three: the domain with www, the domain without it, and
+ * the vercel.app address. vercel.json redirects the last two, but a canonical
+ * tag states it too, so a search engine consolidates on www even if it discovered
+ * a page before the redirect existed. Set GOLDHALL_SITE_URL to override. */
+$canonical_host = getenv('GOLDHALL_SITE_URL');
+$canonical_host = is_string($canonical_host) && trim($canonical_host) !== ''
+    ? rtrim(trim($canonical_host), '/')
+    : goldhall_site_url();
 if (isset($canonical_map[$canonical_page])) :
 ?>
-    <link rel="canonical" href="<?= goldhall_e(goldhall_site_url() . $canonical_map[$canonical_page]) ?>">
+    <link rel="canonical" href="<?= goldhall_e($canonical_host . $canonical_map[$canonical_page]) ?>">
 <?php endif; ?>
     <meta property="og:site_name" content="Gold Refinery Hall, UMaT">
     <meta property="og:type" content="website">
