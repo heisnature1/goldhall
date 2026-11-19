@@ -40,7 +40,7 @@ $extra_scripts = $extra_scripts ?? [];
                     <li><a href="student"><i class="fas fa-chevron-right"></i> Scholarships &amp; internships</a></li>
                     <li><a href="student#executives"><i class="fas fa-chevron-right"></i> Meet the Executives</a></li>
                     <li><a href="student#events"><i class="fas fa-chevron-right"></i> Hall Events</a></li>
-                    <li><a href="student#events"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
+                    <li><a href="student#gallery"><i class="fas fa-chevron-right"></i> Photo Gallery</a></li>
                 </ul>
             </div>
             <div class="footer-column">
