@@ -366,10 +366,13 @@
 }
 
 /* If the script never runs, a wide screen must still show the menu: it is a
-   column that is simply there, and the Sections button has no job. */
+   column that is simply there.
+   
+   Deliberately does not hide the Sections button. Doing that with !important
+   made the menu impossible to bring back once closed on a wide screen. The
+   button's visibility belongs to the script. */
 @media (min-width: 901px) {
   .hub-side:not(.is-closed) { display: block; }
-  .hub-side-open { display: none !important; }
 }
 .hub-tab-panel[hidden] { display: none !important; }
 .hub-tab-panel { padding: 2px 0 4px; }

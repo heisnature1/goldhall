@@ -81,12 +81,16 @@ body { background:#f2f5f2; }
 .admin-badge-count { display:inline-flex; align-items:center; justify-content:center; background:#c0392b; color:#fff; border-radius:10px; padding:2px 7px; font-size:.68rem; font-weight:700; line-height:1; min-width:18px; }
 
 .admin-content { min-width:0; }
-/* If the script never runs, the menu must still be usable: on a wide screen it
-   is a column that is simply there, and the Sections button has no job, so it
-   stays out of the way. */
+/* If the script never runs, the menu must still be usable on a wide screen: it
+   is a column that is simply there.
+   
+   This rule must NOT hide the Sections button. An earlier version did, with
+   !important, so on a wide screen the button could never come back after the
+   menu was closed - the menu vanished and nothing on the page could bring it
+   back. Only the script decides when the button is visible, through the hidden
+   attribute. */
 @media (min-width: 901px) {
   .admin-body > .admin-rail:not(.is-closed) { display: block; }
-  .admin-rail-open { display: none !important; }
 }
 
 .admin-main { width:100%; min-width:0; padding:0 0 60px; }
