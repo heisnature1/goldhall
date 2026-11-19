@@ -310,13 +310,60 @@
 }
 
 /* Student Hub sections */
-.hub-tabs-wrap { margin-top: 28px; }
-.hub-tabs { display: flex; align-items: stretch; gap: 8px; margin-bottom: 24px; padding: 0 4px; border-bottom: 1px solid #dfe7df; overflow-x: auto; scrollbar-width: thin; }
-.hub-tab { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 9px; flex: 0 0 auto; min-height: 52px; padding: 12px 17px; border: 0; border-radius: 10px 10px 0 0; background: transparent; color: #68786d; font: 600 .88rem 'Inter', sans-serif; cursor: pointer; transition: color .2s ease, background .2s ease; white-space: nowrap; }
-.hub-tab:hover { color: var(--hub-green2); background: #edf3ed; }
+/* ---------- section menu down the side ---------- */
+.hub-tabs-wrap { margin-top: 28px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 26px; align-items: start; }
+
+.hub-side { position: sticky; top: 18px; background: #fff; border: 1px solid #e2e9e2; border-radius: 16px; padding: 12px 12px 10px; box-shadow: 0 10px 26px rgba(28, 54, 38, .06); }
+.hub-side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 6px 10px; }
+.hub-side-title { display: inline-flex; align-items: center; gap: 8px; font: 700 .7rem 'Inter', sans-serif; letter-spacing: .13em; text-transform: uppercase; color: #8b9a8f; }
+.hub-side-title i { color: #b08f2f; }
+
+.hub-side-close { flex: none; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #e2e9e2; border-radius: 50%; background: #f7faf7; color: #6d7d72; font-size: .82rem; cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.hub-side-close:hover { background: #eef4ee; color: #2f5b3f; border-color: #cfdccf; }
+.hub-side-close:focus-visible { outline: 3px solid rgba(45, 90, 61, .28); outline-offset: 2px; }
+
+.hub-tabs { display: flex; flex-direction: column; gap: 4px; }
+.hub-tab { position: relative; display: flex; align-items: center; gap: 11px; width: 100%; min-height: 46px; padding: 11px 13px; border: 0; border-radius: 11px; background: transparent; color: #5f6f64; font: 600 .87rem 'Inter', sans-serif; text-align: left; cursor: pointer; transition: color .2s ease, background .2s ease, box-shadow .2s ease; }
+.hub-tab i { flex: none; width: 20px; text-align: center; color: #93a096; font-size: .92rem; transition: color .2s ease; }
+.hub-tab:hover { color: var(--hub-green2); background: #f1f6f1; }
 .hub-tab:focus-visible { outline: 3px solid rgba(45, 90, 61, .28); outline-offset: -3px; }
-.hub-tab.active { color: var(--hub-ink); background: #fff; box-shadow: inset 0 -3px 0 var(--hub-gold); }
+.hub-tab.active { color: #22402c; background: #f3f8f3; box-shadow: inset 3px 0 0 var(--hub-gold); font-weight: 700; }
 .hub-tab.active i { color: #a48635; }
+
+/* The panel: the title rides on top of the white card, on very small screens. */
+.hub-content { min-width: 0; position: relative; }
+.hub-side-open { display: none; }
+.hub-side-open[hidden] { display: none; }
+
+/* Closed menu: the column collapses and the content takes the whole width. */
+.hub-tabs-wrap.side-closed { grid-template-columns: minmax(0, 1fr); }
+.hub-side.is-closed { display: none; }
+
+/* The control that brings it back, sitting above the panel. */
+.hub-side-open {
+  align-items: center; gap: 9px; margin: 0 0 16px; padding: 11px 17px;
+  border: 1px solid #dbe5db; border-radius: 11px; background: #fff; color: #2f5b3f;
+  font: 600 .86rem 'Inter', sans-serif; cursor: pointer; box-shadow: 0 6px 16px rgba(28, 54, 38, .07);
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.hub-side-open:hover { background: #f3f8f3; border-color: #c6d6c6; transform: translateY(-1px); }
+.hub-side-open:focus-visible { outline: 3px solid rgba(45, 90, 61, .28); outline-offset: 2px; }
+
+/* On a narrow screen the menu is a sheet laid over the panel, not a column
+   beside it: it starts closed and only appears when asked for. */
+@media (max-width: 900px) {
+  .hub-tabs-wrap { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .hub-side {
+    position: fixed; inset: 0 auto 0 0; z-index: 80; width: min(300px, 86vw);
+    border-radius: 0 18px 18px 0; padding: 14px 12px 12px; overflow-y: auto;
+    transform: translateX(0); transition: transform .26s ease;
+    box-shadow: 0 0 0 100vmax rgba(16, 34, 22, .45), 0 24px 60px rgba(8, 20, 14, .3);
+  }
+  .hub-side.is-closed { display: block; transform: translateX(-102%); box-shadow: none; }
+  .hub-side-open { display: inline-flex; }
+  .hub-tab { min-height: 48px; font-size: .9rem; padding: 12px 14px; }
+  .hub-content.is-behind-menu { overflow: hidden; }
+}
 .hub-tab-panel[hidden] { display: none !important; }
 .hub-tab-panel { padding: 2px 0 4px; }
 .hub-tab-panel > .hub-section-head { margin: 0 0 17px; }
@@ -325,8 +372,6 @@
 .poll-section-intro { margin: 4px 0 0; color: #818b84; font-size: .82rem; }
 @media (max-width: 700px) {
   .hub-tabs-wrap { margin-top: 22px; }
-  .hub-tabs { gap: 3px; margin: 0 -2px 18px; }
-  .hub-tab { min-height: 48px; padding: 11px 13px; font-size: .8rem; }
   .hub-tab-panel > .hub-section-head { gap: 5px; }
 }
 

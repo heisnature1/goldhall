@@ -50,15 +50,32 @@ function dashboard() {
         </div>
       </div>
     </header>
-    <nav class="admin-tabbar" aria-label="Admin sections">
-      <div class="admin-tabbar-inner">
-        ${contentButtons}
-        <span class="admin-tab-sep" aria-hidden="true"></span>
-        <button id="portalTools" type="button" class="admin-tab ${activeView === 'portal' ? 'active' : ''}"><i class="fas fa-user-graduate"></i>Students &amp; polls</button>
-        <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i>Grievance desk ${pendingSlot}</button>
+    <div class="admin-body" id="adminBody">
+      <aside class="admin-rail" id="adminRail" aria-label="Admin sections">
+        <div class="admin-rail-head">
+          <span class="admin-rail-title"><i class="fas fa-compass" aria-hidden="true"></i> Sections</span>
+          <button class="admin-rail-close" id="railClose" type="button" aria-label="Close the section menu" title="Close menu (Esc)">
+            <i class="fas fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <nav class="admin-tabbar" aria-label="Admin sections">
+          <div class="admin-tabbar-inner">
+            ${contentButtons}
+            <span class="admin-tab-sep" aria-hidden="true"></span>
+            <button id="portalTools" type="button" class="admin-tab ${activeView === 'portal' ? 'active' : ''}"><i class="fas fa-user-graduate"></i>Students &amp; polls</button>
+            <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i>Grievance desk ${pendingSlot}</button>
+          </div>
+        </nav>
+      </aside>
+      <div class="admin-content">
+        <!-- Outside <main>, which each view rewrites: inside it the button would
+             be wiped the first time a section rendered. -->
+        <button class="admin-rail-open" id="railOpen" type="button" aria-expanded="true" aria-controls="adminRail">
+          <i class="fas fa-bars" aria-hidden="true"></i> Sections
+        </button>
+        <main class="admin-main" id="adminMain"></main>
       </div>
-    </nav>
-    <main class="admin-main" id="adminMain"></main>
+    </div>
   </div>`;
 
   document.querySelectorAll('[data-type]').forEach(button => button.onclick = () => {
@@ -78,6 +95,60 @@ function dashboard() {
   });
   document.getElementById('portalTools').onclick = () => { activeView = 'portal'; dashboard(); };
   document.getElementById('grievanceTools').onclick = () => { activeView = 'grievances'; dashboard(); };
+
+  /* ---------- the section menu ---------- */
+  /*
+   * The sections used to run across the top of the page. They now run down the
+   * side, which gives every one of them a readable name at any width - the old
+   * row scrolled sideways and hid the last two on a narrow screen.
+   *
+   * Wide screen: the menu sits beside the content, open. Narrow screen: it is a
+   * sheet laid over the content, starts closed, and opens on demand. Closing is
+   * the round control at its head, the Sections button in the content, or
+   * Escape.
+   */
+  const rail   = document.getElementById('adminRail');
+  const body   = document.getElementById('adminBody');
+  const railOpen  = document.getElementById('railOpen');
+  const railClose = document.getElementById('railClose');
+  const NARROW = '(max-width: 900px)';
+  const narrow = () => !!(window.matchMedia && window.matchMedia(NARROW).matches);
+  let railClosed = narrow();
+
+  const paintRail = () => {
+    const overlay = narrow();
+    rail.classList.toggle('is-closed', railClosed);
+    body.classList.toggle('rail-closed', railClosed);
+    if (railOpen) {
+      railOpen.hidden = !railClosed;
+      railOpen.setAttribute('aria-expanded', String(!railClosed));
+    }
+    if (overlay && !railClosed) rail.removeAttribute('inert');
+    else if (overlay) rail.setAttribute('inert', '');
+    else rail.removeAttribute('inert');
+  };
+
+  const setRail = closed => {
+    railClosed = closed;
+    paintRail();
+    if (closed && rail.contains(document.activeElement)) {
+      const target = railOpen && !railOpen.hidden ? railOpen : rail.querySelector('.admin-tab.active');
+      target?.focus?.();
+    }
+    if (!closed && railClose) railClose.focus();
+  };
+
+  railOpen.onclick  = () => setRail(false);
+  railClose.onclick = () => setRail(true);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !railClosed) { event.preventDefault(); setRail(true); }
+  });
+  /* Picking a section means the menu has done its job on a narrow screen. */
+  [...rail.querySelectorAll('.admin-tab')].forEach(tab => tab.addEventListener('click', () => {
+    if (narrow()) setRail(true);
+  }));
+
+  paintRail();
   document.getElementById('logout').onclick = () => {
     /* The session lives in PHP, so signing out is a POST, not a local flag. */
     const form = document.getElementById('adminSignOut');
