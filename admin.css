@@ -41,6 +41,7 @@ body { background:#f2f5f2; }
 #logout:hover { background:rgba(232,200,78,.15); color:#fff; }
 
 /* ===== sections down the side ===== */
+
 .admin-body { flex:1; width:100%; max-width:1240px; margin:0 auto; display:grid; grid-template-columns:236px minmax(0,1fr); gap:26px; align-items:start; padding:26px 20px 0; }
 .admin-body.rail-closed { grid-template-columns:minmax(0,1fr); }
 
@@ -80,6 +81,14 @@ body { background:#f2f5f2; }
 .admin-badge-count { display:inline-flex; align-items:center; justify-content:center; background:#c0392b; color:#fff; border-radius:10px; padding:2px 7px; font-size:.68rem; font-weight:700; line-height:1; min-width:18px; }
 
 .admin-content { min-width:0; }
+/* If the script never runs, the menu must still be usable: on a wide screen it
+   is a column that is simply there, and the Sections button has no job, so it
+   stays out of the way. */
+@media (min-width: 901px) {
+  .admin-body > .admin-rail:not(.is-closed) { display: block; }
+  .admin-rail-open { display: none !important; }
+}
+
 .admin-main { width:100%; min-width:0; padding:0 0 60px; }
 .admin-top { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:25px; flex-wrap:wrap; }
 .admin-top h2 { color:var(--primary-dark); font:700 1.8rem 'Playfair Display',serif; }

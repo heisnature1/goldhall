@@ -111,12 +111,25 @@ function dashboard() {
   const body   = document.getElementById('adminBody');
   const railOpen  = document.getElementById('railOpen');
   const railClose = document.getElementById('railClose');
-  const NARROW = '(max-width: 900px)';
-  const narrow = () => !!(window.matchMedia && window.matchMedia(NARROW).matches);
-  let railClosed = narrow();
+  /*
+   * Wide or narrow is read from the layout, never asked of the window.
+   *
+   * This used to call matchMedia('(max-width: 900px)') and gate everything on
+   * the answer, which put the two sides in a position to disagree: if the query
+   * said "narrow" for any reason the stylesheet did not share - a device pixel
+   * ratio, a zoom level the query rounds differently, a window that never fired
+   * a resize - the menu was marked closed on a wide screen and disappeared
+   * behind a Sections button, which is exactly what was reported.
+   *
+   * The stylesheet already decides this: on a narrow screen the rail is
+   * position:fixed, on a wide one it is sticky. So the rail's own computed
+   * position IS the answer, and there is no second breakpoint to drift.
+   */
+  const isNarrow = () => getComputedStyle(rail).position === 'fixed';
+  let railClosed = false;
 
   const paintRail = () => {
-    const overlay = narrow();
+    const overlay = isNarrow();
     rail.classList.toggle('is-closed', railClosed);
     body.classList.toggle('rail-closed', railClosed);
     if (railOpen) {
@@ -145,9 +158,15 @@ function dashboard() {
   });
   /* Picking a section means the menu has done its job on a narrow screen. */
   [...rail.querySelectorAll('.admin-tab')].forEach(tab => tab.addEventListener('click', () => {
-    if (narrow()) setRail(true);
+    if (isNarrow()) setRail(true);
   }));
 
+  /* A window that changes size re-asks the stylesheet which view applies. The
+     menu follows that, and only that. */
+  window.addEventListener('resize', () => { railClosed = isNarrow(); paintRail(); });
+
+  /* Start closed only if the stylesheet says this is a narrow screen. */
+  railClosed = isNarrow();
   paintRail();
   document.getElementById('logout').onclick = () => {
     /* The session lives in PHP, so signing out is a POST, not a local flag. */

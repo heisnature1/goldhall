@@ -743,9 +743,19 @@
      * The choice is remembered for the visit, so someone who collapses the menu
      * on a desktop does not have to collapse it again on every section.
      */
-    const NARROW = '(max-width: 900px)';
-    const narrow = () => !!(window.matchMedia && window.matchMedia(NARROW).matches);
-    let sideClosed = narrow();
+    /*
+     * Wide or narrow is read from the layout, not asked of the window.
+     *
+     * Calling matchMedia here put the script and the stylesheet in a position to
+     * disagree - a device pixel ratio, a zoom level the query rounds
+     * differently, a window that never fired a resize - and when they disagreed
+     * the menu was marked closed on a wide screen. The stylesheet already
+     * answers this: the menu is position:fixed on a narrow screen and sticky on
+     * a wide one. Its computed position is therefore the answer, and there is no
+     * second breakpoint to drift out of step.
+     */
+    const narrow = () => getComputedStyle(side).position === 'fixed';
+    let sideClosed = false;
 
     const paintSide = () => {
       const overlay = narrow();
@@ -786,13 +796,9 @@
     host.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !sideClosed) { event.preventDefault(); setSide(true); }
     });
-    /* Rotating a phone or resizing a window changes which rules apply. */
-    if (window.matchMedia) {
-      const mq = window.matchMedia(NARROW);
-      const onChange = () => { sideClosed = mq.matches; paintSide(); };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-      else if (mq.addListener) mq.addListener(onChange);
-    }
+    /* Rotating a phone or resizing a window changes which rules apply; the menu
+       re-reads the layout and follows it. */
+    window.addEventListener('resize', () => { sideClosed = narrow(); paintSide(); });
 
     const activateTab = (tab, moveFocus = false) => {
       tabs.forEach(item => {
@@ -849,6 +855,8 @@
     const startTab = lastSection && host.querySelector('#' + lastSection);
     if (startTab) activateTab(startTab);
 
+    /* Start closed only on a narrow screen, as the stylesheet defines it. */
+    sideClosed = narrow();
     paintSide();
     openFromHash();
     window.addEventListener('hashchange', openFromHash);

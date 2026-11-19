@@ -364,6 +364,13 @@
   .hub-tab { min-height: 48px; font-size: .9rem; padding: 12px 14px; }
   .hub-content.is-behind-menu { overflow: hidden; }
 }
+
+/* If the script never runs, a wide screen must still show the menu: it is a
+   column that is simply there, and the Sections button has no job. */
+@media (min-width: 901px) {
+  .hub-side:not(.is-closed) { display: block; }
+  .hub-side-open { display: none !important; }
+}
 .hub-tab-panel[hidden] { display: none !important; }
 .hub-tab-panel { padding: 2px 0 4px; }
 .hub-tab-panel > .hub-section-head { margin: 0 0 17px; }
