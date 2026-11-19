@@ -8,4 +8,9 @@ Disallow: /reset-password
 Disallow: /confirm-email
 Disallow: /api/
 
+# Members-only content: visible only after signing in to the Student Hub.
+Disallow: /events
+Disallow: /executives
+Disallow: /gallery
+
 Sitemap: https://www.goldrefineryhall-umat.com/sitemap.xml

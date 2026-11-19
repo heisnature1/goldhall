@@ -135,6 +135,87 @@
     return list;
   }
 
+  /* ---------- members-only content: events, pictures, executives ---------- */
+  /*
+   * These read from GoldHallStore, whose read() is synchronous and returns the
+   * bundled seed until api/content.php answers. dashboardMarkup() builds its
+   * template in one pass, so calling these while rendering would always paint
+   * the seed and never show anything an administrator has added. They are
+   * therefore called from mount() after the store is ready, and again whenever
+   * the store refreshes.
+   */
+  function renderHubEvents(host) {
+    const list = host.querySelector('#hubEventList');
+    if (!list) return;
+
+    const events = typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('events') : [];
+    if (!events.length) {
+      list.innerHTML = '<p class="hub-empty-note"><i class="fas fa-circle-info"></i> No events have been posted yet.</p>';
+      return;
+    }
+
+    list.innerHTML = events.map(item => `
+      <article class="announcement">
+        ${item.image ? `<span class="announcement-thumb"><img src="${esc(item.image)}" alt="" loading="lazy" style="object-position:${esc(item.position || '50% 50%')}"></span>` : '<span class="announcement-icon"><i class="fas fa-calendar-days"></i></span>'}
+        <div>
+          <h4>${esc(item.title)}</h4>
+          ${item.meta ? `<p class="announcement-meta"><i class="fas fa-clock"></i> ${esc(item.meta)}</p>` : ''}
+          <p>${esc(item.text)}</p>
+          ${item.link ? `<p style="margin:8px 0 0"><a class="resource-link" href="${esc(item.link)}" target="_blank" rel="noopener noreferrer">${esc(item.label || 'Learn more')} <i class="fas fa-arrow-up-right-from-square"></i></a></p>` : ''}
+        </div>
+      </article>`).join('');
+  }
+
+  function renderHubGallery(host) {
+    const grid = host.querySelector('#hubGalleryGrid');
+    if (!grid) return;
+
+    const pictures = typeof GoldHallStore !== 'undefined'
+      ? GoldHallStore.visible('gallery').filter(item => item.image)
+      : [];
+
+    if (!pictures.length) {
+      grid.innerHTML = '<p class="hub-empty-note"><i class="fas fa-circle-info"></i> No pictures have been posted yet.</p>';
+      return;
+    }
+
+    grid.innerHTML = pictures.map(item => `
+      <figure class="hub-gallery-item">
+        <img src="${esc(item.image)}" alt="${esc(item.title || '')}" loading="lazy" style="object-position:${esc(item.position || '50% 50%')}">
+        ${item.title ? `<figcaption>${esc(item.title)}</figcaption>` : ''}
+      </figure>`).join('');
+  }
+
+  function renderHubExecutives(host) {
+    const grid = host.querySelector('#hubExecutiveGrid');
+    if (!grid) return;
+
+    const team = typeof GoldHallStore !== 'undefined' ? GoldHallStore.visible('executives') : [];
+    if (!team.length) {
+      grid.innerHTML = '<p class="hub-empty-note"><i class="fas fa-circle-info"></i> The executive list has not been published yet.</p>';
+      return;
+    }
+
+    grid.innerHTML = team.map(item => `
+      <article class="hub-executive">
+        <div class="hub-executive-photo">
+          ${item.image
+            ? `<img src="${esc(item.image)}" alt="${esc(item.title)}" loading="lazy" style="object-position:${esc(item.position || '50% 50%')}">`
+            : `<span class="hub-executive-initials" aria-hidden="true">${esc((item.title || '?').trim().charAt(0).toUpperCase())}</span>`}
+        </div>
+        <h3>${esc(item.title)}</h3>
+        ${item.meta ? `<span class="hub-executive-role"><i class="fas fa-user-tie"></i> ${esc(item.meta)}</span>` : ''}
+        <p>${esc(item.text)}</p>
+      </article>`).join('');
+  }
+
+  /** Paint everything that comes from the content store. */
+  function renderMembersOnlyContent(host) {
+    renderHubEvents(host);
+    renderHubGallery(host);
+    renderHubExecutives(host);
+  }
+
   /* ---------- dashboard view markup ---------- */
   function dashboardMarkup(student) {
     return `<div class="hub-dashboard">
@@ -163,6 +244,8 @@
         <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships &amp; internships</button>
         <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i> Grievance desk</button>
         <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
+        <button class="hub-tab" id="tabEvents" type="button" role="tab" aria-selected="false" aria-controls="panelEvents" tabindex="-1"><i class="fas fa-calendar-days" aria-hidden="true"></i> Hall events</button>
+        <button class="hub-tab" id="tabExecutives" type="button" role="tab" aria-selected="false" aria-controls="panelExecutives" tabindex="-1"><i class="fas fa-users" aria-hidden="true"></i> Executives</button>
         <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
       </div>
 
@@ -309,6 +392,35 @@
             <p class="bus-caveat"><i class="fas fa-circle-info"></i> These times are indicative; please confirm the current timetable with the Hall Office before travelling.</p>
           </div>
         </div>
+      </section>
+
+      <!-- TAB: Hall events (members only) -->
+      <section class="hub-tab-panel" id="panelEvents" role="tabpanel" aria-labelledby="tabEvents" tabindex="0" hidden>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">What's coming</span><h2>Hall events</h2></div>
+          <p>Everything the hall has planned, for residents only.</p>
+        </div>
+        <div class="hub-lower-grid">
+          <div class="hub-panel">
+            <h3>Upcoming events</h3>
+            <p class="hub-panel-intro">Programmes, festivals and gatherings at the hall.</p>
+            <div class="announcement-list" id="hubEventList"></div>
+          </div>
+          <div class="hub-panel">
+            <h3>Pictures from the hall</h3>
+            <p class="hub-panel-intro">Moments from events, the campus and hall life.</p>
+            <div class="hub-gallery-grid" id="hubGalleryGrid"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB: Executives (members only) -->
+      <section class="hub-tab-panel" id="panelExecutives" role="tabpanel" aria-labelledby="tabExecutives" tabindex="0" hidden>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">Who leads the hall</span><h2>Hall executives</h2></div>
+          <p>The team running Gold Refinery Hall this administration.</p>
+        </div>
+        <div class="hub-executive-grid" id="hubExecutiveGrid"></div>
       </section>
 
       <!-- TAB 4: Hall Polls -->
@@ -619,6 +731,17 @@
     renderPolls(student, host, lost).catch(() => {});
     renderStudentGrievances(student, host, 'all').catch(() => {});
     setupGrievanceEvents(student, host);
+
+    /* Events, pictures and executives come from the content store, which
+       answers asynchronously. Paint once it is ready, and again if it is
+       refreshed, so the panels never keep showing the bundled seed. */
+    const paintContent = () => renderMembersOnlyContent(host);
+    if (typeof GoldHallStore !== 'undefined' && GoldHallStore.ready) {
+      GoldHallStore.ready().then(paintContent).catch(paintContent);
+    } else {
+      paintContent();
+    }
+    host.addEventListener('goldhall:content', paintContent);
 
     /* Content is not mirrored in storage any more either, so there is no
        cross-tab signal left to listen for. The hub re-reads on reload. */
