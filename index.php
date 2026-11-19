@@ -206,9 +206,5 @@ require __DIR__ . '/includes/header.php';
         <i class="fas fa-chevron-up"></i>
     </button>
 
-    <!-- LIGHTBOX -->
-    <div class="lightbox" id="lightbox">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        <img id="lightboxImg" src="" alt="Gallery Image">
-    </div>
+    <!-- No lightbox: the gallery it opened now lives in the Student Hub. -->
 <?php require __DIR__ . '/includes/footer.php'; ?>
