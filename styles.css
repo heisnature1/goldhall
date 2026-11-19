@@ -1886,6 +1886,22 @@
             min-width: 16px;
         }
 
+        /* The address is a mail link, so it needs to sit like the rest of the
+           column rather than arrive as default blue underlined text, and it has
+           to wrap inside its column on a narrow screen. */
+        .footer-contact a {
+            color: inherit;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+            transition: var(--transition);
+        }
+
+        .footer-contact a:hover,
+        .footer-contact a:focus-visible {
+            color: var(--gold);
+            text-decoration: underline;
+        }
+
         .footer-bottom {
             padding: 25px 0;
             display: flex;

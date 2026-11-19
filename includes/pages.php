@@ -96,7 +96,7 @@ function goldhall_pages(): array
                 ],
                 [
                     'id' => 'email', 'title' => 'Email', 'icon' => 'fa-envelope',
-                    'text' => 'goldhall@umat.edu.gh — for general enquiries, residence matters and official correspondence.',
+                    'text' => 'goldrefineryhall01@gmail.com — for general enquiries, residence matters and official correspondence.',
                 ],
                 [
                     'id' => 'hours', 'title' => 'Office Hours', 'icon' => 'fa-clock',

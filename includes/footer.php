@@ -56,7 +56,7 @@ $extra_scripts = $extra_scripts ?? [];
                     </li>
                     <li>
                         <i class="fas fa-envelope"></i>
-                        <span>goldhall@umat.edu.gh</span>
+                        <a href="mailto:goldrefineryhall01@gmail.com">goldrefineryhall01@gmail.com</a>
                     </li>
                     <li>
                         <i class="fas fa-clock"></i>
