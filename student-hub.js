@@ -284,6 +284,7 @@
         <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i> Grievance desk</button>
         <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
         <button class="hub-tab" id="tabEvents" type="button" role="tab" aria-selected="false" aria-controls="panelEvents" tabindex="-1"><i class="fas fa-calendar-days" aria-hidden="true"></i> Hall events</button>
+        <button class="hub-tab" id="tabGallery" type="button" role="tab" aria-selected="false" aria-controls="panelGallery" tabindex="-1"><i class="fas fa-images" aria-hidden="true"></i> Gallery</button>
         <button class="hub-tab" id="tabExecutives" type="button" role="tab" aria-selected="false" aria-controls="panelExecutives" tabindex="-1"><i class="fas fa-users" aria-hidden="true"></i> Executives</button>
         <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
         </nav>
@@ -445,18 +446,20 @@
           <div><span class="hub-kicker">What's coming</span><h2>Hall events</h2></div>
           <p>Everything the hall has planned, for residents only.</p>
         </div>
-        <div class="hub-lower-grid">
-          <div class="hub-panel">
-            <h3>Upcoming events</h3>
-            <p class="hub-panel-intro">Programmes, festivals and gatherings at the hall.</p>
-            <div class="announcement-list" id="hubEventList"></div>
-          </div>
-          <div class="hub-panel">
-            <h3>Pictures from the hall</h3>
-            <p class="hub-panel-intro">Moments from events, the campus and hall life.</p>
-            <div class="hub-gallery-grid" id="hubGalleryGrid"></div>
-          </div>
+        <div class="hub-panel">
+          <h3>Upcoming events</h3>
+          <p class="hub-panel-intro">Programmes, festivals and gatherings at the hall.</p>
+          <div class="announcement-list" id="hubEventList"></div>
         </div>
+      </section>
+
+      <!-- TAB: Gallery (members only) -->
+      <section class="hub-tab-panel" id="panelGallery" role="tabpanel" aria-labelledby="tabGallery" tabindex="0" hidden>
+        <div class="hub-section-head">
+          <div><span class="hub-kicker">Life at the hall</span><h2>Gallery</h2></div>
+          <p>Freshers' welcome, hall week, sports, projects and everyday life at Gold Refinery Hall.</p>
+        </div>
+        <div class="hub-gallery-grid" id="hubGalleryGrid"></div>
       </section>
 
       <!-- TAB: Executives (members only) -->
@@ -835,7 +838,7 @@
        straight away, so a link in the footer still lands on the right panel. */
     const DEEP_LINKS = {
       events: 'tabEvents',
-      gallery: 'tabEvents',
+      gallery: 'tabGallery',
       executives: 'tabExecutives',
       polls: 'tabPolls',
       grievances: 'tabGrievances',
