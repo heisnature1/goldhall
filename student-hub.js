@@ -262,14 +262,37 @@
     </div>
 
     <div class="hub-section hub-tabs-wrap" data-reveal style="--fx-delay:.14s">
-      <div class="hub-tabs" role="tablist" aria-label="Student Hub sections">
-        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships &amp; internships</button>
+      <!--
+        A section menu down the side rather than a row across the top.
+
+        Each row is its own button, and the one you are reading is marked with
+        aria-current, so it is announced as "current page" rather than as a
+        tab that has been selected. Closing is the same action for everyone:
+        the round control at the foot of the menu, or Escape. When the menu is
+        closed the content stays open beside it - the menu is a list of places
+        to go, not a drawer the content lives inside.
+      -->
+      <aside class="hub-side" id="hubSide" aria-label="Student Hub sections">
+        <div class="hub-side-head">
+          <span class="hub-side-title"><i class="fas fa-compass" aria-hidden="true"></i> Sections</span>
+          <button class="hub-side-close" id="hubSideClose" type="button" aria-label="Close the section menu" title="Close menu (Esc)">
+            <i class="fas fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <nav class="hub-tabs" id="hubTabs" role="tablist" aria-label="Student Hub sections" aria-orientation="vertical">
+        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-current="page" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships &amp; internships</button>
         <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i> Grievance desk</button>
         <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
         <button class="hub-tab" id="tabEvents" type="button" role="tab" aria-selected="false" aria-controls="panelEvents" tabindex="-1"><i class="fas fa-calendar-days" aria-hidden="true"></i> Hall events</button>
         <button class="hub-tab" id="tabExecutives" type="button" role="tab" aria-selected="false" aria-controls="panelExecutives" tabindex="-1"><i class="fas fa-users" aria-hidden="true"></i> Executives</button>
         <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
-      </div>
+        </nav>
+      </aside>
+
+      <div class="hub-content" id="hubContent">
+        <button class="hub-side-open" id="hubSideOpen" type="button" aria-expanded="true" aria-controls="hubSide">
+          <i class="fas fa-bars" aria-hidden="true"></i> Sections
+        </button>
 
       <!-- TAB 1: Scholarships, Internships & Learning -->
       <section class="hub-tab-panel" id="panelScholarships" role="tabpanel" aria-labelledby="tabScholarships" tabindex="0">
@@ -457,6 +480,7 @@
         </div>
         <div class="poll-grid" id="pollGrid"></div>
       </section>
+      </div>
     </div>
 
     <section class="hub-section" style="display:flex;justify-content:flex-end">
@@ -703,16 +727,89 @@
     host.innerHTML = dashboardMarkup(student);
     const tabList = host.querySelector('[role="tablist"]');
     const tabs = [...tabList.querySelectorAll('[role="tab"]')];
+    const wrap   = host.querySelector('.hub-tabs-wrap');
+    const side   = host.querySelector('#hubSide');
+    const content = host.querySelector('#hubContent');
+    const openBtn  = host.querySelector('#hubSideOpen');
+    const closeBtn = host.querySelector('#hubSideClose');
+
+    /* ---------- the section menu ---------- */
+    /*
+     * On a desktop the menu is a column of links beside the content: it is open
+     * to begin with and nothing is hidden behind it. On a phone the same menu
+     * would eat the width, so it starts closed; opening it slides it over the
+     * content, and closing it brings the content back.
+     *
+     * The choice is remembered for the visit, so someone who collapses the menu
+     * on a desktop does not have to collapse it again on every section.
+     */
+    const NARROW = '(max-width: 900px)';
+    const narrow = () => !!(window.matchMedia && window.matchMedia(NARROW).matches);
+    let sideClosed = narrow();
+
+    const paintSide = () => {
+      const overlay = narrow();
+      side.classList.toggle('is-closed', sideClosed);
+      /* The wrapper carries the same state, so the column collapses without
+         relying on :has(), which older browsers do not support. */
+      if (wrap) wrap.classList.toggle('side-closed', sideClosed);
+      if (openBtn) {
+        openBtn.hidden = !sideClosed;
+        openBtn.setAttribute('aria-expanded', String(!sideClosed));
+      }
+      /* Only a narrow screen needs the content pushed out of reach while the
+         menu covers it; on a wide one the two simply sit side by side. */
+      content.classList.toggle('is-behind-menu', overlay && !sideClosed);
+      if (overlay && !sideClosed) {
+        side.removeAttribute('inert');
+      } else if (overlay) {
+        side.setAttribute('inert', '');
+      } else {
+        side.removeAttribute('inert');
+      }
+    };
+
+    const setSide = closed => {
+      sideClosed = closed;
+      paintSide();
+      /* Return focus to whatever is still on screen, so a keyboard user is
+         never dropped into a hidden button. */
+      if (closed && side.contains(document.activeElement)) {
+        (openBtn && !openBtn.hidden ? openBtn : tabList.querySelector('.hub-tab.active'))?.focus?.();
+      }
+      if (!closed && closeBtn) closeBtn.focus();
+    };
+
+    if (openBtn)  openBtn.onclick  = () => setSide(false);
+    if (closeBtn) closeBtn.onclick = () => setSide(true);
+    /* Escape closes the menu wherever it is open, the way any panel closes. */
+    host.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !sideClosed) { event.preventDefault(); setSide(true); }
+    });
+    /* Rotating a phone or resizing a window changes which rules apply. */
+    if (window.matchMedia) {
+      const mq = window.matchMedia(NARROW);
+      const onChange = () => { sideClosed = mq.matches; paintSide(); };
+      if (mq.addEventListener) mq.addEventListener('change', onChange);
+      else if (mq.addListener) mq.addListener(onChange);
+    }
+
     const activateTab = (tab, moveFocus = false) => {
       tabs.forEach(item => {
         const active = item === tab;
         item.classList.toggle('active', active);
         item.setAttribute('aria-selected', String(active));
         item.tabIndex = active ? 0 : -1;
+        /* aria-current reads as "you are here", which is what this is now that
+           the sections sit in a menu down the side rather than across the top. */
+        if (active) item.setAttribute('aria-current', 'page');
+        else item.removeAttribute('aria-current');
         const panel = host.querySelector(`#${item.getAttribute('aria-controls')}`);
         if (panel) panel.hidden = !active;
       });
       if (moveFocus) tab.focus();
+      /* On a phone, picking a section means you are done with the menu. */
+      if (narrow() && !sideClosed) setSide(true);
     };
     tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => activateTab(tab));
@@ -744,8 +841,22 @@
       const tab = DEEP_LINKS[key] ? host.querySelector('#' + DEEP_LINKS[key]) : null;
       if (tab) activateTab(tab);
     };
+
+    /* Start on the section that was open last, so coming back to the hub does
+       not always drop the student on Scholarships. A hash still wins. */
+    let lastSection = '';
+    try { lastSection = sessionStorage.getItem('goldHallHubSection') || ''; } catch (_) { /* blocked */ }
+    const startTab = lastSection && host.querySelector('#' + lastSection);
+    if (startTab) activateTab(startTab);
+
+    paintSide();
     openFromHash();
     window.addEventListener('hashchange', openFromHash);
+
+    /* Remember which section is open. */
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      try { sessionStorage.setItem('goldHallHubSection', tab.id); } catch (_) { /* blocked */ }
+    }));
 
     host.querySelector('#signOutButton').addEventListener('click', () => {
       if (onSignOut) onSignOut();
