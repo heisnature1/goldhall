@@ -1683,6 +1683,100 @@
             transform: translateY(-3px);
         }
 
+        /*
+         * Two columns: the portrait, then the copy.
+         *
+         * The photograph keeps its own 4:5 frame (object-fit only ever trims,
+         * never stretches), and the copy sits beside it rather than on top, so
+         * neither has to fight the other for contrast.
+         */
+        .cta-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+            gap: 64px;
+            align-items: center;
+            text-align: left;
+        }
+
+        .cta-portrait {
+            margin: 0;
+            justify-self: center;
+            /* Above the decorative rings, which are positioned and would
+               otherwise paint over the photograph's corner. */
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            /* The portrait was shot against a studio backdrop. A gold hairline
+               and a shadow treat that grey as deliberate rather than as a
+               photograph that happens to have its edges showing. */
+            outline: 1px solid rgba(200, 168, 78, 0.5);
+            outline-offset: -1px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.38);
+        }
+
+        .cta-portrait img {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            object-position: center 22%;
+        }
+
+        .cta-layout .cta-content {
+            max-width: 560px;
+        }
+
+        .cta-layout .cta-content h2 {
+            margin-top: 0;
+        }
+
+        .cta-layout .cta-content p {
+            margin: 0 0 35px;
+        }
+
+        .cta-layout .cta-buttons {
+            justify-content: flex-start;
+        }
+
+        /* Below tablet the columns stack; the portrait leads, a little smaller
+           than full width so it still reads as a portrait and not a banner. */
+        @media (max-width: 900px) {
+            .cta-layout {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 36px;
+                text-align: center;
+            }
+
+            .cta-portrait {
+                max-width: 320px;
+                order: -1;
+            }
+
+            .cta-layout .cta-content {
+                max-width: 640px;
+                margin: 0 auto;
+            }
+
+            .cta-layout .cta-content p {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .cta-layout .cta-buttons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .cta-portrait {
+                max-width: 260px;
+            }
+        }
+
         /* ===== FOOTER ===== */
         .footer {
             background: var(--primary-dark);

@@ -184,8 +184,25 @@ require __DIR__ . '/includes/header.php';
         </div>
     </section>
     <!-- CTA SECTION -->
+    <!--
+      The portrait sits in its own column rather than behind the words. It is a
+      studio photograph, tall and centred on one person: stretched across the
+      whole band it would either lose the face to the text or lose the face to
+      the crop. Side by side, the photograph gets a column of the right shape and
+      the copy keeps a background that can be read.
+    -->
     <section class="cta-section">
-        <div class="container">
+        <div class="container cta-layout">
+            <figure class="cta-portrait animate-on-scroll">
+                <picture>
+                    <source media="(max-width: 560px)" srcset="assets/images/cta/president-welcome-480.jpg">
+                    <source media="(max-width: 900px)" srcset="assets/images/cta/president-welcome-768.jpg">
+                    <source media="(min-width: 1400px)" srcset="assets/images/cta/president-welcome-1280.jpg">
+                    <img src="assets/images/cta/president-welcome.jpg"
+                         alt="Pius Clinton, President of Gold Refinery Hall"
+                         width="864" height="1080" loading="lazy" decoding="async">
+                </picture>
+            </figure>
             <div class="cta-content animate-on-scroll">
                 <h2>Join the Gold Refinery Family</h2>
                 <p>Experience the best of university life at Gold Refinery Hall. From academic support to vibrant social activities, we have everything you need to thrive.</p>
