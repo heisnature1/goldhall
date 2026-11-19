@@ -272,6 +272,7 @@
         closed the content stays open beside it - the menu is a list of places
         to go, not a drawer the content lives inside.
       -->
+      <div class="hub-side-backdrop" id="hubSideBackdrop" aria-hidden="true"></div>
       <aside class="hub-side" id="hubSide" aria-label="Student Hub sections">
         <div class="hub-side-head">
           <span class="hub-side-title"><i class="fas fa-compass" aria-hidden="true"></i> Sections</span>
@@ -280,13 +281,13 @@
           </button>
         </div>
         <nav class="hub-tabs" id="hubTabs" role="tablist" aria-label="Student Hub sections" aria-orientation="vertical">
-        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-current="page" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i> Scholarships &amp; internships</button>
-        <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i> Grievance desk</button>
-        <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i> Hall announcements</button>
-        <button class="hub-tab" id="tabEvents" type="button" role="tab" aria-selected="false" aria-controls="panelEvents" tabindex="-1"><i class="fas fa-calendar-days" aria-hidden="true"></i> Hall events</button>
-        <button class="hub-tab" id="tabGallery" type="button" role="tab" aria-selected="false" aria-controls="panelGallery" tabindex="-1"><i class="fas fa-images" aria-hidden="true"></i> Gallery</button>
-        <button class="hub-tab" id="tabExecutives" type="button" role="tab" aria-selected="false" aria-controls="panelExecutives" tabindex="-1"><i class="fas fa-users" aria-hidden="true"></i> Executives</button>
-        <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i> Hall polls</button>
+        <button class="hub-tab active" id="tabScholarships" type="button" role="tab" aria-selected="true" aria-current="page" aria-controls="panelScholarships" tabindex="0"><i class="fas fa-award" aria-hidden="true"></i><span> Scholarships &amp; internships</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabGrievances" type="button" role="tab" aria-selected="false" aria-controls="panelGrievances" tabindex="-1"><i class="fas fa-clipboard-question" aria-hidden="true"></i><span> Grievance desk</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabAnnouncements" type="button" role="tab" aria-selected="false" aria-controls="panelAnnouncements" tabindex="-1"><i class="fas fa-bullhorn" aria-hidden="true"></i><span> Hall announcements</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabEvents" type="button" role="tab" aria-selected="false" aria-controls="panelEvents" tabindex="-1"><i class="fas fa-calendar-days" aria-hidden="true"></i><span> Hall events</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabGallery" type="button" role="tab" aria-selected="false" aria-controls="panelGallery" tabindex="-1"><i class="fas fa-images" aria-hidden="true"></i><span> Gallery</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabExecutives" type="button" role="tab" aria-selected="false" aria-controls="panelExecutives" tabindex="-1"><i class="fas fa-users" aria-hidden="true"></i><span> Executives</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
+        <button class="hub-tab" id="tabPolls" type="button" role="tab" aria-selected="false" aria-controls="panelPolls" tabindex="-1"><i class="fas fa-check-to-slot" aria-hidden="true"></i><span> Hall polls</span><span class="hub-tab-mark" aria-hidden="true">§</span></button>
         </nav>
       </aside>
 
@@ -731,6 +732,7 @@
     const tabList = host.querySelector('[role="tablist"]');
     const tabs = [...tabList.querySelectorAll('[role="tab"]')];
     const wrap   = host.querySelector('.hub-tabs-wrap');
+    const backdrop = host.querySelector('#hubSideBackdrop');
     const side   = host.querySelector('#hubSide');
     const content = host.querySelector('#hubContent');
     const openBtn  = host.querySelector('#hubSideOpen');
@@ -773,6 +775,9 @@
       /* Only a narrow screen needs the content pushed out of reach while the
          menu covers it; on a wide one the two simply sit side by side. */
       content.classList.toggle('is-behind-menu', overlay && !sideClosed);
+      /* The backdrop belongs to the sheet only; on a wide screen the menu is
+         part of the page, not something laid over it. */
+      wrap.classList.toggle('side-covered', overlay && !sideClosed);
       if (overlay && !sideClosed) {
         side.removeAttribute('inert');
       } else if (overlay) {
@@ -795,6 +800,8 @@
 
     if (openBtn)  openBtn.onclick  = () => setSide(false);
     if (closeBtn) closeBtn.onclick = () => setSide(true);
+    /* Tapping the dimmed page beside the sheet closes it. */
+    if (backdrop) backdrop.onclick = () => setSide(true);
     /* Escape closes the menu wherever it is open, the way any panel closes. */
     host.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !sideClosed) { event.preventDefault(); setSide(true); }

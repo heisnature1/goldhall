@@ -26,7 +26,7 @@ let grievanceSearchQuery = '';
 const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
 
 function dashboard() {
-  const contentButtons = Object.keys(labels).map(type => `<button type="button" data-type="${type}" class="admin-tab ${activeView === 'content' && type === activeType ? 'active' : ''}"><i class="fas ${icons[type]}"></i>${labels[type]}</button>`).join('');
+  const contentButtons = Object.keys(labels).map(type => `<button type="button" data-type="${type}" class="admin-tab ${activeView === 'content' && type === activeType ? 'active' : ''}"><i class="fas ${icons[type]}"></i><span>${labels[type]}</span><span class="admin-tab-mark" aria-hidden="true">§</span></button>`).join('');
 
   /* The pending-grievance count now comes from the database. The shell renders
      first and the badge fills in when it arrives: waiting for it would stall
@@ -51,6 +51,7 @@ function dashboard() {
       </div>
     </header>
     <div class="admin-body" id="adminBody">
+      <div class="admin-rail-backdrop" id="railBackdrop" aria-hidden="true"></div>
       <aside class="admin-rail" id="adminRail" aria-label="Admin sections">
         <div class="admin-rail-head">
           <span class="admin-rail-title"><i class="fas fa-compass" aria-hidden="true"></i> Sections</span>
@@ -62,8 +63,8 @@ function dashboard() {
           <div class="admin-tabbar-inner">
             ${contentButtons}
             <span class="admin-tab-sep" aria-hidden="true"></span>
-            <button id="portalTools" type="button" class="admin-tab ${activeView === 'portal' ? 'active' : ''}"><i class="fas fa-user-graduate"></i>Students &amp; polls</button>
-            <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i>Grievance desk ${pendingSlot}</button>
+            <button id="portalTools" type="button" class="admin-tab ${activeView === 'portal' ? 'active' : ''}"><i class="fas fa-user-graduate"></i><span>Students &amp; polls</span><span class="admin-tab-mark" aria-hidden="true">§</span></button>
+            <button id="grievanceTools" type="button" class="admin-tab ${activeView === 'grievances' ? 'active' : ''}"><i class="fas fa-clipboard-question"></i><span>Grievance desk</span>${pendingSlot}<span class="admin-tab-mark" aria-hidden="true">§</span></button>
           </div>
         </nav>
       </aside>
@@ -111,6 +112,7 @@ function dashboard() {
   const body   = document.getElementById('adminBody');
   const railOpen  = document.getElementById('railOpen');
   const railClose = document.getElementById('railClose');
+  const backdrop  = document.getElementById('railBackdrop');
   /*
    * Wide or narrow is read from the layout, never asked of the window.
    *
@@ -132,6 +134,9 @@ function dashboard() {
     const overlay = isNarrow();
     rail.classList.toggle('is-closed', railClosed);
     body.classList.toggle('rail-closed', railClosed);
+    /* The backdrop belongs to the sheet, never to the docking column: on a wide
+       screen the menu is part of the page, not something covering it. */
+    body.classList.toggle('rail-covered', overlay && !railClosed);
     if (railOpen) {
       railOpen.hidden = !railClosed;
       railOpen.setAttribute('aria-expanded', String(!railClosed));
@@ -153,6 +158,8 @@ function dashboard() {
 
   railOpen.onclick  = () => setRail(false);
   railClose.onclick = () => setRail(true);
+  /* Tapping the dimmed page beside the sheet closes it, the way a sheet should. */
+  if (backdrop) backdrop.onclick = () => setRail(true);
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && !railClosed) { event.preventDefault(); setRail(true); }
   });
